@@ -6,7 +6,8 @@ Le suivi détaillé se fait dans les [issues](https://github.com/franckniat/bibl
 
 - La logique métier pure (canon biblique, générateur de plans, rattrapage, séries, échéances des rappels, schémas zod) vit dans `@workspace/core`, partagé avec la future app mobile.
 - Les mutations web passent par des Server Actions qui délèguent à des services serveur (`apps/web/server/services`), réutilisables par une API REST pour le mobile.
-- Le texte biblique n'est jamais stocké : il est servi par API.Bible, dans le respect de ses conditions d'utilisation.
+- Le texte biblique provient de versions du domaine public (LSG 1910, KJV) embarquées dans `@workspace/bible-data` : aucune API payante, lecture possible hors ligne.
+- 100 % gratuit : uniquement des offres gratuites (Neon, Vercel Hobby, Resend, PostHog, GitHub Actions). Seul coût : un nom de domaine pour l’envoi d’emails.
 
 ## M1 — Fondations
 
@@ -16,7 +17,7 @@ CI, packages de base, base de données, i18n, emails, authentification, squelett
 - [#2 packages/core : socle de la logique métier partagée](https://github.com/franckniat/bible-plan/issues/2) — dépend de #1
 - [#3 packages/db : Prisma + Neon](https://github.com/franckniat/bible-plan/issues/3) — dépend de #1
 - [#4 packages/i18n + next-intl : application FR / EN](https://github.com/franckniat/bible-plan/issues/4) — dépend de #2
-- [#5 packages/notifications : EmailSender + Lumail](https://github.com/franckniat/bible-plan/issues/5) — dépend de #4
+- [#5 packages/notifications : EmailSender + Resend](https://github.com/franckniat/bible-plan/issues/5) — dépend de #4
 - [#6 packages/auth : better-auth (email + mot de passe)](https://github.com/franckniat/bible-plan/issues/6) — dépend de #3, #5
 - [#7 Pages d'authentification, Google et magic link](https://github.com/franckniat/bible-plan/issues/7) — dépend de #6
 - [#8 Squelette de l'application et profil utilisateur](https://github.com/franckniat/bible-plan/issues/8) — dépend de #7
@@ -35,17 +36,17 @@ Canon biblique, générateur de plans, modèles, création, page Aujourd'hui, ge
 
 ## M3 — Bible
 
-Client API.Bible et lecteur intégré.
+Textes du domaine public (LSG 1910, KJV) et lecteur intégré.
 
-- [#16 packages/bible : client API.Bible](https://github.com/franckniat/bible-plan/issues/16) — dépend de #9
+- [#16 packages/bible-data : textes du domaine public (LSG 1910, KJV)](https://github.com/franckniat/bible-plan/issues/16) — dépend de #9
 - [#17 Lecteur biblique intégré](https://github.com/franckniat/bible-plan/issues/17) — dépend de #16, #14
 
 ## M4 — Rappels
 
-Rappels planifiés (QStash), emails, Web Push / PWA, contenu intelligent.
+Rappels planifiés (cron GitHub Actions), emails (Resend), Web Push / PWA, contenu intelligent.
 
 - [#18 Modèle des rappels et calcul de la prochaine échéance](https://github.com/franckniat/bible-plan/issues/18) — dépend de #8, #2
-- [#19 Envoi des rappels : QStash + email](https://github.com/franckniat/bible-plan/issues/19) — dépend de #18, #5
+- [#19 Envoi des rappels : cron GitHub Actions + email](https://github.com/franckniat/bible-plan/issues/19) — dépend de #18, #5
 - [#20 PWA et notifications Web Push](https://github.com/franckniat/bible-plan/issues/20) — dépend de #19
 - [#21 Contenu intelligent des rappels](https://github.com/franckniat/bible-plan/issues/21) — dépend de #20, #22
 
@@ -69,15 +70,17 @@ Groupes, invitations, plan commun, prières partagées, commentaires.
 
 ## M7 — Lancement
 
-Apple Sign-In, landing, dons, accessibilité, e2e, mise en production.
+Landing, dons, PostHog, RGPD, accessibilité, e2e, mise en production.
 
-- [#30 Connexion avec Apple](https://github.com/franckniat/bible-plan/issues/30) — dépend de #7
 - [#31 Landing, page Soutenir et SEO](https://github.com/franckniat/bible-plan/issues/31) — dépend de #8
+- [#35 PostHog : analytics produit et suivi des erreurs](https://github.com/franckniat/bible-plan/issues/35) — dépend de #8
+- [#36 Confidentialité et RGPD](https://github.com/franckniat/bible-plan/issues/36) — dépend de #25, #29
 - [#32 Accessibilité et tests de bout en bout](https://github.com/franckniat/bible-plan/issues/32) — dépend de #21, #25, #29
-- [#33 Mise en production](https://github.com/franckniat/bible-plan/issues/33) — dépend de #32, #30, #31
+- [#33 Mise en production](https://github.com/franckniat/bible-plan/issues/33) — dépend de #32, #31, #35, #36
 
 ## Hors milestone
 
 Travaux planifiés après la v1 web.
 
-- [#34 [Épique] Application mobile Expo](https://github.com/franckniat/bible-plan/issues/34) — dépend de #33
+- [#30 Connexion avec Apple](https://github.com/franckniat/bible-plan/issues/30) — dépend de #7
+- [#34 [Épique] Application mobile Expo](https://github.com/franckniat/bible-plan/issues/34) — dépend de #33, #30
