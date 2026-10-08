@@ -10,7 +10,7 @@ L'app mobile couvre les **usages quotidiens**. L'administration avancée reste s
 |---|---|---|
 | Page « Aujourd'hui » (lectures du jour, série) | ✅ | écran d'accueil |
 | Cocher une lecture | ✅ | fonctionne hors ligne |
-| Lecteur biblique (API.Bible) | ✅ | passages récents en cache |
+| Lecteur biblique (LSG 1910, KJV) | ✅ | textes embarqués, 100 % hors ligne |
 | Journal de prière, « J'ai prié » | ✅ | |
 | Minuteur de méditation et notes | ✅ | minuteur maintenu écran verrouillé |
 | Rappels (lecture, prière, méditation) | ✅ | notifications natives |
@@ -38,6 +38,7 @@ L'app vivra dans `apps/mobile` comme un workspace pnpm du monorepo (`turbo dev -
 |---|---|
 | `@workspace/core` | canon biblique, générateur de plans, stratégies de retard, calcul des séries, `nextRunAt`, schémas zod |
 | `@workspace/i18n` | messages FR / EN |
+| `@workspace/bible-data` | textes LSG 1910 et KJV (domaine public), embarqués dans l'app ou téléchargés à la demande |
 
 L'**UI n'est pas partagée** : shadcn/Base UI est spécifique au DOM. On garde seulement la cohérence des tokens de design (couleurs, typographies).
 
@@ -47,32 +48,34 @@ L'**UI n'est pas partagée** : shadcn/Base UI est spécifique au DOM. On garde s
 
 Le mobile ne peut pas appeler les Server Actions. On ajoutera des **Route Handlers REST versionnés** dans `apps/web/app/api/v1/*`, qui appellent **les mêmes services serveur** (`apps/web/server/services/*`) que les Server Actions.
 
-- Endpoints prévus : `GET /today`, `POST /readings/:id/complete`, `GET /plans`, `GET /plans/:id`, `POST /plans` (depuis un modèle), `GET|POST|PATCH /prayers`, `POST /meditation-sessions`, `GET|POST /notes`, `GET /groups`, `GET /groups/:id`, `POST /groups/join`, `GET|POST /groups/:id/comments`, `GET|POST|PATCH /reminders`, `POST /devices`, `GET /bible/passages/:ref`.
+- Endpoints prévus : `GET /today`, `POST /readings/:id/complete`, `GET /plans`, `GET /plans/:id`, `POST /plans` (depuis un modèle), `GET|POST|PATCH /prayers`, `POST /meditation-sessions`, `GET|POST /notes`, `GET /groups`, `GET /groups/:id`, `POST /groups/join`, `GET|POST /groups/:id/comments`, `GET|POST|PATCH /reminders`, `POST /devices`.
 - Validation par les schémas zod de `@workspace/core`. Les types de réponse sont exportés pour le client mobile.
 - **Auth** : plugin `@better-auth/expo` côté serveur et client, session dans `expo-secure-store`, Google et Apple en natif.
-- **API.Bible** : la clé reste côté serveur. Le mobile passe par `GET /api/v1/bible/passages/:ref`, en respectant le FUMS et l'attribution.
+- **Bible** : aucun appel réseau, les textes du domaine public sont lus localement.
 
 ## 5. Notifications
 
 - Le modèle `PushDevice` prévoit déjà `kind = EXPO` (en plus de `WEB_PUSH`).
 - À la connexion, l'app enregistre son jeton Expo via `POST /api/v1/devices`.
-- Le job de rappel QStash existant envoie aussi via l'**Expo Push Service** pour les appareils `EXPO`. Les jetons invalides (`DeviceNotRegistered`) sont supprimés.
+- Le dispatch des rappels existant (déclenché par le cron GitHub Actions) envoie aussi via l'**Expo Push Service** pour les appareils `EXPO`. Les jetons invalides (`DeviceNotRegistered`) sont supprimés.
 - **Notifications locales de secours** : les rappels de la semaine sont programmés localement, pour qu'ils fonctionnent sans réseau. On dédoublonne avec le push distant via un identifiant (rappel + date).
 - Actions de notification : « Marquer comme lu », « Ouvrir la lecture », « J'ai prié ».
 
 ## 6. Hors ligne
 
-- Cache des lectures du jour et des 7 prochains jours pour chaque plan actif, ainsi que des passages récemment ouverts (dans la limite des CGU API.Bible).
+- Cache des lectures du jour et des 7 prochains jours pour chaque plan actif.
+- Le texte biblique est embarqué : la lecture fonctionne entièrement hors ligne.
 - File de mutations persistée (lecture faite, prière, session de méditation), rejouée à la reconnexion. Les opérations sont idempotentes côté serveur grâce aux contraintes uniques.
 - Indicateur « hors ligne » discret.
 
 ## 7. Publication sur les stores
 
-- **Sign in with Apple** est obligatoire sur iOS dès qu'une connexion Google est proposée (règle App Store 4.8). Il est prévu dès la v1 web.
+- **Sign in with Apple** est obligatoire sur iOS dès qu'une connexion Google est proposée (règle App Store 4.8). Il a été reporté de la v1 web (coût du programme Apple Developer) et sera ajouté au démarrage du mobile.
 - Politique de confidentialité et fiches « Data safety » (Google) / « App Privacy » (Apple) : email, données de lecture et de prière privées, aucune revente ni publicité.
 - **Deep links / universal links** : `/join/[code]` (invitation de groupe), `/read/[passage]`, `/today`.
 - Assets : icône, splash screen, captures FR / EN.
-- Comptes nécessaires : Apple Developer (payant), Google Play Console (frais unique), Expo/EAS.
+- Comptes nécessaires : Expo/EAS (gratuit), Google Play Console (25 $ une fois), Apple Developer (99 $/an).
+- **Option 100 % gratuite pour commencer** : PWA installable et APK Android distribué directement (build EAS gratuit). Les stores viendront quand les dons couvriront les frais.
 
 ## 8. Phases
 
@@ -81,7 +84,7 @@ Le mobile ne peut pas appeler les Server Actions. On ajoutera des **Route Handle
 3. **Prière et méditation** : journal, minuteur, notes.
 4. **Groupes** : consultation, commentaires, prières partagées, rejoindre par lien.
 5. **Hors ligne et finitions** : file de mutations, accessibilité, performances.
-6. **Publication** : TestFlight / test interne Play, puis production.
+6. **Publication** : APK direct, puis test interne Google Play et TestFlight, puis production.
 
 ## 9. Prérequis côté web (à respecter pendant les milestones M1 à M7)
 
@@ -90,7 +93,8 @@ Le mobile ne peut pas appeler les Server Actions. On ajoutera des **Route Handle
 - [ ] `PushDevice` multi-type (`WEB_PUSH | EXPO`).
 - [ ] Messages i18n dans `@workspace/i18n`, sans dépendance à next-intl dans les fichiers de messages.
 - [ ] Opérations de progression idempotentes (contraintes uniques).
-- [ ] Apple Sign-In disponible.
+- [ ] Textes bibliques dans `@workspace/bible-data`, utilisables sans serveur.
+- [ ] Apple Sign-In (issue dédiée, à faire au démarrage du mobile).
 
 ## 10. Licence
 
