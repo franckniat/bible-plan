@@ -1,0 +1,31 @@
+name: Fonctionnalité / tâche
+description: Proposer une fonctionnalité ou décrire une tâche de développement
+labels: ["feat"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexte
+      description: Pourquoi ce changement ? Quel besoin utilisateur ?
+    validations:
+      required: true
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Tâches
+      description: Une case = un commit.
+      value: |
+        - [ ] 
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critères d'acceptation
+      value: |
+        - [ ] 
+  - type: input
+    id: depends
+    attributes:
+      label: Dépend de
+      placeholder: "#12, #13"
