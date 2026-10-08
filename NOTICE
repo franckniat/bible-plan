@@ -34,12 +34,18 @@ Third-party content NOT covered by this license
 -------------------------------------------------------------------------------
 
 Bible texts
-  Scripture texts displayed by the application are retrieved at runtime from
-  API.Bible (https://scripture.api.bible) and remain the property of their
-  respective publishers and copyright holders. They are not part of this
-  repository, are not licensed under the AGPL, and are subject to the API.Bible
-  terms of use and to each version's own copyright notice, which the
-  application displays alongside the text.
+  The application only ships Bible translations that are in the public
+  domain. They are not covered by the AGPL and remain free for anyone to use:
+
+  - Louis Segond 1910 (French) - public domain.
+  - King James Version (English) - public domain, except in the United
+    Kingdom where it is subject to Crown rights.
+
+  Source files come from eBible.org (https://ebible.org) and are converted
+  by the project's import script. Exact sources are listed in
+  packages/bible-data once added. Copyrighted modern translations are never
+  included; the application only links to external readers (e.g. YouVersion)
+  for them.
 
 Datasets
   Bible structure data (books, chapters, verse counts) and reading orders

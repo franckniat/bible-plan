@@ -28,4 +28,4 @@ Merci de laisser un délai raisonnable de correction avant toute divulgation pub
 
 ## Périmètre
 
-Sont notamment concernés : l'authentification et les sessions, l'accès aux données d'autres utilisateurs ou groupes (plans, journaux de prière, notes), les endpoints de rappels (QStash), les notifications push et la fuite de secrets.
+Sont notamment concernés : l'authentification et les sessions, l'accès aux données d'autres utilisateurs ou groupes (plans, journaux de prière, notes), l'endpoint de déclenchement des rappels (cron), les notifications push et la fuite de secrets.
