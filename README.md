@@ -10,9 +10,9 @@ Bible Plan aide chacun à lire la Bible avec régularité :
 - **Prière et méditation** : journal de prière (sujets, prières exaucées), minuteur de méditation, notes liées au passage lu, rappels dédiés.
 - **Séries et statistiques** de régularité.
 - **Groupes** (église, cellule, famille) : plan commun, progression des membres, sujets de prière partagés, commentaires sur la lecture du jour.
-- **Lecteur intégré** via [API.Bible](https://scripture.api.bible), en français et en anglais.
+- **Lecteur intégré**, y compris hors ligne : Louis Segond 1910 (FR) et King James (EN), deux versions du domaine public.
 
-L'application est **gratuite**. Une application mobile (Expo) est prévue : voir [apps/mobile/PLAN-MOBILE.md](apps/mobile/PLAN-MOBILE.md).
+L'application est **100 % gratuite** et repose uniquement sur des offres gratuites. Elle vit de dons via Mobile Money (Orange Money, MTN MoMo). Une application mobile (Expo) est prévue : voir [apps/mobile/PLAN-MOBILE.md](apps/mobile/PLAN-MOBILE.md).
 
 ## Feuille de route
 
@@ -25,10 +25,11 @@ Les étapes sont suivies dans les [issues](https://github.com/franckniat/bible-p
 | Monorepo | Turborepo + pnpm |
 | Web | Next.js 16 (App Router), React 19, Tailwind CSS 4, shadcn/ui (Base UI) |
 | Base de données | PostgreSQL (Neon) + Prisma ORM |
-| Authentification | better-auth (email/mot de passe, magic link, Google, Apple) |
+| Authentification | better-auth (email/mot de passe, magic link, Google) |
 | i18n | next-intl (FR / EN) |
-| Rappels | Upstash QStash, Lumail (email), Web Push |
-| Texte biblique | API.Bible |
+| Rappels | cron GitHub Actions, Resend (email), Web Push |
+| Texte biblique | Textes du domaine public (eBible.org), embarqués |
+| Analytics et erreurs | PostHog (UE) |
 | Hébergement | Vercel |
 
 ## Structure
@@ -42,7 +43,7 @@ packages/
   core/           logique métier partagée web/mobile (plans, séries, rappels)
   db/             schéma et client Prisma
   auth/           configuration better-auth
-  bible/          client API.Bible
+  bible-data/     textes bibliques du domaine public (LSG 1910, KJV)
   notifications/  emails, push, envoi des rappels
   i18n/           traductions FR / EN
   eslint-config/  configuration ESLint
