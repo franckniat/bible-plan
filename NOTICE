@@ -1,0 +1,53 @@
+Bible Plan
+Copyright (C) 2026 franckniat and the Bible Plan contributors
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at your
+option) any later version. See the LICENSE file for the full text.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+for more details.
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+-------------------------------------------------------------------------------
+Network use (AGPL-3.0, section 13)
+-------------------------------------------------------------------------------
+
+If you run a modified version of this program and let users interact with it
+over a network, you must offer those users the Corresponding Source of your
+modified version. The application exposes a "Source code" link for this
+purpose; keep it pointing to your own modified sources.
+
+-------------------------------------------------------------------------------
+Name and logo
+-------------------------------------------------------------------------------
+
+The AGPL licenses the code only. It does not grant any right to use the
+"Bible Plan" name, logo or visual identity. See TRADEMARKS.md.
+
+-------------------------------------------------------------------------------
+Third-party content NOT covered by this license
+-------------------------------------------------------------------------------
+
+Bible texts
+  Scripture texts displayed by the application are retrieved at runtime from
+  API.Bible (https://scripture.api.bible) and remain the property of their
+  respective publishers and copyright holders. They are not part of this
+  repository, are not licensed under the AGPL, and are subject to the API.Bible
+  terms of use and to each version's own copyright notice, which the
+  application displays alongside the text.
+
+Datasets
+  Bible structure data (books, chapters, verse counts) and reading orders
+  (e.g. chronological order) included in this repository are listed below
+  with their source and license as they are added.
+
+  - (none yet)
+
+Third-party software
+  Dependencies are distributed under their own licenses, as declared in their
+  respective packages (see pnpm-lock.yaml and node_modules/*/LICENSE).
