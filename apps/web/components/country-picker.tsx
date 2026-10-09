@@ -92,6 +92,8 @@ export function CountryPicker({
         id={id}
         placeholder={t("placeholder")}
         showClear={value !== null}
+        triggerLabel={t("showCountries")}
+        clearLabel={t("clear")}
         className={className}
       >
         {value && (

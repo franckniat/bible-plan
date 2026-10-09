@@ -41,7 +41,9 @@
   },
   "CountryPicker": {
     "placeholder": "Rechercher un pays",
-    "empty": "Aucun pays trouvé"
+    "empty": "Aucun pays trouvé",
+    "showCountries": "Afficher la liste des pays",
+    "clear": "Effacer le pays"
   },
   "NotFound": {
     "title": "Page introuvable",

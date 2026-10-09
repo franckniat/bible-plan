@@ -41,7 +41,9 @@
   },
   "CountryPicker": {
     "placeholder": "Search for a country",
-    "empty": "No country found"
+    "empty": "No country found",
+    "showCountries": "Show the list of countries",
+    "clear": "Clear the country"
   },
   "NotFound": {
     "title": "Page not found",
