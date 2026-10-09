@@ -1,0 +1,22 @@
+name: DCO
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  dco:
+    name: Developer Certificate of Origin
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check Signed-off-by on every commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_COMMITS_URL: repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits
+        run: gh api --paginate --slurp "$PR_COMMITS_URL" | node .github/scripts/check-dco.mjs
