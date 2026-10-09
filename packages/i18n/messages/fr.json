@@ -13,6 +13,10 @@
     "label": "Langue",
     "locale": "{locale, select, fr {Français} en {English} other {{locale}}}"
   },
+  "CountryPicker": {
+    "placeholder": "Rechercher un pays",
+    "empty": "Aucun pays trouvé"
+  },
   "NotFound": {
     "title": "Page introuvable",
     "description": "Cette page n'existe pas ou a été déplacée.",
