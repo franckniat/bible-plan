@@ -12,7 +12,8 @@
       "title": "Lisez la Bible à votre rythme, jour après jour.",
       "subtitle": "Bible Plan crée un plan de lecture adapté à votre emploi du temps, vous rappelle de lire, de prier et de méditer, et vous aide à persévérer, seul ou en groupe.",
       "verse": "Ta parole est une lampe à mes pieds, et une lumière sur mon sentier.",
-      "verseReference": "Psaume 119:105"
+      "verseReference": "Psaume 119:105",
+      "counter": "{count, plural, one {# personne déjà inscrite} other {# personnes déjà inscrites}}"
     },
     "features": {
       "title": "Tout pour lire avec régularité",

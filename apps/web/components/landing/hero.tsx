@@ -4,7 +4,15 @@ import type { ReactNode } from "react"
 import { Badge } from "@workspace/ui/components/badge"
 
 /** Opening section: the promise on the left, the waitlist form on the right. */
-export async function Hero({ children }: { children?: ReactNode }) {
+export async function Hero({
+  counter,
+  children,
+}: {
+  /** Social proof shown under the verse. */
+  counter?: ReactNode
+  /** The waitlist form. */
+  children?: ReactNode
+}) {
   const t = await getTranslations("Landing.hero")
 
   return (
@@ -30,6 +38,7 @@ export async function Hero({ children }: { children?: ReactNode }) {
             {t("verseReference")}
           </figcaption>
         </figure>
+        {counter}
       </div>
       {children}
     </section>

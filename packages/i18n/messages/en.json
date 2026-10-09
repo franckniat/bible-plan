@@ -12,7 +12,8 @@
       "title": "Read the Bible at your own pace, day after day.",
       "subtitle": "Bible Plan builds a reading plan around your schedule, reminds you to read, pray and meditate, and helps you keep going, on your own or with others.",
       "verse": "Thy word is a lamp unto my feet, and a light unto my path.",
-      "verseReference": "Psalm 119:105"
+      "verseReference": "Psalm 119:105",
+      "counter": "{count, plural, one {# person has already signed up} other {# people have already signed up}}"
     },
     "features": {
       "title": "Everything you need to read consistently",
