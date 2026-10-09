@@ -21,6 +21,7 @@ describe("getWaitlistRedirect", () => {
       "/en",
       "/fr/privacy",
       "/en/privacy/",
+      "/fr/terms",
       "/fr/opengraph-image",
       "/en/twitter-image-1a2b3c",
     ]) {

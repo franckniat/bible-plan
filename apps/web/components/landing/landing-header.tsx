@@ -8,7 +8,7 @@ export async function LandingHeader() {
   const t = await getTranslations("Landing.header")
 
   return (
-    <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+    <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-5">
       <Link
         href="/"
         aria-label={t("home")}

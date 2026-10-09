@@ -11,5 +11,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
     ? requested
     : routing.defaultLocale
 
-  return { locale, messages: await loadMessages(locale) }
+  return {
+    locale,
+    messages: await loadMessages(locale),
+    // Dates without a user context (e.g. legal pages) are formatted in UTC.
+    timeZone: "UTC",
+  }
 })

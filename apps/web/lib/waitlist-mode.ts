@@ -3,7 +3,7 @@
 // exposed. Set WAITLIST_MODE=true to enable it (see apps/web/.env.example).
 
 /** Pages reachable in waitlist mode, relative to the locale prefix. */
-const allowedPages = new Set(["", "/privacy"])
+const allowedPages = new Set(["", "/privacy", "/terms"])
 
 /** Metadata routes generated per locale (sharing previews). */
 const allowedPagePrefixes = ["/opengraph-image", "/twitter-image"]

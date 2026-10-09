@@ -43,7 +43,8 @@
     "footer": {
       "privacy": "Confidentialité",
       "sourceCode": "Code source",
-      "license": "Logiciel libre sous licence AGPL-3.0"
+      "license": "Logiciel libre sous licence AGPL-3.0",
+      "terms": "Conditions d’utilisation"
     }
   },
   "WaitlistForm": {
@@ -78,6 +79,17 @@
       "invalid": "Cette valeur n’est pas valide.",
       "rate_limited": "Trop d’inscriptions depuis cette connexion. Réessayez dans une heure.",
       "unexpected": "Une erreur est survenue. Réessayez dans un instant."
+    }
+  },
+  "Legal": {
+    "updated": "Dernière mise à jour : {date, date, long}",
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "description": "Quelles données Bible Plan collecte, pourquoi, et comment vous gardez la main dessus."
+    },
+    "terms": {
+      "title": "Conditions d’utilisation",
+      "description": "Les règles d’utilisation du site Bible Plan pendant la préparation de l’application."
     }
   },
   "LanguageSwitcher": {

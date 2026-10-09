@@ -43,7 +43,8 @@
     "footer": {
       "privacy": "Privacy",
       "sourceCode": "Source code",
-      "license": "Free software under the AGPL-3.0 license"
+      "license": "Free software under the AGPL-3.0 license",
+      "terms": "Terms of use"
     }
   },
   "WaitlistForm": {
@@ -78,6 +79,17 @@
       "invalid": "This value is not valid.",
       "rate_limited": "Too many signups from this connection. Try again in an hour.",
       "unexpected": "Something went wrong. Please try again in a moment."
+    }
+  },
+  "Legal": {
+    "updated": "Last updated: {date, date, long}",
+    "privacy": {
+      "title": "Privacy policy",
+      "description": "Which data Bible Plan collects, why, and how you stay in control of it."
+    },
+    "terms": {
+      "title": "Terms of use",
+      "description": "The rules for using the Bible Plan website while the app is being prepared."
     }
   },
   "LanguageSwitcher": {

@@ -24,6 +24,9 @@ export async function LandingFooter() {
           <Link href="/privacy" className="underline-offset-4 hover:underline">
             {t("privacy")}
           </Link>
+          <Link href="/terms" className="underline-offset-4 hover:underline">
+            {t("terms")}
+          </Link>
           <a
             href={sourceCodeUrl}
             target="_blank"
