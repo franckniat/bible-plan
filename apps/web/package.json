@@ -12,7 +12,8 @@
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check-links": "node scripts/check-links.mjs"
   },
   "dependencies": {
     "@workspace/core": "workspace:*",
