@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { hasLocale } from "next-intl"
 import { setRequestLocale } from "next-intl/server"
 
+import { Features } from "@/components/landing/features"
 import { Hero } from "@/components/landing/hero"
 import { LandingHeader } from "@/components/landing/landing-header"
 import { routing } from "@/i18n/routing"
@@ -22,6 +23,7 @@ export default async function LandingPage({ params }: PageProps<"/[locale]">) {
       <LandingHeader />
       <main className="relative">
         <Hero />
+        <Features />
       </main>
     </div>
   )

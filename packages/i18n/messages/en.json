@@ -13,6 +13,26 @@
       "subtitle": "Bible Plan builds a reading plan around your schedule, reminds you to read, pray and meditate, and helps you keep going, on your own or with others.",
       "verse": "Thy word is a lamp unto my feet, and a light unto my path.",
       "verseReference": "Psalm 119:105"
+    },
+    "features": {
+      "title": "Everything you need to read consistently",
+      "subtitle": "One app to grow in the Word, at your own pace.",
+      "plans": {
+        "title": "A plan that fits you",
+        "description": "The whole Bible in a year, the New Testament in 90 days or 15 minutes a day: readings are spread over the days you choose, and the plan adapts if you fall behind."
+      },
+      "reminders": {
+        "title": "Reminders at the right time",
+        "description": "A notification at the time you choose to read, pray or meditate, on your phone as well as on your computer."
+      },
+      "prayer": {
+        "title": "Prayer and meditation",
+        "description": "A journal for your prayer requests and answered prayers, a meditation timer and notes on what you read."
+      },
+      "groups": {
+        "title": "Read together",
+        "description": "Follow a shared plan with your church, small group or family, share prayer requests and talk about the day’s reading."
+      }
     }
   },
   "LanguageSwitcher": {

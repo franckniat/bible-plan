@@ -13,6 +13,26 @@
       "subtitle": "Bible Plan crée un plan de lecture adapté à votre emploi du temps, vous rappelle de lire, de prier et de méditer, et vous aide à persévérer, seul ou en groupe.",
       "verse": "Ta parole est une lampe à mes pieds, et une lumière sur mon sentier.",
       "verseReference": "Psaume 119:105"
+    },
+    "features": {
+      "title": "Tout pour lire avec régularité",
+      "subtitle": "Une seule application pour avancer dans la Parole, à votre rythme.",
+      "plans": {
+        "title": "Un plan qui vous ressemble",
+        "description": "Toute la Bible en un an, le Nouveau Testament en 90 jours ou 15 minutes par jour : les lectures sont réparties selon vos jours disponibles, et le plan s’adapte si vous prenez du retard."
+      },
+      "reminders": {
+        "title": "Des rappels au bon moment",
+        "description": "Une notification à l’heure que vous choisissez pour lire, prier ou méditer, sur votre téléphone comme sur votre ordinateur."
+      },
+      "prayer": {
+        "title": "Prière et méditation",
+        "description": "Un journal pour vos sujets de prière et les prières exaucées, un minuteur de méditation et des notes sur ce que vous lisez."
+      },
+      "groups": {
+        "title": "Lire ensemble",
+        "description": "Suivez un plan commun avec votre église, votre groupe ou votre famille, partagez vos sujets de prière et échangez sur la lecture du jour."
+      }
     }
   },
   "LanguageSwitcher": {
