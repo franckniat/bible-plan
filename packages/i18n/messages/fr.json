@@ -34,6 +34,16 @@
         "title": "Lire ensemble",
         "description": "Suivez un plan commun avec votre église, votre groupe ou votre famille, partagez vos sujets de prière et échangez sur la lecture du jour."
       }
+    },
+    "closing": {
+      "title": "Soyez parmi les premiers lecteurs",
+      "description": "Inscrivez-vous : nous vous préviendrons dès l’ouverture de Bible Plan.",
+      "cta": "Rejoindre la liste d’attente"
+    },
+    "footer": {
+      "privacy": "Confidentialité",
+      "sourceCode": "Code source",
+      "license": "Logiciel libre sous licence AGPL-3.0"
     }
   },
   "WaitlistForm": {

@@ -4,8 +4,10 @@ import { setRequestLocale } from "next-intl/server"
 
 import { prisma } from "@workspace/db"
 
+import { ClosingCall } from "@/components/landing/closing-call"
 import { Features } from "@/components/landing/features"
 import { Hero } from "@/components/landing/hero"
+import { LandingFooter } from "@/components/landing/landing-footer"
 import { LandingHeader } from "@/components/landing/landing-header"
 import { WaitlistCounter } from "@/components/landing/waitlist-counter"
 import { WaitlistForm } from "@/components/waitlist/waitlist-form"
@@ -45,7 +47,9 @@ export default async function LandingPage({ params }: PageProps<"/[locale]">) {
           <WaitlistForm />
         </Hero>
         <Features />
+        <ClosingCall />
       </main>
+      <LandingFooter />
     </div>
   )
 }

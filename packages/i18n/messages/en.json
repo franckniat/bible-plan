@@ -34,6 +34,16 @@
         "title": "Read together",
         "description": "Follow a shared plan with your church, small group or family, share prayer requests and talk about the day’s reading."
       }
+    },
+    "closing": {
+      "title": "Be among the first readers",
+      "description": "Sign up and we will let you know as soon as Bible Plan opens.",
+      "cta": "Join the waitlist"
+    },
+    "footer": {
+      "privacy": "Privacy",
+      "sourceCode": "Source code",
+      "license": "Free software under the AGPL-3.0 license"
     }
   },
   "WaitlistForm": {
