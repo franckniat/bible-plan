@@ -6,7 +6,9 @@
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "lint": "eslint --max-warnings 0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "zod": "^4.6.5"
@@ -15,7 +17,8 @@
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "eslint": "^10",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "catalog:"
   },
   "exports": {
     ".": "./src/index.ts",
