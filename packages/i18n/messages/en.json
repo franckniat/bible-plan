@@ -35,6 +35,40 @@
       }
     }
   },
+  "WaitlistForm": {
+    "title": "Be the first to know",
+    "description": "Sign up to discover Bible Plan among the first. Only the email is required.",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "firstName": "First name",
+    "optional": "optional",
+    "country": "Country",
+    "interests": "What interests you",
+    "interest": {
+      "plans": "Reading plans",
+      "reminders": "Reminders",
+      "prayer": "Prayer",
+      "meditation": "Meditation",
+      "groups": "Groups"
+    },
+    "consent": "I agree that Bible Plan keeps this information to let me know when it launches (<link>privacy</link>).",
+    "submit": "Join the waitlist",
+    "submitting": "Signing up…",
+    "successTitle": "Thank you, you’re on the list!",
+    "successDescription": "We’ll let you know by email as soon as Bible Plan is ready. Meanwhile, share it with those who would love to read the Bible consistently.",
+    "shareWhatsApp": "Share on WhatsApp",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied",
+    "shareMessage": "I just signed up for Bible Plan, an app to read the Bible at your own pace. Join the waitlist: {url}",
+    "errors": {
+      "invalid_email": "Enter a valid email address.",
+      "too_long": "This text is too long.",
+      "consent_required": "Your consent is required to sign up.",
+      "invalid": "This value is not valid.",
+      "rate_limited": "Too many signups from this connection. Try again in an hour.",
+      "unexpected": "Something went wrong. Please try again in a moment."
+    }
+  },
   "LanguageSwitcher": {
     "label": "Language",
     "locale": "{locale, select, fr {Français} en {English} other {{locale}}}"

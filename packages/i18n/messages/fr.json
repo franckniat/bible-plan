@@ -35,6 +35,40 @@
       }
     }
   },
+  "WaitlistForm": {
+    "title": "Soyez prévenu du lancement",
+    "description": "Inscrivez-vous pour découvrir Bible Plan parmi les premiers. Seul l’email est obligatoire.",
+    "email": "Email",
+    "emailPlaceholder": "vous@exemple.com",
+    "firstName": "Prénom",
+    "optional": "facultatif",
+    "country": "Pays",
+    "interests": "Ce qui vous intéresse",
+    "interest": {
+      "plans": "Plans de lecture",
+      "reminders": "Rappels",
+      "prayer": "Prière",
+      "meditation": "Méditation",
+      "groups": "Groupes"
+    },
+    "consent": "J’accepte que Bible Plan conserve ces informations pour me prévenir du lancement (<link>confidentialité</link>).",
+    "submit": "Rejoindre la liste d’attente",
+    "submitting": "Inscription…",
+    "successTitle": "Merci, vous êtes sur la liste !",
+    "successDescription": "Nous vous préviendrons par email dès que Bible Plan sera prêt. En attendant, partagez-le avec ceux qui aimeraient lire la Bible avec régularité.",
+    "shareWhatsApp": "Partager sur WhatsApp",
+    "copyLink": "Copier le lien",
+    "linkCopied": "Lien copié",
+    "shareMessage": "Je viens de m’inscrire à Bible Plan, une application pour lire la Bible à son rythme. Rejoins la liste d’attente : {url}",
+    "errors": {
+      "invalid_email": "Saisissez une adresse email valide.",
+      "too_long": "Ce texte est trop long.",
+      "consent_required": "Votre accord est nécessaire pour vous inscrire.",
+      "invalid": "Cette valeur n’est pas valide.",
+      "rate_limited": "Trop d’inscriptions depuis cette connexion. Réessayez dans une heure.",
+      "unexpected": "Une erreur est survenue. Réessayez dans un instant."
+    }
+  },
   "LanguageSwitcher": {
     "label": "Langue",
     "locale": "{locale, select, fr {Français} en {English} other {{locale}}}"
