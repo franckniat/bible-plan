@@ -9,6 +9,9 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   msw: false
+  # Optional native helpers of the next-intl message extractor (unused).
+  "@parcel/watcher": false
+  "@swc/core": false
 
 catalog:
   vitest: ^5.0.3
