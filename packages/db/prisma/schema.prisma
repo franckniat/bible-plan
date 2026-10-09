@@ -1,0 +1,11 @@
+// Database schema for Bible Plan. Models are added by the feature issues
+// (auth, plans, reminders, prayer, groups...). See README.md for the workflow.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
