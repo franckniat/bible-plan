@@ -1,5 +1,8 @@
 # Bible Plan
 
+[![CI](https://github.com/franckniat/bible-plan/actions/workflows/ci.yml/badge.svg)](https://github.com/franckniat/bible-plan/actions/workflows/ci.yml)
+[![Licence : AGPL v3](https://img.shields.io/badge/licence-AGPL--3.0-blue.svg)](LICENSE)
+
 > Créez un plan de lecture biblique qui s'adapte à **votre** rythme, et ne l'oubliez plus.
 
 Bible Plan aide chacun à lire la Bible avec régularité :
