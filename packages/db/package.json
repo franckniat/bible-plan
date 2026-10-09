@@ -12,7 +12,8 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "waitlist:remove": "tsx --env-file-if-exists=.env scripts/waitlist-remove.ts"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",

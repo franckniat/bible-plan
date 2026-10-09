@@ -15,7 +15,8 @@
     "db:migrate": "pnpm --filter @workspace/db db:migrate",
     "db:deploy": "pnpm --filter @workspace/db db:deploy",
     "db:studio": "pnpm --filter @workspace/db db:studio",
-    "db:seed": "pnpm --filter @workspace/db db:seed"
+    "db:seed": "pnpm --filter @workspace/db db:seed",
+    "db:waitlist:remove": "pnpm --filter @workspace/db waitlist:remove"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",

@@ -84,6 +84,7 @@ Avant le lancement, la production tourne avec `WAITLIST_MODE=true` : seule la la
 - En local et sur les previews Vercel, laissez `WAITLIST_MODE` vide pour accéder à toute l'application.
 - Les pages autorisées sont définies dans [apps/web/lib/waitlist-mode.ts](apps/web/lib/waitlist-mode.ts).
 - Au lancement, passez `WAITLIST_MODE` à `false` (ou supprimez la variable) sur Vercel.
+- Export des inscrits, retrait d'une personne et variables associées : [docs/WAITLIST.md](docs/WAITLIST.md).
 
 ## Contribuer
 
