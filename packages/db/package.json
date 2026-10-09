@@ -23,6 +23,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@prisma/adapter-neon": "^7.10.0",
     "@prisma/client": "^7.10.0"
   }
 }
