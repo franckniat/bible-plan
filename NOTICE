@@ -52,7 +52,10 @@ Datasets
   (e.g. chronological order) included in this repository are listed below
   with their source and license as they are added.
 
-  - (none yet)
+  - Country codes (ISO 3166-1 alpha-2) and flags: flag-icons
+    (https://github.com/lipis/flag-icons), MIT License, Copyright (c) 2013
+    Panayiotis Lipiridis. Country names are generated at runtime by
+    Intl.DisplayNames (Unicode CLDR data).
 
 Third-party software
   Dependencies are distributed under their own licenses, as declared in their
