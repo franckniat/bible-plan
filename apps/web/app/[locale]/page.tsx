@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { hasLocale } from "next-intl"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
+import { LanguageSwitcher } from "@/components/language-switcher"
 import { routing } from "@/i18n/routing"
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
@@ -22,6 +23,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <div className="font-mono text-xs text-muted-foreground">
           {t.rich("themeHint", { key: (chunks) => <kbd>{chunks}</kbd> })}
         </div>
+        <LanguageSwitcher className="text-xs" />
       </div>
     </div>
   )
