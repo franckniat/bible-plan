@@ -7,7 +7,8 @@ Le suivi détaillé se fait dans les [issues](https://github.com/franckniat/bibl
 - La logique métier pure (canon biblique, générateur de plans, rattrapage, séries, échéances des rappels, schémas zod) vit dans `@workspace/core`, partagé avec la future app mobile.
 - Les mutations web passent par des Server Actions qui délèguent à des services serveur (`apps/web/server/services`), réutilisables par une API REST pour le mobile.
 - Le texte biblique provient de versions du domaine public (LSG 1910, KJV) embarquées dans `@workspace/bible-data` : aucune API payante, lecture possible hors ligne.
-- 100 % gratuit : uniquement des offres gratuites (Neon, Vercel Hobby, Resend, PostHog, GitHub Actions). Seul coût : un nom de domaine pour l’envoi d’emails.
+- 100 % gratuit : uniquement des offres gratuites (Neon, Vercel Hobby, PostHog, GitHub Actions).
+- Notifications : dans l’app et en push. L’email (Resend) est prêt mais désactivé ; il s’active en ajoutant `RESEND_API_KEY` et un domaine vérifié.
 
 ## M1 — Fondations
 
@@ -17,7 +18,7 @@ CI, packages de base, base de données, i18n, emails, authentification, squelett
 - [#2 packages/core : socle de la logique métier partagée](https://github.com/franckniat/bible-plan/issues/2) — dépend de #1
 - [#3 packages/db : Prisma + Neon](https://github.com/franckniat/bible-plan/issues/3) — dépend de #1
 - [#4 packages/i18n + next-intl : application FR / EN](https://github.com/franckniat/bible-plan/issues/4) — dépend de #2
-- [#5 packages/notifications : EmailSender + Resend](https://github.com/franckniat/bible-plan/issues/5) — dépend de #4
+- [#5 packages/notifications : EmailSender (Resend, désactivé par défaut)](https://github.com/franckniat/bible-plan/issues/5) — dépend de #4
 - [#6 packages/auth : better-auth (email + mot de passe)](https://github.com/franckniat/bible-plan/issues/6) — dépend de #3, #5
 - [#7 Pages d'authentification, Google et magic link](https://github.com/franckniat/bible-plan/issues/7) — dépend de #6
 - [#8 Squelette de l'application et profil utilisateur](https://github.com/franckniat/bible-plan/issues/8) — dépend de #7
@@ -43,10 +44,11 @@ Textes du domaine public (LSG 1910, KJV) et lecteur intégré.
 
 ## M4 — Rappels
 
-Rappels planifiés (cron GitHub Actions), emails (Resend), Web Push / PWA, contenu intelligent.
+Rappels planifiés (cron GitHub Actions), notifications dans l'app, Web Push / PWA, email prêt mais désactivé, contenu intelligent.
 
 - [#18 Modèle des rappels et calcul de la prochaine échéance](https://github.com/franckniat/bible-plan/issues/18) — dépend de #8, #2
-- [#19 Envoi des rappels : cron GitHub Actions + email](https://github.com/franckniat/bible-plan/issues/19) — dépend de #18, #5
+- [#37 Centre de notifications dans l'application](https://github.com/franckniat/bible-plan/issues/37) — dépend de #8, #18
+- [#19 Envoi des rappels : cron GitHub Actions + notifications](https://github.com/franckniat/bible-plan/issues/19) — dépend de #18, #37, #5
 - [#20 PWA et notifications Web Push](https://github.com/franckniat/bible-plan/issues/20) — dépend de #19
 - [#21 Contenu intelligent des rappels](https://github.com/franckniat/bible-plan/issues/21) — dépend de #20, #22
 
