@@ -10,7 +10,11 @@
     "format": "turbo format",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
-    "test:watch": "turbo test:watch"
+    "test:watch": "turbo test:watch",
+    "db:generate": "turbo db:generate",
+    "db:migrate": "pnpm --filter @workspace/db db:migrate",
+    "db:deploy": "pnpm --filter @workspace/db db:deploy",
+    "db:studio": "pnpm --filter @workspace/db db:studio"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",

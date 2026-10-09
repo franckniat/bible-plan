@@ -8,7 +8,10 @@
     "lint": "eslint --max-warnings 0",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",
