@@ -50,8 +50,9 @@ Create branches in the Neon console (**Branches → New branch**), then copy the
 ## Migration workflow
 
 1. Change `prisma/schema.prisma`.
-2. Run `pnpm db:migrate`, then name the migration (e.g. `add_reading_plans`). Prisma writes `prisma/migrations/<timestamp>_<name>/migration.sql`, applies it to the dev branch and regenerates the client.
-3. Review the SQL and commit it together with the schema change.
-4. In production, `pnpm db:deploy` applies the committed migrations (set up in the production deployment issue).
+2. Run `pnpm db:migrate --name <name>` (e.g. `add_reading_plans`). Prisma writes `prisma/migrations/<timestamp>_<name>/migration.sql` and applies it to the dev branch.
+3. Run `pnpm db:generate`: since Prisma 7, `migrate dev` no longer regenerates the client (Turbo also regenerates it before `dev`, `typecheck`, `test` and `build`).
+4. Review the SQL and commit it together with the schema change.
+5. In production, `pnpm db:deploy` applies the committed migrations (set up in the production deployment issue).
 
 Never edit a migration that has already been applied to production: create a new one instead.
