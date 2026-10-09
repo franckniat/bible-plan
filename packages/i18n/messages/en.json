@@ -3,11 +3,17 @@
     "title": "Bible Plan",
     "description": "Create a Bible reading plan that fits your pace, with reading, prayer and meditation reminders."
   },
-  "HomePage": {
-    "title": "Read the Bible at your own pace",
-    "description": "Bible Plan helps you build a reading plan that fits your schedule, and keep up with it.",
-    "status": "The app is under construction.",
-    "themeHint": "Press <key>d</key> to toggle dark mode."
+  "Landing": {
+    "header": {
+      "home": "Bible Plan, home"
+    },
+    "hero": {
+      "eyebrow": "Coming soon",
+      "title": "Read the Bible at your own pace, day after day.",
+      "subtitle": "Bible Plan builds a reading plan around your schedule, reminds you to read, pray and meditate, and helps you keep going, on your own or with others.",
+      "verse": "Thy word is a lamp unto my feet, and a light unto my path.",
+      "verseReference": "Psalm 119:105"
+    }
   },
   "LanguageSwitcher": {
     "label": "Language",

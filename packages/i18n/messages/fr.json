@@ -3,11 +3,17 @@
     "title": "Bible Plan",
     "description": "Créez un plan de lecture biblique adapté à votre rythme, avec des rappels de lecture, de prière et de méditation."
   },
-  "HomePage": {
-    "title": "Lisez la Bible à votre rythme",
-    "description": "Bible Plan vous aide à créer un plan de lecture adapté à votre emploi du temps, et à ne plus l'oublier.",
-    "status": "L'application est en cours de construction.",
-    "themeHint": "Appuyez sur <key>d</key> pour basculer le mode sombre."
+  "Landing": {
+    "header": {
+      "home": "Bible Plan, accueil"
+    },
+    "hero": {
+      "eyebrow": "Bientôt disponible",
+      "title": "Lisez la Bible à votre rythme, jour après jour.",
+      "subtitle": "Bible Plan crée un plan de lecture adapté à votre emploi du temps, vous rappelle de lire, de prier et de méditer, et vous aide à persévérer, seul ou en groupe.",
+      "verse": "Ta parole est une lampe à mes pieds, et une lumière sur mon sentier.",
+      "verseReference": "Psaume 119:105"
+    }
   },
   "LanguageSwitcher": {
     "label": "Langue",
