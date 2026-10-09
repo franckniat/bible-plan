@@ -9,3 +9,33 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// ─── Waitlist (teaser landing, before launch) ───────────────────────────────
+
+enum WaitlistInterest {
+  PLANS
+  REMINDERS
+  PRAYER
+  MEDITATION
+  GROUPS
+}
+
+/// Person interested in the app, collected by the waitlist landing page.
+model WaitlistEntry {
+  id          String             @id @default(uuid(7))
+  /// Normalized (trimmed, lowercase).
+  email       String             @unique
+  firstName   String?
+  /// ISO 3166-1 alpha-2 code, e.g. "CM".
+  countryCode String?            @db.Char(2)
+  interests   WaitlistInterest[]
+  /// Language used on the landing page ("fr" or "en").
+  locale      String             @db.VarChar(5)
+  consentedAt DateTime
+  /// HMAC of the client IP address, only used for rate limiting.
+  ipHash      String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([ipHash, createdAt])
+}
