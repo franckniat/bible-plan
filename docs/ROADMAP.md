@@ -9,6 +9,19 @@ Le suivi détaillé se fait dans les [issues](https://github.com/franckniat/bibl
 - Le texte biblique provient de versions du domaine public (LSG 1910, KJV) embarquées dans `@workspace/bible-data` : aucune API payante, lecture possible hors ligne.
 - 100 % gratuit : uniquement des offres gratuites (Neon, Vercel Hobby, Resend, PostHog, GitHub Actions). Seul coût : un nom de domaine pour les emails d’authentification.
 - Notifications : dans l’app et en push. Resend sert aux emails d’authentification ; les rappels par email sont prêts mais désactivés (`EMAIL_REMINDERS_ENABLED`).
+- Avant le lancement, la production tourne en mode liste d’attente (`WAITLIST_MODE=true`) : seule la landing est publique, le développement continue sur `main`.
+
+## M0 — Liste d'attente
+
+Landing page de teasing avec liste d'attente, mise en ligne avant l'application grâce au mode WAITLIST_MODE.
+
+- [#42 Mode liste d'attente (WAITLIST_MODE)](https://github.com/franckniat/bible-plan/issues/42) — dépend de #4
+- [#43 Pays du monde avec drapeaux](https://github.com/franckniat/bible-plan/issues/43) — dépend de #2, #4
+- [#44 Inscription à la liste d'attente](https://github.com/franckniat/bible-plan/issues/44) — dépend de #3, #43
+- [#45 Landing page d'attente](https://github.com/franckniat/bible-plan/issues/45) — dépend de #44, #42
+- [#46 Confidentialité et données des inscrits](https://github.com/franckniat/bible-plan/issues/46) — dépend de #45
+- [#47 Partage et référencement de la landing](https://github.com/franckniat/bible-plan/issues/47) — dépend de #45
+- [#48 Mise en ligne de la landing sur Vercel](https://github.com/franckniat/bible-plan/issues/48) — dépend de #46, #47
 
 ## M1 — Fondations
 
