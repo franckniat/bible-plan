@@ -1,0 +1,21 @@
+{
+  "Metadata": {
+    "title": "Bible Plan",
+    "description": "Create a Bible reading plan that fits your pace, with reading, prayer and meditation reminders."
+  },
+  "HomePage": {
+    "title": "Read the Bible at your own pace",
+    "description": "Bible Plan helps you build a reading plan that fits your schedule, and keep up with it.",
+    "status": "The app is under construction.",
+    "themeHint": "Press <key>d</key> to toggle dark mode."
+  },
+  "LanguageSwitcher": {
+    "label": "Language",
+    "locale": "{locale, select, fr {Français} en {English} other {{locale}}}"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "This page does not exist or has been moved.",
+    "backHome": "Back to home"
+  }
+}

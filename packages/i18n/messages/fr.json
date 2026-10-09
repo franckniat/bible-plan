@@ -1,0 +1,21 @@
+{
+  "Metadata": {
+    "title": "Bible Plan",
+    "description": "Créez un plan de lecture biblique adapté à votre rythme, avec des rappels de lecture, de prière et de méditation."
+  },
+  "HomePage": {
+    "title": "Lisez la Bible à votre rythme",
+    "description": "Bible Plan vous aide à créer un plan de lecture adapté à votre emploi du temps, et à ne plus l'oublier.",
+    "status": "L'application est en cours de construction.",
+    "themeHint": "Appuyez sur <key>d</key> pour basculer le mode sombre."
+  },
+  "LanguageSwitcher": {
+    "label": "Langue",
+    "locale": "{locale, select, fr {Français} en {English} other {{locale}}}"
+  },
+  "NotFound": {
+    "title": "Page introuvable",
+    "description": "Cette page n'existe pas ou a été déplacée.",
+    "backHome": "Retour à l'accueil"
+  }
+}

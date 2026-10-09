@@ -1,0 +1,28 @@
+{
+  "name": "@workspace/i18n",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "scripts": {
+    "lint": "eslint --max-warnings 0",
+    "format": "prettier --write \"**/*.{ts,tsx,json}\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@workspace/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "eslint": "^10",
+    "typescript": "^5",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./messages/*": "./messages/*.json"
+  }
+}

@@ -171,6 +171,28 @@ importers:
         specifier: ^8.71.1
         version: 8.71.1(eslint@10.11.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
 
+  packages/i18n:
+    dependencies:
+      '@workspace/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@workspace/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@workspace/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      eslint:
+        specifier: ^10
+        version: 10.11.0(jiti@2.7.0)(supports-color@7.2.0)
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 5.0.3(vite@8.3.3(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15))
+
   packages/typescript-config: {}
 
   packages/ui:
