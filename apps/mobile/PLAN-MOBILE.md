@@ -56,7 +56,7 @@ Le mobile ne peut pas appeler les Server Actions. On ajoutera des **Route Handle
 ## 5. Notifications
 
 - Les notifications **in-app** (modèle `Notification`, centre de notifications du web) sont réutilisées telles quelles : même API, même compteur de non lues.
-- L'email est optionnel (désactivé tant que Resend n'est pas configuré) : le mobile repose sur l'in-app et le push.
+- Les rappels par email sont désactivés (Resend ne sert qu'à l'authentification) : le mobile repose sur l'in-app et le push.
 - Le modèle `PushDevice` prévoit déjà `kind = EXPO` (en plus de `WEB_PUSH`).
 - À la connexion, l'app enregistre son jeton Expo via `POST /api/v1/devices`.
 - Le dispatch des rappels existant (déclenché par le cron GitHub Actions) envoie aussi via l'**Expo Push Service** pour les appareils `EXPO`. Les jetons invalides (`DeviceNotRegistered`) sont supprimés.

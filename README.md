@@ -9,7 +9,7 @@ Bible Plan aide chacun à lire la Bible avec régularité :
 
 - **Plans de lecture sur mesure** : par date de fin (« toute la Bible en 1 an »), par temps disponible (« 15 min par jour »), à partir de modèles (chronologique, M'Cheyne, NT en 90 jours…) ou en choisissant librement ses livres. On choisit ses jours de lecture, et l'app répartit la charge de façon équilibrée.
 - **Gestion du retard** : répartir le retard sur les jours restants, décaler la date de fin ou rattraper librement, au choix et pour chaque plan.
-- **Rappels** dans l'application et par notification push (téléphone et ordinateur), à l'heure et dans le fuseau horaire de chacun. L'envoi par email est prêt et sera activé plus tard.
+- **Rappels** dans l'application et par notification push (téléphone et ordinateur), à l'heure et dans le fuseau horaire de chacun. Les rappels par email sont prêts et pourront être activés plus tard.
 - **Prière et méditation** : journal de prière (sujets, prières exaucées), minuteur de méditation, notes liées au passage lu, rappels dédiés.
 - **Séries et statistiques** de régularité.
 - **Groupes** (église, cellule, famille) : plan commun, progression des membres, sujets de prière partagés, commentaires sur la lecture du jour.
@@ -30,7 +30,8 @@ Les étapes sont suivies dans les [issues](https://github.com/franckniat/bible-p
 | Base de données | PostgreSQL (Neon) + Prisma ORM |
 | Authentification | better-auth (email/mot de passe, magic link, Google) |
 | i18n | next-intl (FR / EN) |
-| Rappels | cron GitHub Actions, notifications in-app, Web Push (email Resend prêt, désactivé) |
+| Rappels | cron GitHub Actions, notifications in-app, Web Push |
+| Emails | Resend (authentification ; rappels par email prêts, désactivés) |
 | Texte biblique | Textes du domaine public (eBible.org), embarqués |
 | Analytics et erreurs | PostHog (UE) |
 | Hébergement | Vercel |
