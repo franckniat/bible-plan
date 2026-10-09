@@ -77,6 +77,14 @@ Puis l'importer :
 import { Card } from "@workspace/ui/components/card"
 ```
 
+## Mode liste d'attente
+
+Avant le lancement, la production tourne avec `WAITLIST_MODE=true` : seule la landing d'attente (et les pages qu'elle propose, comme la confidentialité) est publique. Toute autre page redirige vers la landing de la même langue, ce qui permet de continuer à développer sur `main` sans exposer le travail en cours.
+
+- En local et sur les previews Vercel, laissez `WAITLIST_MODE` vide pour accéder à toute l'application.
+- Les pages autorisées sont définies dans [apps/web/lib/waitlist-mode.ts](apps/web/lib/waitlist-mode.ts).
+- Au lancement, passez `WAITLIST_MODE` à `false` (ou supprimez la variable) sur Vercel.
+
 ## Contribuer
 
 Les contributions sont les bienvenues : lisez [CONTRIBUTING.md](CONTRIBUTING.md). Les commits doivent être signés (`git commit -s`, [DCO](https://developercertificate.org/)). Pour une faille de sécurité, voir [SECURITY.md](SECURITY.md).
