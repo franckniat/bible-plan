@@ -41,7 +41,9 @@ export function hashIp(ip: string, secret: string): string {
 }
 
 /** Secret used by `hashIp`; mandatory in production. */
-export function getIpHashSecret(env = process.env): string {
+export function getIpHashSecret(
+  env: { IP_HASH_SECRET?: string; NODE_ENV?: string } = process.env
+): string {
   const secret = env.IP_HASH_SECRET
   if (secret) return secret
   if (env.NODE_ENV === "production") {
