@@ -9,9 +9,17 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   msw: false
-  # Optional native helpers of the next-intl message extractor (unused).
+  # Native helpers of next-intl: @swc/core is loaded by its Next.js plugin,
+  # @parcel/watcher is only used by the (unused) message extractor watch mode.
   "@parcel/watcher": false
-  "@swc/core": false
+  "@swc/core": true
 
 catalog:
   vitest: ^5.0.3
+
+overrides:
+  # @swc/core >= 1.16.12 (pulled in by next-intl) ships a compressed native
+  # "carrier" that refuses to load when its cache folder grants rights to
+  # another account (e.g. sandboxed tools on Windows). 1.16.2 still matches
+  # next-intl's "~1.16.0" range and ships a regular binary.
+  "@swc/core": 1.16.2
