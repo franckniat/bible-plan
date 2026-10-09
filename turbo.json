@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "globalEnv": ["NODE_ENV"],
-  "globalPassThroughEnv": ["DATABASE_URL", "DIRECT_URL"],
+  "globalPassThroughEnv": ["DATABASE_URL", "DIRECT_URL", "WAITLIST_MODE"],
   "tasks": {
     "build": {
       "dependsOn": ["^build", "^db:generate"],
