@@ -8,9 +8,9 @@ export const isoDateSchema = z.iso.date()
 export type IsoDate = z.infer<typeof isoDateSchema>
 
 /** Local time of day, 24-hour `HH:mm` (e.g. a reminder time). */
-export const timeOfDaySchema = z
-  .string()
-  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, { error: "Expected a time formatted as HH:mm" })
+export const timeOfDaySchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, {
+  error: "Expected a time formatted as HH:mm",
+})
 export type TimeOfDay = z.infer<typeof timeOfDaySchema>
 
 export const locales = ["fr", "en"] as const
@@ -41,6 +41,8 @@ export type Weekday = z.infer<typeof weekdaySchema>
 export const weekdaysSchema = z
   .array(weekdaySchema)
   .min(1)
-  .refine((days) => new Set(days).size === days.length, { error: "Duplicate weekdays" })
+  .refine((days) => new Set(days).size === days.length, {
+    error: "Duplicate weekdays",
+  })
 
 export const allWeekdays: readonly Weekday[] = [0, 1, 2, 3, 4, 5, 6]

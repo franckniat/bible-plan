@@ -17,7 +17,13 @@ describe("isoDateSchema", () => {
   })
 
   it("rejects invalid dates and datetimes", () => {
-    for (const value of ["2026-13-01", "2026-02-30", "2027-02-29", "09/10/2026", "2026-10-09T07:00:00Z"]) {
+    for (const value of [
+      "2026-13-01",
+      "2026-02-30",
+      "2027-02-29",
+      "09/10/2026",
+      "2026-10-09T07:00:00Z",
+    ]) {
       expect(isoDateSchema.safeParse(value).success, value).toBe(false)
     }
   })
@@ -48,7 +54,12 @@ describe("localeSchema", () => {
 
 describe("timeZoneSchema", () => {
   it("accepts IANA time zones", () => {
-    for (const value of ["Europe/Paris", "Africa/Douala", "America/New_York", "UTC"]) {
+    for (const value of [
+      "Europe/Paris",
+      "Africa/Douala",
+      "America/New_York",
+      "UTC",
+    ]) {
       expect(timeZoneSchema.safeParse(value).success, value).toBe(true)
     }
   })
@@ -67,7 +78,10 @@ describe("weekdaysSchema", () => {
 
   it("rejects empty, duplicated or out-of-range days", () => {
     for (const value of [[], [1, 1], [7], [-1], [1.5]]) {
-      expect(weekdaysSchema.safeParse(value).success, JSON.stringify(value)).toBe(false)
+      expect(
+        weekdaysSchema.safeParse(value).success,
+        JSON.stringify(value)
+      ).toBe(false)
     }
   })
 })
