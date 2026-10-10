@@ -9,7 +9,6 @@
   "globalPassThroughEnv": [
     "DATABASE_URL",
     "DIRECT_URL",
-    "WAITLIST_MODE",
     "IP_HASH_SECRET",
     "WAITLIST_EXPORT_TOKEN"
   ],
