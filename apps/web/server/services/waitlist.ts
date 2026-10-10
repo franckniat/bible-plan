@@ -57,31 +57,3 @@ export function countSignupsFromIp(
     where: { ipHash, createdAt: { gte: since } },
   })
 }
-
-export type WaitlistExportEntry = {
-  email: string
-  firstName: string | null
-  countryCode: string | null
-  interests: string[]
-  locale: string
-  consentedAt: Date
-  createdAt: Date
-}
-
-/** Every waitlist entry, oldest first (CSV export for the launch email). */
-export function listWaitlistEntries(
-  db: WaitlistDb
-): Promise<WaitlistExportEntry[]> {
-  return db.waitlistEntry.findMany({
-    orderBy: { createdAt: "asc" },
-    select: {
-      email: true,
-      firstName: true,
-      countryCode: true,
-      interests: true,
-      locale: true,
-      consentedAt: true,
-      createdAt: true,
-    },
-  })
-}

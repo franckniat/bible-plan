@@ -6,12 +6,7 @@
     "NEXT_PUBLIC_SOURCE_URL",
     "NEXT_PUBLIC_CONTACT_EMAIL"
   ],
-  "globalPassThroughEnv": [
-    "DATABASE_URL",
-    "DIRECT_URL",
-    "IP_HASH_SECRET",
-    "WAITLIST_EXPORT_TOKEN"
-  ],
+  "globalPassThroughEnv": ["DATABASE_URL", "DIRECT_URL", "IP_HASH_SECRET"],
   "tasks": {
     "build": {
       "dependsOn": ["^build", "^db:generate"],
