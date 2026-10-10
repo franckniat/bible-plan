@@ -27,14 +27,14 @@ export async function Hero({
         <h1 className="font-heading text-4xl leading-[1.1] font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
           {t("title")}
         </h1>
-        <p className="max-w-xl text-lg leading-relaxed text-pretty text-brand-night/75 dark:text-brand-cream/75">
+        <p className="max-w-xl text-lg leading-relaxed text-pretty text-brand-night/75 dark:text-neutral-100/75">
           {t("subtitle")}
         </p>
         <figure className="max-w-xl border-l-2 border-brand-gold pl-4">
           <blockquote className="font-heading text-lg text-pretty italic">
             « {t("verse")} »
           </blockquote>
-          <figcaption className="mt-1 text-sm text-brand-night/60 dark:text-brand-cream/60">
+          <figcaption className="mt-1 text-sm text-brand-night/60 dark:text-neutral-100/60">
             {t("verseReference")}
           </figcaption>
         </figure>

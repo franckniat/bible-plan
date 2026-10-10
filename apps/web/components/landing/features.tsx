@@ -23,7 +23,7 @@ export async function Features() {
         >
           {t("title")}
         </h2>
-        <p className="mt-3 text-lg text-pretty text-brand-night/70 dark:text-brand-cream/70">
+        <p className="mt-3 text-lg text-pretty text-brand-night/70 dark:text-neutral-100/70">
           {t("subtitle")}
         </p>
       </div>
@@ -31,7 +31,7 @@ export async function Features() {
         {features.map(({ key, Icon }) => (
           <li
             key={key}
-            className="flex flex-col gap-4 rounded-3xl bg-white/70 p-6 ring-1 ring-brand-night/10 dark:bg-brand-night-soft/70 dark:ring-white/10"
+            className="flex flex-col gap-4 rounded-3xl bg-white/70 p-6 ring-1 ring-brand-night/10 dark:bg-neutral-900/70 dark:ring-white/10"
           >
             <span className="flex size-11 items-center justify-center rounded-2xl bg-brand-gold/20 text-brand-night dark:text-brand-gold">
               <Icon aria-hidden className="size-5" />
@@ -39,7 +39,7 @@ export async function Features() {
             <h3 className="font-heading text-xl font-semibold">
               {t(`${key}.title`)}
             </h3>
-            <p className="text-sm leading-relaxed text-brand-night/70 dark:text-brand-cream/70">
+            <p className="text-sm leading-relaxed text-brand-night/70 dark:text-neutral-100/70">
               {t(`${key}.description`)}
             </p>
           </li>

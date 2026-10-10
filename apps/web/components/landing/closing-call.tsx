@@ -10,7 +10,7 @@ export async function ClosingCall() {
 
   return (
     <section className="px-6 pb-20">
-      <div className="mx-auto flex max-w-4xl flex-col items-center gap-5 overflow-hidden rounded-[2rem] bg-brand-night px-6 py-14 text-center text-brand-cream ring-1 ring-white/10 sm:px-12 dark:bg-brand-night-soft">
+      <div className="mx-auto flex max-w-4xl flex-col items-center gap-5 overflow-hidden rounded-[2rem] bg-brand-night px-6 py-14 text-center text-brand-cream ring-1 ring-white/10 sm:px-12 dark:bg-neutral-900">
         <BrandMark className="h-14" />
         <h2 className="font-heading text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
           {t("title")}

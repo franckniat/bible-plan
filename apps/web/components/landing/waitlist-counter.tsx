@@ -10,7 +10,7 @@ export async function WaitlistCounter({ count }: { count: number | null }) {
   const t = await getTranslations("Landing.hero")
 
   return (
-    <p className="flex items-center gap-2 text-sm font-medium text-brand-night/80 dark:text-brand-cream/80">
+    <p className="flex items-center gap-2 text-sm font-medium text-brand-night/80 dark:text-neutral-100/80">
       <Users aria-hidden className="size-4 text-brand-gold" />
       {t("counter", { count })}
     </p>

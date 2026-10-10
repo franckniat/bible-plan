@@ -16,7 +16,7 @@ export async function LandingFooter() {
             <BrandMark className="h-5" />
             Bible Plan
           </span>
-          <span className="text-brand-night/60 dark:text-brand-cream/60">
+          <span className="text-brand-night/60 dark:text-neutral-100/60">
             © {new Date().getFullYear()} · {t("license")}
           </span>
         </div>

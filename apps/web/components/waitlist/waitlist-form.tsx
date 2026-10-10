@@ -57,7 +57,7 @@ export function WaitlistForm({ className }: { className?: string }) {
     <div
       id="waitlist"
       className={cn(
-        "scroll-mt-8 rounded-3xl bg-white/85 p-6 shadow-xl ring-1 shadow-brand-night/5 ring-brand-night/10 backdrop-blur sm:p-8 dark:bg-brand-night-soft/85 dark:ring-white/10",
+        "scroll-mt-8 rounded-3xl bg-white/85 p-6 shadow-xl ring-1 shadow-brand-night/5 ring-brand-night/10 backdrop-blur sm:p-8 dark:bg-neutral-900/85 dark:ring-white/10",
         className
       )}
     >
@@ -74,7 +74,7 @@ export function WaitlistForm({ className }: { className?: string }) {
             <h2 className="font-heading text-2xl font-semibold">
               {t("title")}
             </h2>
-            <p className="mt-1 text-sm text-brand-night/70 dark:text-brand-cream/70">
+            <p className="mt-1 text-sm text-brand-night/70 dark:text-neutral-100/70">
               {t("description")}
             </p>
           </div>
@@ -140,7 +140,7 @@ export function WaitlistForm({ className }: { className?: string }) {
           <fieldset className="flex flex-col gap-2">
             <legend className="mb-2 text-sm font-medium">
               {t("interests")}{" "}
-              <span className="font-normal text-brand-night/50 dark:text-brand-cream/50">
+              <span className="font-normal text-brand-night/50 dark:text-neutral-100/50">
                 ({t("optional")})
               </span>
             </legend>
@@ -148,7 +148,7 @@ export function WaitlistForm({ className }: { className?: string }) {
               {waitlistInterests.map((interest) => (
                 <label
                   key={interest}
-                  className="cursor-pointer rounded-full px-3.5 py-1.5 text-sm ring-1 ring-brand-night/15 transition-colors select-none hover:bg-brand-gold/10 has-checked:bg-brand-night has-checked:text-brand-cream has-checked:ring-brand-night has-focus-visible:ring-3 has-focus-visible:ring-brand-gold dark:ring-white/20 dark:has-checked:bg-brand-gold dark:has-checked:text-brand-night dark:has-checked:ring-brand-gold"
+                  className="cursor-pointer rounded-full px-3.5 py-1.5 text-sm ring-1 ring-brand-night/15 transition-colors select-none hover:bg-brand-gold/10 has-checked:bg-brand-night has-checked:text-brand-cream has-checked:ring-brand-night has-focus-visible:ring-3 has-focus-visible:ring-brand-gold dark:ring-white/20 dark:has-checked:bg-brand-gold dark:has-checked:text-neutral-950 dark:has-checked:ring-brand-gold"
                 >
                   <input
                     type="checkbox"
@@ -172,7 +172,7 @@ export function WaitlistForm({ className }: { className?: string }) {
                   fieldErrors.consent ? "waitlist-consent-error" : undefined
                 }
               />
-              <span className="text-brand-night/80 dark:text-brand-cream/80">
+              <span className="text-brand-night/80 dark:text-neutral-100/80">
                 {t.rich("consent", {
                   link: (chunks) => (
                     <Link
@@ -251,7 +251,7 @@ function Field({
       <Label htmlFor={htmlFor}>
         {label}
         {hint && (
-          <span className="font-normal text-brand-night/50 dark:text-brand-cream/50">
+          <span className="font-normal text-brand-night/50 dark:text-neutral-100/50">
             ({hint})
           </span>
         )}
@@ -292,7 +292,7 @@ function WaitlistSuccess({ locale }: { locale: string }) {
       <h2 className="font-heading text-2xl font-semibold">
         {t("successTitle")}
       </h2>
-      <p className="text-brand-night/75 dark:text-brand-cream/75">
+      <p className="text-brand-night/75 dark:text-neutral-100/75">
         {t("successDescription")}
       </p>
       <div className="flex w-full flex-col gap-2 sm:flex-row">
