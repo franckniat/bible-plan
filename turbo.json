@@ -2,7 +2,16 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "globalEnv": ["NODE_ENV"],
-  "globalPassThroughEnv": ["DATABASE_URL", "DIRECT_URL", "IP_HASH_SECRET"],
+  "globalPassThroughEnv": [
+    "DATABASE_URL",
+    "DIRECT_URL",
+    "IP_HASH_SECRET",
+    "RESEND_API_KEY",
+    "EMAIL_FROM",
+    "EMAIL_DRIVER",
+    "EMAIL_REMINDERS_ENABLED",
+    "EMAIL_DAILY_LIMIT"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build", "^db:generate"],
