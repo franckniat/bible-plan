@@ -16,6 +16,7 @@
     "check-links": "node scripts/check-links.mjs"
   },
   "dependencies": {
+    "@workspace/auth": "workspace:*",
     "@workspace/core": "workspace:*",
     "@workspace/db": "workspace:*",
     "@workspace/i18n": "workspace:*",

@@ -3,6 +3,7 @@ import createNextIntlPlugin from "next-intl/plugin"
 
 const nextConfig: NextConfig = {
   transpilePackages: [
+    "@workspace/auth",
     "@workspace/core",
     "@workspace/db",
     "@workspace/i18n",

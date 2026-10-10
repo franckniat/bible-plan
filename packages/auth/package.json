@@ -28,6 +28,7 @@
     "vitest": "catalog:"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./next": "./src/next.ts"
   }
 }
