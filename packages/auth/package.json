@@ -7,7 +7,8 @@
   "scripts": {
     "lint": "eslint --max-warnings 0",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "auth:generate": "node --env-file-if-exists=../db/.env ./node_modules/auth/dist/index.mjs generate --config ./auth.cli.ts --output ../db/prisma/schema.prisma --yes"
   },
   "dependencies": {
     "@workspace/db": "workspace:*",
