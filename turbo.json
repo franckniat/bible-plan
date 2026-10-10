@@ -10,7 +10,9 @@
     "EMAIL_FROM",
     "EMAIL_DRIVER",
     "EMAIL_REMINDERS_ENABLED",
-    "EMAIL_DAILY_LIMIT"
+    "EMAIL_DAILY_LIMIT",
+    "BETTER_AUTH_SECRET",
+    "BETTER_AUTH_URL"
   ],
   "tasks": {
     "build": {
