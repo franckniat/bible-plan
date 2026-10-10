@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     "@workspace/core",
     "@workspace/db",
     "@workspace/i18n",
+    "@workspace/notifications",
     "@workspace/ui",
   ],
 }

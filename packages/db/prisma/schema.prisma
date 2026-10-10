@@ -39,3 +39,12 @@ model WaitlistEntry {
 
   @@index([ipHash, createdAt])
 }
+
+// ─── Emails ─────────────────────────────────────────────────────────────────
+
+/// Emails sent per UTC day, to stay within the provider's daily quota.
+model EmailDailyUsage {
+  day       DateTime @id @db.Date
+  sent      Int      @default(0)
+  updatedAt DateTime @updatedAt
+}

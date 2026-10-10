@@ -47,6 +47,9 @@ importers:
       '@workspace/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@workspace/notifications':
+        specifier: workspace:*
+        version: link:../../packages/notifications
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui

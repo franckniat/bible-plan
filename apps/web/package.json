@@ -19,6 +19,7 @@
     "@workspace/core": "workspace:*",
     "@workspace/db": "workspace:*",
     "@workspace/i18n": "workspace:*",
+    "@workspace/notifications": "workspace:*",
     "@workspace/ui": "workspace:*",
     "flag-icons": "^7.5.0",
     "lucide-react": "^1.52.0",
