@@ -82,9 +82,9 @@ export function PrivacyEn() {
       <h2>Your rights</h2>
       <p>
         At any time, you can ask to access, correct or delete your data (and so
-        be removed from the waitlist), or withdraw your consent. Write to us
-        from the email address you signed up with: <ContactLink />. We reply
-        within one month.
+        be removed from the waitlist), or withdraw your consent. Contact the
+        project maintainer (<ContactLink />) with the email address you signed
+        up with. We reply within one month.
       </p>
       <p>
         If you believe your rights are not respected, you can contact the data

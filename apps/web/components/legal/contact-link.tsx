@@ -1,10 +1,7 @@
-import { contactEmail, maintainerUrl } from "@/lib/site"
+import { maintainerUrl } from "@/lib/site"
 
-/** Where to send privacy requests: the contact address, or the maintainer. */
+/** Contact point for questions and data requests: the project maintainer. */
 export function ContactLink() {
-  if (contactEmail) {
-    return <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
-  }
   return (
     <a href={maintainerUrl} target="_blank" rel="noopener noreferrer">
       github.com/franckniat

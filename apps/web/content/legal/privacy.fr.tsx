@@ -90,8 +90,9 @@ export function PrivacyFr() {
       <p>
         Vous pouvez à tout moment demander l’accès à vos données, leur
         correction, leur suppression (et donc votre retrait de la liste
-        d’attente), ou retirer votre consentement. Écrivez-nous depuis l’adresse
-        email inscrite : <ContactLink />. Nous répondons sous un mois.
+        d’attente), ou retirer votre consentement. Contactez le responsable du
+        projet (<ContactLink />) en indiquant l’adresse email inscrite. Nous
+        répondons sous un mois.
       </p>
       <p>
         Si vous estimez que vos droits ne sont pas respectés, vous pouvez vous

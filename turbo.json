@@ -1,11 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalEnv": [
-    "NODE_ENV",
-    "NEXT_PUBLIC_SOURCE_URL",
-    "NEXT_PUBLIC_CONTACT_EMAIL"
-  ],
+  "globalEnv": ["NODE_ENV"],
   "globalPassThroughEnv": ["DATABASE_URL", "DIRECT_URL", "IP_HASH_SECRET"],
   "tasks": {
     "build": {
