@@ -136,5 +136,11 @@
       "expiry": "Ce lien est valable une heure. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email : votre mot de passe reste inchangé.",
       "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
     }
+  },
+  "App": {
+    "today": {
+      "greeting": "Bonjour, {name} !",
+      "placeholder": "Votre programme du jour arrive bientôt."
+    }
   }
 }

@@ -136,5 +136,11 @@
       "expiry": "This link is valid for one hour. If you did not ask for it, ignore this email: your password stays the same.",
       "fallback": "If the button does not work, copy this link into your browser:"
     }
+  },
+  "App": {
+    "today": {
+      "greeting": "Hello, {name}!",
+      "placeholder": "Your plan for today is coming soon."
+    }
   }
 }
