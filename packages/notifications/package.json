@@ -8,7 +8,9 @@
     "lint": "eslint --max-warnings 0",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "email:test": "tsx --env-file-if-exists=../../apps/web/.env.local scripts/send-test-email.ts"
+    "email:test": "tsx --env-file-if-exists=../../apps/web/.env.local scripts/send-test-email.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",
@@ -18,7 +20,8 @@
     "@workspace/typescript-config": "workspace:*",
     "eslint": "^10",
     "tsx": "^4.23.15",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "catalog:"
   },
   "exports": {
     ".": "./src/index.ts",
