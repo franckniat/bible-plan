@@ -8,9 +8,12 @@
     "lint": "eslint --max-warnings 0",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "auth:generate": "node --env-file-if-exists=../db/.env ./node_modules/auth/dist/index.mjs generate --config ./auth.cli.ts --output ../db/prisma/schema.prisma --yes"
+    "auth:generate": "node --env-file-if-exists=../db/.env ./node_modules/auth/dist/index.mjs generate --config ./auth.cli.ts --output ../db/prisma/schema.prisma --yes",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
+    "@workspace/core": "workspace:*",
     "@workspace/db": "workspace:*",
     "@workspace/notifications": "workspace:*",
     "better-auth": "^1.7.7"
@@ -21,7 +24,8 @@
     "@workspace/typescript-config": "workspace:*",
     "auth": "^1.7.7",
     "eslint": "^10",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "catalog:"
   },
   "exports": {
     ".": "./src/index.ts"

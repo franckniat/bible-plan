@@ -117,6 +117,24 @@
       "preview": "Sending emails works.",
       "heading": "Everything works!",
       "body": "This email confirms that Bible Plan’s email sending is set up correctly."
+    },
+    "verifyEmail": {
+      "subject": "Confirm your email address",
+      "preview": "One more step to start reading with Bible Plan.",
+      "heading": "Welcome, {name}!",
+      "body": "Confirm your email address to activate your Bible Plan account.",
+      "button": "Confirm my email",
+      "expiry": "This link is valid for one hour.",
+      "fallback": "If the button does not work, copy this link into your browser:"
+    },
+    "resetPassword": {
+      "subject": "Reset your password",
+      "preview": "Choose a new password for your Bible Plan account.",
+      "heading": "New password",
+      "body": "You asked to reset the password of your Bible Plan account.",
+      "button": "Choose a new password",
+      "expiry": "This link is valid for one hour. If you did not ask for it, ignore this email: your password stays the same.",
+      "fallback": "If the button does not work, copy this link into your browser:"
     }
   }
 }

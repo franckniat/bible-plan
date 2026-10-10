@@ -117,6 +117,24 @@
       "preview": "L’envoi d’emails fonctionne.",
       "heading": "Tout fonctionne !",
       "body": "Cet email confirme que l’envoi d’emails de Bible Plan est bien configuré."
+    },
+    "verifyEmail": {
+      "subject": "Confirmez votre adresse email",
+      "preview": "Plus qu’une étape pour commencer à lire avec Bible Plan.",
+      "heading": "Bienvenue, {name} !",
+      "body": "Confirmez votre adresse email pour activer votre compte Bible Plan.",
+      "button": "Confirmer mon email",
+      "expiry": "Ce lien est valable une heure.",
+      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
+    },
+    "resetPassword": {
+      "subject": "Réinitialisez votre mot de passe",
+      "preview": "Choisissez un nouveau mot de passe pour votre compte Bible Plan.",
+      "heading": "Nouveau mot de passe",
+      "body": "Vous avez demandé à réinitialiser le mot de passe de votre compte Bible Plan.",
+      "button": "Choisir un nouveau mot de passe",
+      "expiry": "Ce lien est valable une heure. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email : votre mot de passe reste inchangé.",
+      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
     }
   }
 }
