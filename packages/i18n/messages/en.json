@@ -106,5 +106,17 @@
     "title": "Page not found",
     "description": "This page does not exist or has been moved.",
     "backHome": "Back to home"
+  },
+  "Emails": {
+    "layout": {
+      "tagline": "Read the Bible at your own pace",
+      "footer": "You are receiving this email from Bible Plan. If you did not request it, you can simply ignore it."
+    },
+    "test": {
+      "subject": "Bible Plan test email",
+      "preview": "Sending emails works.",
+      "heading": "Everything works!",
+      "body": "This email confirms that Bible Plan’s email sending is set up correctly."
+    }
   }
 }

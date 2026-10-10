@@ -106,5 +106,17 @@
     "title": "Page introuvable",
     "description": "Cette page n'existe pas ou a été déplacée.",
     "backHome": "Retour à l'accueil"
+  },
+  "Emails": {
+    "layout": {
+      "tagline": "Lire la Bible à votre rythme",
+      "footer": "Vous recevez cet email de Bible Plan. Si vous n’êtes pas à l’origine de cette demande, vous pouvez simplement l’ignorer."
+    },
+    "test": {
+      "subject": "Email de test de Bible Plan",
+      "preview": "L’envoi d’emails fonctionne.",
+      "heading": "Tout fonctionne !",
+      "body": "Cet email confirme que l’envoi d’emails de Bible Plan est bien configuré."
+    }
   }
 }

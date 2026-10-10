@@ -1,3 +1,7 @@
 export * from "./email/config"
+export * from "./email/render"
 export * from "./email/sender"
 export * from "./email/senders"
+export * from "./email/templates/layout"
+export * from "./email/templates/test-email"
+export * from "./email/translations"
