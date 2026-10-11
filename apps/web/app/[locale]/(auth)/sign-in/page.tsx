@@ -1,22 +1,17 @@
-import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
 import { hasLocale } from "next-intl"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 import { AuthCard } from "@/components/auth/auth-card"
+import { getAuthMetadata } from "@/components/auth/auth-metadata"
 import { SignInForm } from "@/components/auth/sign-in-form"
 import { Link } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
 import { getSafeRedirect } from "@/lib/safe-redirect"
 import { getSession } from "@/server/session"
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/sign-in">): Promise<Metadata> {
-  const { locale } = await params
-  if (!hasLocale(routing.locales, locale)) return {}
-  const t = await getTranslations({ locale, namespace: "Auth.meta" })
-  return { title: `${t("signIn")} · Bible Plan` }
+export function generateMetadata({ params }: PageProps<"/[locale]/sign-in">) {
+  return getAuthMetadata(params, "signIn")
 }
 
 export default async function SignInPage({

@@ -146,7 +146,10 @@
   "Auth": {
     "meta": {
       "signIn": "Sign in",
-      "signUp": "Create an account"
+      "signUp": "Create an account",
+      "verifyEmail": "Email confirmation",
+      "forgotPassword": "Forgot password",
+      "resetPassword": "New password"
     },
     "fields": {
       "name": "First name",
@@ -195,6 +198,39 @@
       "invalidToken": "This link is no longer valid. Ask for a new one.",
       "tooManyRequests": "Too many attempts. Try again in a few minutes.",
       "unexpected": "Something went wrong. Please try again in a moment."
+    },
+    "verifyEmail": {
+      "successTitle": "Email address confirmed",
+      "successDescription": "Your account is active. Welcome to Bible Plan!",
+      "start": "Get started",
+      "errorTitle": "Invalid or expired link",
+      "errorDescription": "This confirmation link is no longer valid. Enter your email to receive a new one.",
+      "pendingTitle": "Confirm your email address",
+      "pendingDescription": "Open the email we sent you and click the confirmation link. You can also ask for a new one.",
+      "resend": "Send a new link",
+      "signIn": "Sign in"
+    },
+    "forgotPassword": {
+      "title": "Forgot your password",
+      "description": "Enter your email: we will send you a link to choose a new password.",
+      "submit": "Send the link",
+      "submitting": "Sending…",
+      "sent": "If an account exists with this address, you will receive an email with a link valid for one hour.",
+      "backToSignIn": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "New password",
+      "description": "Choose a new password for your account.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm the password",
+      "mismatch": "The two passwords do not match.",
+      "submit": "Save",
+      "submitting": "Saving…",
+      "success": "Your password has been changed. You can now sign in.",
+      "signIn": "Sign in",
+      "invalidTitle": "Invalid or expired link",
+      "invalidDescription": "This reset link is no longer valid.",
+      "requestNew": "Ask for a new link"
     }
   }
 }

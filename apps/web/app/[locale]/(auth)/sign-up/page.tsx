@@ -1,21 +1,16 @@
-import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { hasLocale } from "next-intl"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 import { AuthCard } from "@/components/auth/auth-card"
+import { getAuthMetadata } from "@/components/auth/auth-metadata"
 import { SignUpForm } from "@/components/auth/sign-up-form"
 import { Link, redirect } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
 import { getSession } from "@/server/session"
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/sign-up">): Promise<Metadata> {
-  const { locale } = await params
-  if (!hasLocale(routing.locales, locale)) return {}
-  const t = await getTranslations({ locale, namespace: "Auth.meta" })
-  return { title: `${t("signUp")} · Bible Plan` }
+export function generateMetadata({ params }: PageProps<"/[locale]/sign-up">) {
+  return getAuthMetadata(params, "signUp")
 }
 
 export default async function SignUpPage({

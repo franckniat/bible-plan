@@ -146,7 +146,10 @@
   "Auth": {
     "meta": {
       "signIn": "Connexion",
-      "signUp": "Créer un compte"
+      "signUp": "Créer un compte",
+      "verifyEmail": "Confirmation de l’email",
+      "forgotPassword": "Mot de passe oublié",
+      "resetPassword": "Nouveau mot de passe"
     },
     "fields": {
       "name": "Prénom",
@@ -195,6 +198,39 @@
       "invalidToken": "Ce lien n’est plus valide. Demandez-en un nouveau.",
       "tooManyRequests": "Trop de tentatives. Réessayez dans quelques minutes.",
       "unexpected": "Une erreur est survenue. Réessayez dans un instant."
+    },
+    "verifyEmail": {
+      "successTitle": "Adresse email confirmée",
+      "successDescription": "Votre compte est activé. Bienvenue dans Bible Plan !",
+      "start": "Commencer",
+      "errorTitle": "Lien invalide ou expiré",
+      "errorDescription": "Ce lien de confirmation n’est plus valide. Saisissez votre email pour en recevoir un nouveau.",
+      "pendingTitle": "Confirmez votre adresse email",
+      "pendingDescription": "Ouvrez l’email que nous vous avons envoyé et cliquez sur le lien de confirmation. Vous pouvez aussi en demander un nouveau.",
+      "resend": "Envoyer un nouveau lien",
+      "signIn": "Se connecter"
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "description": "Saisissez votre email : nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+      "submit": "Envoyer le lien",
+      "submitting": "Envoi…",
+      "sent": "Si un compte existe avec cette adresse, vous allez recevoir un email avec un lien valable une heure.",
+      "backToSignIn": "Retour à la connexion"
+    },
+    "resetPassword": {
+      "title": "Nouveau mot de passe",
+      "description": "Choisissez un nouveau mot de passe pour votre compte.",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmez le mot de passe",
+      "mismatch": "Les deux mots de passe ne correspondent pas.",
+      "submit": "Enregistrer",
+      "submitting": "Enregistrement…",
+      "success": "Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter.",
+      "signIn": "Se connecter",
+      "invalidTitle": "Lien invalide ou expiré",
+      "invalidDescription": "Ce lien de réinitialisation n’est plus valide.",
+      "requestNew": "Demander un nouveau lien"
     }
   }
 }
