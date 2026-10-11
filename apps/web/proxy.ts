@@ -15,7 +15,10 @@ export default function proxy(request: NextRequest) {
   // the (app) layout validates the session itself.
   const locale = getProtectedLocale(request.nextUrl.pathname, routing.locales)
   if (locale && !getSessionCookie(request)) {
-    return NextResponse.redirect(new URL(`/${locale}/sign-in`, request.url))
+    const signIn = new URL(`/${locale}/sign-in`, request.url)
+    const { pathname, search } = request.nextUrl
+    signIn.searchParams.set("redirect", `${pathname}${search}`)
+    return NextResponse.redirect(signIn)
   }
 
   return handleI18nRouting(request)

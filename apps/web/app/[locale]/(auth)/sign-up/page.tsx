@@ -1,0 +1,45 @@
+import type { Metadata } from "next"
+import { notFound } from "next/navigation"
+import { hasLocale } from "next-intl"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+
+import { AuthCard } from "@/components/auth/auth-card"
+import { SignUpForm } from "@/components/auth/sign-up-form"
+import { Link, redirect } from "@/i18n/navigation"
+import { routing } from "@/i18n/routing"
+import { getSession } from "@/server/session"
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/sign-up">): Promise<Metadata> {
+  const { locale } = await params
+  if (!hasLocale(routing.locales, locale)) return {}
+  const t = await getTranslations({ locale, namespace: "Auth.meta" })
+  return { title: `${t("signUp")} · Bible Plan` }
+}
+
+export default async function SignUpPage({
+  params,
+}: PageProps<"/[locale]/sign-up">) {
+  const { locale } = await params
+  if (!hasLocale(routing.locales, locale)) notFound()
+  setRequestLocale(locale)
+
+  if (await getSession()) return redirect({ href: "/today", locale })
+
+  const t = await getTranslations("Auth")
+  return (
+    <AuthCard
+      title={t("signUp.title")}
+      description={t("signUp.description")}
+      footer={
+        <>
+          {t("signUp.hasAccount")}{" "}
+          <Link href="/sign-in">{t("signUp.signInLink")}</Link>
+        </>
+      }
+    >
+      <SignUpForm />
+    </AuthCard>
+  )
+}
