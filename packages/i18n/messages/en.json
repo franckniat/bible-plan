@@ -231,6 +231,11 @@
       "invalidTitle": "Invalid or expired link",
       "invalidDescription": "This reset link is no longer valid.",
       "requestNew": "Ask for a new link"
+    },
+    "social": {
+      "google": "Continue with Google",
+      "or": "or",
+      "error": "Signing in with Google did not work. Please try again."
     }
   }
 }

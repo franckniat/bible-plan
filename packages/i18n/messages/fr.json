@@ -231,6 +231,11 @@
       "invalidTitle": "Lien invalide ou expiré",
       "invalidDescription": "Ce lien de réinitialisation n’est plus valide.",
       "requestNew": "Demander un nouveau lien"
+    },
+    "social": {
+      "google": "Continuer avec Google",
+      "or": "ou",
+      "error": "La connexion avec Google n’a pas abouti. Réessayez."
     }
   }
 }

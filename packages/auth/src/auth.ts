@@ -12,6 +12,18 @@ import {
 
 import { getRequestLocale } from "./locale"
 
+/** Google OAuth credentials, when GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are set. */
+function getGoogleCredentials(env = process.env) {
+  const clientId = env.GOOGLE_CLIENT_ID
+  const clientSecret = env.GOOGLE_CLIENT_SECRET
+  return clientId && clientSecret ? { clientId, clientSecret } : undefined
+}
+
+/** Whether "Continue with Google" can be offered. */
+export function isGoogleAuthEnabled(env = process.env): boolean {
+  return getGoogleCredentials(env) !== undefined
+}
+
 export type CreateAuthOptions = {
   /** Sends authentication emails (verification, password reset). */
   emailSender: EmailSender
@@ -30,6 +42,8 @@ export function createAuth({
   emailSender,
   runAfterResponse,
 }: CreateAuthOptions) {
+  const google = getGoogleCredentials()
+
   async function deliver(to: string, email: Promise<RenderedEmail>) {
     const task = email
       .then((rendered) =>
@@ -59,6 +73,7 @@ export function createAuth({
           })
         ),
     },
+    socialProviders: google ? { google } : {},
     emailVerification: {
       sendOnSignUp: true,
       autoSignInAfterVerification: true,
