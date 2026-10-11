@@ -43,7 +43,7 @@ export function GoogleSignIn({ redirectTo }: { redirectTo: string }) {
       await authClient.signIn.social({
         provider: "google",
         callbackURL: redirectTo,
-        errorCallbackURL: `/${locale}/sign-in?error=google`,
+        errorCallbackURL: `/${locale}/sign-in?method=google`,
       })
     })
   }

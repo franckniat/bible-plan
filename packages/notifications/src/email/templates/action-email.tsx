@@ -6,7 +6,7 @@ import { renderEmail, type RenderedEmail } from "../render"
 import { getEmailTranslator } from "../translations"
 import { EmailLayout, emailColors, fontSerif } from "./layout"
 
-type ActionEmailKind = "verifyEmail" | "resetPassword"
+type ActionEmailKind = "verifyEmail" | "resetPassword" | "magicLink"
 
 /**
  * Email asking the recipient to follow a link (confirm the address, reset the
@@ -15,7 +15,7 @@ type ActionEmailKind = "verifyEmail" | "resetPassword"
 async function renderActionEmail(
   kind: ActionEmailKind,
   locale: Locale,
-  { name, url }: { name: string; url: string }
+  { name, url }: { name?: string; url: string }
 ): Promise<RenderedEmail> {
   const t = await getEmailTranslator(locale)
 
@@ -27,8 +27,8 @@ async function renderActionEmail(
         style={{ fontFamily: fontSerif, fontSize: "26px", margin: "0 0 12px" }}
       >
         {kind === "verifyEmail"
-          ? t("verifyEmail.heading", { name })
-          : t("resetPassword.heading")}
+          ? t("verifyEmail.heading", { name: name ?? "" })
+          : t(`${kind}.heading`)}
       </Heading>
       <Text
         style={{ fontSize: "16px", lineHeight: "24px", margin: "0 0 24px" }}
@@ -84,4 +84,9 @@ export function renderResetPasswordEmail(
   params: { name: string; url: string }
 ) {
   return renderActionEmail("resetPassword", locale, params)
+}
+
+/** "Your sign-in link" email (passwordless sign-in). */
+export function renderMagicLinkEmail(locale: Locale, params: { url: string }) {
+  return renderActionEmail("magicLink", locale, params)
 }

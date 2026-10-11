@@ -1,9 +1,11 @@
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { nextCookies } from "better-auth/next-js"
+import { magicLink } from "better-auth/plugins/magic-link"
 
 import { prisma } from "@workspace/db"
 import {
+  renderMagicLinkEmail,
   renderResetPasswordEmail,
   renderVerifyEmail,
   type EmailSender,
@@ -83,8 +85,18 @@ export function createAuth({
           renderVerifyEmail(getRequestLocale(request), { name: user.name, url })
         ),
     },
-    // Lets Server Actions set auth cookies; must stay the last plugin.
-    plugins: [nextCookies()],
+    plugins: [
+      // Passwordless sign-in by email (link valid 5 minutes, single use).
+      magicLink({
+        sendMagicLink: ({ email, url }, ctx) =>
+          deliver(
+            email,
+            renderMagicLinkEmail(getRequestLocale(ctx?.request), { url })
+          ),
+      }),
+      // Lets Server Actions set auth cookies; must stay the last plugin.
+      nextCookies(),
+    ],
   })
 }
 

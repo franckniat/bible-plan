@@ -135,6 +135,15 @@
       "button": "Choisir un nouveau mot de passe",
       "expiry": "Ce lien est valable une heure. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email : votre mot de passe reste inchangé.",
       "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
+    },
+    "magicLink": {
+      "subject": "Votre lien de connexion",
+      "preview": "Connectez-vous à Bible Plan en un clic.",
+      "heading": "Connexion à Bible Plan",
+      "body": "Cliquez sur le bouton ci-dessous pour vous connecter, sans mot de passe.",
+      "button": "Me connecter",
+      "expiry": "Ce lien est valable 5 minutes et ne fonctionne qu’une fois. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.",
+      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
     }
   },
   "App": {
@@ -236,6 +245,15 @@
       "google": "Continuer avec Google",
       "or": "ou",
       "error": "La connexion avec Google n’a pas abouti. Réessayez."
+    },
+    "magicLink": {
+      "switchToMagicLink": "Recevoir un lien de connexion par email",
+      "switchToPassword": "Se connecter avec un mot de passe",
+      "description": "Nous vous envoyons un lien : un clic suffit pour vous connecter, sans mot de passe.",
+      "submit": "Recevoir le lien",
+      "submitting": "Envoi…",
+      "sent": "Un lien de connexion vient de vous être envoyé. Il est valable 5 minutes.",
+      "error": "Ce lien de connexion n’est plus valide. Demandez-en un nouveau."
     }
   }
 }
