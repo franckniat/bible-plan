@@ -3,6 +3,7 @@ import type { ReactNode } from "react"
 
 import { cn } from "@workspace/ui/lib/utils"
 
+import { AppFooter } from "@/components/app/app-footer"
 import { AppNav } from "@/components/app/app-nav"
 import { SignOutButton } from "@/components/app/sign-out-button"
 import { BrandMark } from "@/components/brand/brand-mark"
@@ -74,9 +75,10 @@ export function AppShell({
           <HomeLink />
           <SignOutButton iconOnly />
         </header>
-        <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-6 pb-28 md:px-10 md:py-10">
+        <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6 md:px-10 md:py-10">
           {children}
         </main>
+        <AppFooter />
       </div>
 
       <AppNav

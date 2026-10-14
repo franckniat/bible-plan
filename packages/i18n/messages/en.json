@@ -160,6 +160,13 @@
     "account": {
       "signOut": "Sign out",
       "signingOut": "Signing out…"
+    },
+    "footer": {
+      "label": "Site information",
+      "sourceCode": "Source code",
+      "license": "AGPL-3.0 license",
+      "privacy": "Privacy",
+      "terms": "Terms"
     }
   },
   "Auth": {
