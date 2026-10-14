@@ -5,12 +5,13 @@ import { z } from "zod"
 
 import {
   profileSettingsSchema,
+  timeZoneSchema,
   type Locale,
   type ProfileSettings,
 } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
-import { updateProfile } from "@/server/services/profile"
+import { setDetectedTimeZone, updateProfile } from "@/server/services/profile"
 import { requireUser } from "@/server/session"
 
 type ProfileField = keyof ProfileSettings
@@ -66,4 +67,12 @@ export async function updateProfileAction(
   // The name is shown in the whole signed-in area.
   revalidatePath("/[locale]", "layout")
   return { status: "success", locale: parsed.data.locale }
+}
+
+/** Saves the browser time zone on the first visit (see TimeZoneDetector). */
+export async function detectTimeZoneAction(timezone: string): Promise<void> {
+  const user = await requireUser()
+  const parsed = timeZoneSchema.safeParse(timezone)
+  if (!parsed.success || user.timezone) return
+  await setDetectedTimeZone(prisma, user.id, parsed.data)
 }

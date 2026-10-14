@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
-import { updateProfile, type ProfileDb } from "./profile"
+import { setDetectedTimeZone, updateProfile, type ProfileDb } from "./profile"
 
 describe("updateProfile", () => {
   it("updates only the settings of the given user", async () => {
@@ -20,6 +20,22 @@ describe("updateProfile", () => {
         timezone: "Africa/Douala",
         readingWpm: 240,
       },
+    })
+  })
+})
+
+describe("setDetectedTimeZone", () => {
+  it("only fills a missing time zone", async () => {
+    const user = { updateMany: vi.fn() }
+    await setDetectedTimeZone(
+      { user } as unknown as ProfileDb,
+      "user-1",
+      "Europe/Paris"
+    )
+
+    expect(user.updateMany).toHaveBeenCalledWith({
+      where: { id: "user-1", timezone: null },
+      data: { timezone: "Europe/Paris" },
     })
   })
 })

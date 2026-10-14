@@ -6,6 +6,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { AppFooter } from "@/components/app/app-footer"
 import { AppNav } from "@/components/app/app-nav"
 import { SignOutButton } from "@/components/app/sign-out-button"
+import { TimeZoneDetector } from "@/components/app/time-zone-detector"
 import { BrandMark } from "@/components/brand/brand-mark"
 import { brandThemeClassName } from "@/components/brand/brand-theme"
 import { Link } from "@/i18n/navigation"
@@ -59,6 +60,7 @@ export function AppShell({
 }) {
   return (
     <div className={cn("flex min-h-svh", brandThemeClassName)}>
+      {!user.timezone && <TimeZoneDetector />}
       <aside className="sticky top-0 hidden h-svh w-64 shrink-0 flex-col gap-8 border-r border-brand-night/10 px-3 py-6 md:flex dark:border-white/10 dark:bg-neutral-900/40">
         <div className="px-3">
           <HomeLink />

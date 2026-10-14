@@ -21,3 +21,18 @@ export async function updateProfile(
     },
   })
 }
+
+/**
+ * Sets the time zone detected by the browser, unless the user already has
+ * one (detected earlier or chosen in the settings).
+ */
+export async function setDetectedTimeZone(
+  db: ProfileDb,
+  userId: string,
+  timezone: string
+): Promise<void> {
+  await db.user.updateMany({
+    where: { id: userId, timezone: null },
+    data: { timezone },
+  })
+}
