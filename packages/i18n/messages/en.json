@@ -319,6 +319,16 @@
       "too_long": "This text is too long.",
       "invalid": "This value is not valid.",
       "unexpected": "Something went wrong. Please try again."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "The “System” theme follows your device setting. Shortcut: D key."
     }
+  },
+  "Theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   }
 }

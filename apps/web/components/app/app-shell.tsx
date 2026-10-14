@@ -9,6 +9,7 @@ import { SignOutButton } from "@/components/app/sign-out-button"
 import { TimeZoneDetector } from "@/components/app/time-zone-detector"
 import { BrandMark } from "@/components/brand/brand-mark"
 import { brandThemeClassName } from "@/components/brand/brand-theme"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Link } from "@/i18n/navigation"
 import type { SessionUser } from "@/server/session"
 
@@ -67,6 +68,7 @@ export function AppShell({
         </div>
         <AppNav variant="sidebar" />
         <div className="mt-auto flex flex-col gap-3">
+          <ThemeToggle className="mx-3 self-start" />
           <UserSummary user={user} />
           <SignOutButton />
         </div>
@@ -75,7 +77,10 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-brand-night/10 bg-brand-cream/90 px-4 py-2 backdrop-blur md:hidden dark:border-white/10 dark:bg-neutral-950/90">
           <HomeLink />
-          <SignOutButton iconOnly />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <SignOutButton iconOnly />
+          </div>
         </header>
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6 md:px-10 md:py-10">
           {children}

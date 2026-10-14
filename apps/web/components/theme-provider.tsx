@@ -13,6 +13,12 @@ function ThemeProvider({
       defaultTheme="system"
       enableSystem
       disableTransitionOnChange
+      // The theme script only has to run in the server HTML. When React creates
+      // it in the browser (e.g. after a language change), a non-JavaScript type
+      // avoids a warning: the provider applies the theme by itself there.
+      scriptProps={{
+        type: typeof window === "undefined" ? undefined : "application/json",
+      }}
       {...props}
     >
       <ThemeHotkey />

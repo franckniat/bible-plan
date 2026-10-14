@@ -319,6 +319,16 @@
       "too_long": "Ce texte est trop long.",
       "invalid": "Cette valeur n’est pas valide.",
       "unexpected": "Une erreur est survenue. Veuillez réessayer."
+    },
+    "appearance": {
+      "title": "Apparence",
+      "description": "Le thème « Système » suit le réglage de votre appareil. Raccourci : touche D."
     }
+  },
+  "Theme": {
+    "label": "Thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
   }
 }
