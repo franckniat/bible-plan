@@ -150,6 +150,16 @@
     "today": {
       "greeting": "Bonjour, {name} !",
       "placeholder": "Votre programme du jour arrive bientôt."
+    },
+    "home": "Aujourd’hui — Bible Plan",
+    "nav": {
+      "label": "Navigation principale",
+      "today": "Aujourd’hui",
+      "settings": "Réglages"
+    },
+    "account": {
+      "signOut": "Se déconnecter",
+      "signingOut": "Déconnexion…"
     }
   },
   "Auth": {

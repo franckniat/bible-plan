@@ -8,11 +8,13 @@ export default async function TodayPage() {
   const t = await getTranslations("App.today")
 
   return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-2 p-6">
+    <div className="flex flex-col gap-2">
       <h1 className="font-heading text-3xl font-semibold">
         {t("greeting", { name: user.name })}
       </h1>
-      <p className="text-muted-foreground">{t("placeholder")}</p>
-    </main>
+      <p className="text-brand-night/70 dark:text-neutral-100/70">
+        {t("placeholder")}
+      </p>
+    </div>
   )
 }

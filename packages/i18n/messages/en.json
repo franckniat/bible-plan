@@ -150,6 +150,16 @@
     "today": {
       "greeting": "Hello, {name}!",
       "placeholder": "Your plan for today is coming soon."
+    },
+    "home": "Today — Bible Plan",
+    "nav": {
+      "label": "Main navigation",
+      "today": "Today",
+      "settings": "Settings"
+    },
+    "account": {
+      "signOut": "Sign out",
+      "signingOut": "Signing out…"
     }
   },
   "Auth": {

@@ -1,5 +1,8 @@
 import type { ReactNode } from "react"
 
+import { cn } from "@workspace/ui/lib/utils"
+
+import { brandThemeClassName } from "@/components/brand/brand-theme"
 import { LandingFooter } from "@/components/landing/landing-footer"
 import { LandingHeader } from "@/components/landing/landing-header"
 
@@ -9,7 +12,12 @@ import { LandingHeader } from "@/components/landing/landing-header"
  */
 export function SiteShell({ children }: { children: ReactNode }) {
   return (
-    <div className="relative flex min-h-svh flex-col overflow-x-clip bg-brand-cream text-brand-night [--primary-foreground:var(--brand-cream)] [--primary:var(--brand-night)] [--ring:var(--brand-gold)] dark:bg-neutral-950 dark:text-neutral-100 dark:[--primary-foreground:var(--color-neutral-950)] dark:[--primary:var(--brand-gold)]">
+    <div
+      className={cn(
+        "relative flex min-h-svh flex-col overflow-x-clip",
+        brandThemeClassName
+      )}
+    >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[640px] bg-[radial-gradient(55%_60%_at_50%_0%,color-mix(in_oklab,var(--brand-gold)_30%,transparent),transparent)] dark:bg-[radial-gradient(55%_60%_at_50%_0%,color-mix(in_oklab,var(--brand-gold)_18%,transparent),transparent)]"
