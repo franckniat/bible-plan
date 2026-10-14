@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma"
 import { nextCookies } from "better-auth/next-js"
 import { magicLink } from "better-auth/plugins/magic-link"
 
+import { defaultLocale, defaultReadingWpm } from "@workspace/core"
 import { prisma } from "@workspace/db"
 import {
   renderMagicLinkEmail,
@@ -76,6 +77,37 @@ export function createAuth({
         ),
     },
     socialProviders: google ? { google } : {},
+    user: {
+      // Profile settings, changed from the settings page (not on sign-up).
+      additionalFields: {
+        locale: {
+          type: "string",
+          required: true,
+          defaultValue: defaultLocale,
+          input: false,
+        },
+        // IANA time zone, detected by the browser on the first sign-in.
+        timezone: { type: "string", required: false, input: false },
+        readingWpm: {
+          type: "number",
+          required: true,
+          defaultValue: defaultReadingWpm,
+          input: false,
+        },
+        // Preferred Bible version, chosen once the reader exists.
+        bibleVersion: { type: "string", required: false, input: false },
+      },
+    },
+    databaseHooks: {
+      user: {
+        create: {
+          // New accounts speak the language they signed up in.
+          before: async (user, ctx) => ({
+            data: { ...user, locale: getRequestLocale(ctx?.request) },
+          }),
+        },
+      },
+    },
     emailVerification: {
       sendOnSignUp: true,
       autoSignInAfterVerification: true,

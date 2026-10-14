@@ -64,6 +64,11 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+  locale       String  @default("fr")
+  timezone     String?
+  readingWpm   Int     @default(180)
+  bibleVersion String?
+
   @@unique([email])
   @@map("user")
 }
