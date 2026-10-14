@@ -1,6 +1,6 @@
 "use client"
 
-import { Sun, type LucideIcon } from "lucide-react"
+import { Settings, Sun, type LucideIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 import { cn } from "@workspace/ui/lib/utils"
@@ -9,12 +9,15 @@ import { Link, usePathname } from "@/i18n/navigation"
 
 type NavItem = {
   href: string
-  label: "today"
+  label: "today" | "settings"
   icon: LucideIcon
 }
 
 // Sections are added here as they are built.
-const navItems: NavItem[] = [{ href: "/today", label: "today", icon: Sun }]
+const navItems: NavItem[] = [
+  { href: "/today", label: "today", icon: Sun },
+  { href: "/settings", label: "settings", icon: Settings },
+]
 
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`)

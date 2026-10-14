@@ -272,5 +272,53 @@
       "sent": "A sign-in link has just been sent to you. It is valid for 5 minutes.",
       "error": "This sign-in link is no longer valid. Ask for a new one."
     }
+  },
+  "Settings": {
+    "title": "Settings",
+    "description": "Your profile and the way you read.",
+    "profile": {
+      "title": "Profile",
+      "description": "These settings are used to prepare your plans and reminders."
+    },
+    "fields": {
+      "name": "First name or name",
+      "email": "Email address",
+      "emailHint": "The email address of your account cannot be changed here.",
+      "locale": "Language",
+      "timezone": "Time zone",
+      "timezoneHint": "It sets when your day starts and when your reminders arrive.",
+      "detectTimezone": "Use this device’s time zone",
+      "readingSpeed": "Reading speed",
+      "readingSpeedHint": "It is used to estimate reading time when a plan is built from the time you have."
+    },
+    "readingSpeeds": {
+      "slow": {
+        "label": "Unhurried",
+        "description": "About {wpm} words per minute, to dwell on every verse."
+      },
+      "normal": {
+        "label": "Average",
+        "description": "About {wpm} words per minute, the pace of attentive reading."
+      },
+      "fast": {
+        "label": "Fast",
+        "description": "About {wpm} words per minute, to cover long passages."
+      }
+    },
+    "timezonePicker": {
+      "placeholder": "Search for a city or region…",
+      "empty": "No time zone found.",
+      "show": "Show time zones",
+      "clear": "Clear"
+    },
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Your settings have been saved.",
+    "errors": {
+      "required": "This field is required.",
+      "too_long": "This text is too long.",
+      "invalid": "This value is not valid.",
+      "unexpected": "Something went wrong. Please try again."
+    }
   }
 }

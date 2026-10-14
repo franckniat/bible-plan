@@ -272,5 +272,53 @@
       "sent": "Un lien de connexion vient de vous être envoyé. Il est valable 5 minutes.",
       "error": "Ce lien de connexion n’est plus valide. Demandez-en un nouveau."
     }
+  },
+  "Settings": {
+    "title": "Réglages",
+    "description": "Votre profil et votre façon de lire.",
+    "profile": {
+      "title": "Profil",
+      "description": "Ces réglages servent à préparer vos plans et vos rappels."
+    },
+    "fields": {
+      "name": "Prénom ou nom",
+      "email": "Adresse email",
+      "emailHint": "L’adresse email de votre compte ne peut pas être modifiée ici.",
+      "locale": "Langue",
+      "timezone": "Fuseau horaire",
+      "timezoneHint": "Il définit quand commence votre journée et à quelle heure arrivent vos rappels.",
+      "detectTimezone": "Utiliser le fuseau de cet appareil",
+      "readingSpeed": "Vitesse de lecture",
+      "readingSpeedHint": "Elle sert à estimer le temps de lecture quand un plan est fait selon le temps dont vous disposez."
+    },
+    "readingSpeeds": {
+      "slow": {
+        "label": "Posée",
+        "description": "Environ {wpm} mots par minute, pour s’arrêter sur chaque verset."
+      },
+      "normal": {
+        "label": "Moyenne",
+        "description": "Environ {wpm} mots par minute, le rythme d’une lecture attentive."
+      },
+      "fast": {
+        "label": "Rapide",
+        "description": "Environ {wpm} mots par minute, pour parcourir de longs passages."
+      }
+    },
+    "timezonePicker": {
+      "placeholder": "Rechercher une ville ou une région…",
+      "empty": "Aucun fuseau horaire trouvé.",
+      "show": "Afficher les fuseaux horaires",
+      "clear": "Effacer"
+    },
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saved": "Vos réglages sont enregistrés.",
+    "errors": {
+      "required": "Ce champ est obligatoire.",
+      "too_long": "Ce texte est trop long.",
+      "invalid": "Cette valeur n’est pas valide.",
+      "unexpected": "Une erreur est survenue. Veuillez réessayer."
+    }
   }
 }
