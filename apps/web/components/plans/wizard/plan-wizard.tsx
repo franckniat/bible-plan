@@ -4,7 +4,11 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useState, type ReactNode } from "react"
 
-import { maxCustomPassages, type IsoDate } from "@workspace/core"
+import {
+  maxCustomPassages,
+  planPaceSchema,
+  type IsoDate,
+} from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 
 import {
@@ -14,6 +18,7 @@ import {
   type WizardState,
   type WizardStep,
 } from "@/components/plans/wizard/state"
+import { ScheduleStep } from "@/components/plans/wizard/schedule-step"
 import { SelectionStep } from "@/components/plans/wizard/selection-step"
 import { TypeStep } from "@/components/plans/wizard/type-step"
 
@@ -37,6 +42,12 @@ function isStepComplete(step: WizardStep, state: WizardState): boolean {
     case "selection":
       return (
         state.passages.length > 0 && state.passages.length <= maxCustomPassages
+      )
+    case "schedule":
+      return (
+        state.activeWeekdays.length > 0 &&
+        planPaceSchema.safeParse(state.pace).success &&
+        (state.pace.mode !== "endDate" || state.pace.endDate >= state.startDate)
       )
     default:
       return true
@@ -88,6 +99,16 @@ export function PlanWizard({
         passages={state.passages}
         onChange={(passages) => update({ passages })}
         free={state.type === "free"}
+      />
+    ),
+    schedule: state.type && (
+      <ScheduleStep
+        type={state.type}
+        startDate={state.startDate}
+        activeWeekdays={state.activeWeekdays}
+        pace={state.pace}
+        readingWpm={readingWpm}
+        onChange={update}
       />
     ),
   }

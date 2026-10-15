@@ -397,6 +397,33 @@
         "moveDown": "Read {passage} later",
         "remove": "Remove {passage}"
       }
+    },
+    "schedule": {
+      "startDate": "Start date",
+      "weekdays": {
+        "legend": "Reading days",
+        "hint": "Keep only the days that suit you: the plan adapts to them.",
+        "required": "Choose at least one day."
+      },
+      "mode": {
+        "legend": "Length of the plan",
+        "days": "A number of days",
+        "endDate": "An end date",
+        "minutesPerDay": "Minutes per day"
+      },
+      "days": {
+        "label": "Number of reading days",
+        "quick": "{days} days"
+      },
+      "endDate": {
+        "label": "Finish by",
+        "beforeStart": "The end date must come after the start date."
+      },
+      "minutes": {
+        "label": "Minutes per day, on average",
+        "quick": "{minutes} min",
+        "hint": "A guide to set the length of the plan: some days will be a little longer, others shorter. Estimated at {wpm} words per minute (<settings>change my reading speed</settings>)."
+      }
     }
   }
 }

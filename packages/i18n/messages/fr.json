@@ -397,6 +397,33 @@
         "moveDown": "Lire {passage} plus tard",
         "remove": "Retirer {passage}"
       }
+    },
+    "schedule": {
+      "startDate": "Date de début",
+      "weekdays": {
+        "legend": "Jours de lecture",
+        "hint": "Ne gardez que les jours qui vous conviennent : le plan s’y adapte.",
+        "required": "Choisissez au moins un jour."
+      },
+      "mode": {
+        "legend": "Durée du plan",
+        "days": "Un nombre de jours",
+        "endDate": "Une date de fin",
+        "minutesPerDay": "Des minutes par jour"
+      },
+      "days": {
+        "label": "Nombre de jours de lecture",
+        "quick": "{days} jours"
+      },
+      "endDate": {
+        "label": "Terminer au plus tard le",
+        "beforeStart": "La date de fin doit suivre la date de début."
+      },
+      "minutes": {
+        "label": "Minutes par jour, en moyenne",
+        "quick": "{minutes} min",
+        "hint": "C’est un repère pour fixer la durée du plan : certains jours seront un peu plus longs, d’autres plus courts. Estimation à {wpm} mots par minute (<settings>modifier ma vitesse de lecture</settings>)."
+      }
     }
   }
 }
