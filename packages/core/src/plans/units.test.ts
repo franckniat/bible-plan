@@ -65,6 +65,12 @@ describe("splitLongUnits", () => {
     expect(ranges("Ps 117-118", { minUnits: 3 })).toBe(
       "Ps 117; Ps 118:1–15; Ps 118:16–29"
     )
+    // Cut into even pieces rather than halves of halves.
+    expect(
+      splitLongUnits(units("Ps 119"), { maxVerses: 51, minUnits: 7 }).map(
+        (unit) => unit.verses
+      )
+    ).toEqual([26, 25, 25, 25, 25, 25, 25])
     // Only as many units as verses.
     expect(splitLongUnits(units("Ps 117"), { minUnits: 5 })).toHaveLength(2)
   })
