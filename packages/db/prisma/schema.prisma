@@ -128,6 +128,13 @@ model Verification {
 // day. People follow a plan through an enrollment, which holds their progress:
 // the same plan can later be followed by every member of a group.
 
+/// What to do when readings are late (see planCatchUp in @workspace/core).
+enum CatchUpStrategy {
+  SHIFT
+  REDISTRIBUTE
+  FREE
+}
+
 enum PlanEnrollmentStatus {
   ACTIVE
   PAUSED
@@ -135,26 +142,28 @@ enum PlanEnrollmentStatus {
 }
 
 model ReadingPlan {
-  id             String   @id @default(uuid(7))
-  ownerId        String
-  owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  title          String
+  id              String          @id @default(uuid(7))
+  ownerId         String
+  owner           User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title           String
   /// Key of the template it was created from (core plan templates), if any.
-  templateKey    String?
-  startDate      DateTime @db.Date
-  endDate        DateTime @db.Date
+  templateKey     String?
+  startDate       DateTime        @db.Date
+  endDate         DateTime        @db.Date
   /// Days of the week with a reading, 0 = Sunday.
-  activeWeekdays Int[]
+  activeWeekdays  Int[]
   /// Generator input, to rebuild the remaining days (catch-up):
   /// tracks = [{ name?: { fr, en }, passages: Passage[] }], pace = PlanPace.
-  tracks         Json
-  pace           Json
-  totalDays      Int
-  totalVerses    Int
+  tracks          Json
+  pace            Json
+  totalDays       Int
+  totalVerses     Int
+  /// Chosen by the owner: SHIFT keeps the daily load, REDISTRIBUTE the end date.
+  catchUpStrategy CatchUpStrategy @default(SHIFT)
   /// Number of PlanReading rows, to show the progress without loading them.
-  totalReadings  Int      @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  totalReadings   Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
   days        PlanDay[]
   enrollments PlanEnrollment[]

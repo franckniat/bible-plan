@@ -525,6 +525,25 @@
       "deleteConfirm": "Delete permanently",
       "cancel": "Cancel",
       "failed": "The action did not go through. Please try again."
+    },
+    "catchUp": {
+      "legend": "If you fall behind",
+      "description": "It happens to everyone. Choose how your plan adapts when readings are left waiting.",
+      "SHIFT": {
+        "label": "Shift the plan",
+        "description": "You pick up where you left off, with the same amount of reading each day. The end date moves back accordingly."
+      },
+      "REDISTRIBUTE": {
+        "label": "Spread over the remaining days",
+        "description": "The end date stays: waiting readings are spread over the following days, a little longer."
+      },
+      "FREE": {
+        "label": "Catch up freely",
+        "description": "The calendar does not change: you read the waiting readings whenever you like."
+      },
+      "saving": "Saving…",
+      "saved": "Choice saved.",
+      "failed": "The choice could not be saved. Please try again."
     }
   }
 }

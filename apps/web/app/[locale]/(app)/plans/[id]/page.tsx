@@ -9,6 +9,7 @@ import { prisma } from "@workspace/db"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { CatchUpSetting } from "@/components/plans/catch-up-setting"
 import { toChecklist } from "@/components/plans/checklist"
 import { PlanActions } from "@/components/plans/plan-actions"
 import { ReadingChecklist } from "@/components/plans/reading-checklist"
@@ -197,6 +198,12 @@ export default async function PlanPage({
           )
         })}
       </section>
+
+      {plan.isOwner && (
+        <section className="rounded-3xl bg-white/85 p-5 ring-1 ring-brand-night/10 sm:p-6 dark:bg-neutral-900/85 dark:ring-white/10">
+          <CatchUpSetting planId={plan.id} strategy={plan.catchUpStrategy} />
+        </section>
+      )}
     </div>
   )
 }

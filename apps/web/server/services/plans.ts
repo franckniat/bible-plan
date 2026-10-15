@@ -188,6 +188,9 @@ export type PlanDetailDay = {
 
 export type PlanDetail = PlanSummary & {
   enrollmentId: string
+  /** Whether the user created the plan (and may change its settings). */
+  isOwner: boolean
+  catchUpStrategy: CatchUpStrategy
   activeWeekdays: Weekday[]
   totalVerses: number
   /** Names of the tracks (null when unnamed), for plans with several. */
@@ -284,6 +287,8 @@ export async function getPlan(
           id: true,
           title: true,
           templateKey: true,
+          ownerId: true,
+          catchUpStrategy: true,
           startDate: true,
           endDate: true,
           activeWeekdays: true,
@@ -307,6 +312,8 @@ export async function getPlan(
   return {
     id: plan.id,
     enrollmentId: enrollment.id,
+    isOwner: plan.ownerId === userId,
+    catchUpStrategy: plan.catchUpStrategy,
     title: plan.title,
     templateKey: plan.templateKey,
     startDate: fromDbDate(plan.startDate),
@@ -621,4 +628,21 @@ export async function applyCatchUp(
     { timeout: CREATE_TIMEOUT_MS }
   )
   return { ok: true, changed: true }
+}
+
+/**
+ * Chooses what happens when the plan is late. Only its owner can change it;
+ * returns false otherwise.
+ */
+export async function setCatchUpStrategy(
+  db: PlansDb,
+  userId: string,
+  planId: string,
+  strategy: CatchUpStrategy
+): Promise<boolean> {
+  const { count } = await db.readingPlan.updateMany({
+    where: { id: planId, ownerId: userId },
+    data: { catchUpStrategy: strategy },
+  })
+  return count > 0
 }

@@ -14,6 +14,7 @@ import {
   getPlan,
   getTodayPlans,
   listPlans,
+  setCatchUpStrategy,
   setPlanStatus,
   setReadingProgress,
   toDbDate,
@@ -23,7 +24,7 @@ import {
 /** A fake client whose transaction runs the callback on the same mocks. */
 function fakeDb() {
   const mocks = {
-    readingPlan: { create: vi.fn(), deleteMany: vi.fn() },
+    readingPlan: { create: vi.fn(), deleteMany: vi.fn(), updateMany: vi.fn() },
     planDay: { createMany: vi.fn() },
     planReading: {
       createMany: vi.fn(),
@@ -580,5 +581,24 @@ describe("applyCatchUp", () => {
         progress: { none: {} },
       },
     })
+  })
+})
+
+describe("setCatchUpStrategy", () => {
+  it("lets only the owner choose", async () => {
+    const fake = fakeDb()
+    fake.readingPlan.updateMany.mockResolvedValue({ count: 1 })
+    expect(
+      await setCatchUpStrategy(fake.db, "user-1", "plan-1", "REDISTRIBUTE")
+    ).toBe(true)
+    expect(fake.readingPlan.updateMany).toHaveBeenCalledWith({
+      where: { id: "plan-1", ownerId: "user-1" },
+      data: { catchUpStrategy: "REDISTRIBUTE" },
+    })
+
+    fake.readingPlan.updateMany.mockResolvedValue({ count: 0 })
+    expect(
+      await setCatchUpStrategy(fake.db, "member-1", "plan-1", "FREE")
+    ).toBe(false)
   })
 })

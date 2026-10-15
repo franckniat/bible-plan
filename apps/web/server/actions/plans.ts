@@ -5,8 +5,10 @@ import { getLocale } from "next-intl/server"
 import { z } from "zod"
 
 import {
+  catchUpStrategies,
   newPlanSchema,
   PlanGenerationError,
+  type CatchUpStrategy,
   type Locale,
   type NewPlan,
   type PlanGenerationErrorCode,
@@ -17,6 +19,7 @@ import { redirect } from "@/i18n/navigation"
 import {
   createPlan,
   deletePlan,
+  setCatchUpStrategy,
   setPlanStatus,
   setReadingProgress,
 } from "@/server/services/plans"
@@ -97,4 +100,17 @@ export async function deletePlanAction(
   if (!ok) return { ok }
   revalidatePath("/[locale]", "layout")
   return redirect({ href: "/plans", locale: await getLocale() })
+}
+
+/** Chooses what happens when a plan of the user is late. */
+export async function setCatchUpStrategyAction(
+  planId: string,
+  strategy: CatchUpStrategy
+): Promise<{ ok: boolean }> {
+  const user = await requireUser()
+  const parsed = z.enum(catchUpStrategies).safeParse(strategy)
+  if (typeof planId !== "string" || !parsed.success) return { ok: false }
+  const ok = await setCatchUpStrategy(prisma, user.id, planId, parsed.data)
+  if (ok) revalidatePath("/[locale]", "layout")
+  return { ok }
 }

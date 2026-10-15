@@ -525,6 +525,25 @@
       "deleteConfirm": "Supprimer définitivement",
       "cancel": "Annuler",
       "failed": "L’action n’a pas pu aboutir. Veuillez réessayer."
+    },
+    "catchUp": {
+      "legend": "Si vous prenez du retard",
+      "description": "Ça arrive à tout le monde. Choisissez comment votre plan s’adapte quand des lectures restent en attente.",
+      "SHIFT": {
+        "label": "Décaler le plan",
+        "description": "Vous reprenez là où vous en étiez, avec la même quantité de lecture chaque jour. La date de fin recule d’autant."
+      },
+      "REDISTRIBUTE": {
+        "label": "Répartir sur les jours restants",
+        "description": "La date de fin ne bouge pas : les lectures en attente sont réparties sur les jours suivants, un peu plus longs."
+      },
+      "FREE": {
+        "label": "Rattraper librement",
+        "description": "Le calendrier ne change pas : vous lisez les lectures en attente quand vous le souhaitez."
+      },
+      "saving": "Enregistrement…",
+      "saved": "Choix enregistré.",
+      "failed": "Le choix n’a pas pu être enregistré. Veuillez réessayer."
     }
   }
 }
