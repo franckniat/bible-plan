@@ -2,6 +2,7 @@ import { books, type Testament } from "../bible/books"
 import { parseReference } from "../bible/parse"
 import { bookPassage, type Passage } from "../bible/passage"
 import type { IsoDate, Locale, Weekday } from "../schemas/common"
+import { chronologicalOrder } from "./chronological-order"
 import type { PlanInput, PlanPace } from "./schema"
 
 type Localized = Record<Locale, string>
@@ -51,6 +52,20 @@ const bibleInAYear: PlanTemplate = {
   days: 365,
 }
 
+const chronologicalBible: PlanTemplate = {
+  key: "chronological-1-year",
+  title: {
+    fr: "La Bible chronologique en un an",
+    en: "The chronological Bible in a year",
+  },
+  description: {
+    fr: "Toute la Bible dans l’ordre des événements : Job avec les patriarches, les psaumes avec la vie de David, les prophètes sous leurs rois, les lettres avec les Actes. Un ordre approximatif, établi par Bible Plan.",
+    en: "The whole Bible in the order of the events: Job with the patriarchs, the psalms with David’s life, the prophets under their kings, the letters with Acts. An approximate order, compiled by Bible Plan.",
+  },
+  tracks: [{ passages: references(chronologicalOrder.join("; ")) }],
+  days: 365,
+}
+
 const newTestament90Days: PlanTemplate = {
   key: "new-testament-90-days",
   title: {
@@ -96,6 +111,7 @@ const psalmsAndProverbs: PlanTemplate = {
 /** Plans ready to adopt, in the order they are offered. */
 export const planTemplates: readonly PlanTemplate[] = [
   bibleInAYear,
+  chronologicalBible,
   newTestament90Days,
   gospels30Days,
   psalmsAndProverbs,

@@ -62,6 +62,14 @@ Datasets
     book identifiers (public standard, https://crosswire.org/osis), Louis
     Segond 1910 names in French and King James Version names in English.
 
+  - Chronological reading order (packages/core/src/plans/
+    chronological-order.ts): compiled by the Bible Plan contributors from
+    the historical setting given by the biblical text itself (psalm titles,
+    reigns named by the prophets, journeys in Acts). It is an original work
+    of this project, licensed under the AGPL like the code. It does not
+    reproduce any published chronological plan; the dates of several books
+    are debated, so the order is approximate.
+
   - Country codes (ISO 3166-1 alpha-2) and flags: flag-icons
     (https://github.com/lipis/flag-icons), MIT License, Copyright (c) 2013
     Panayiotis Lipiridis. Country names are generated at runtime by
