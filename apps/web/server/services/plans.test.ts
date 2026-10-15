@@ -7,6 +7,7 @@ import {
 } from "@workspace/core"
 
 import {
+  applyCatchUp,
   createPlan,
   deletePlan,
   fromDbDate,
@@ -24,15 +25,22 @@ function fakeDb() {
   const mocks = {
     readingPlan: { create: vi.fn(), deleteMany: vi.fn() },
     planDay: { createMany: vi.fn() },
-    planReading: { createMany: vi.fn(), findUnique: vi.fn() },
+    planReading: {
+      createMany: vi.fn(),
+      findUnique: vi.fn(),
+      deleteMany: vi.fn(),
+      groupBy: vi.fn().mockResolvedValue([]),
+    },
     planEnrollment: {
       create: vi.fn(),
       findMany: vi.fn(),
       findUnique: vi.fn(),
       updateMany: vi.fn(),
+      count: vi.fn(),
       deleteMany: vi.fn(),
     },
     readingProgress: { createMany: vi.fn(), deleteMany: vi.fn() },
+    $executeRaw: vi.fn(),
   }
   const $transaction = vi.fn(async (callback: (tx: typeof mocks) => unknown) =>
     callback(mocks)
@@ -465,5 +473,112 @@ describe("deletePlan", () => {
     fake.readingPlan.deleteMany.mockResolvedValue({ count: 0 })
     fake.planEnrollment.deleteMany.mockResolvedValue({ count: 0 })
     expect(await deletePlan(fake.db, "intruder", "plan-1")).toBe(false)
+  })
+})
+
+describe("applyCatchUp", () => {
+  /** Genesis 1-3 from January 1, one chapter a day, nothing read. */
+  function lateEnrollment() {
+    const day = (number: number, chapter: number, verses: number) => ({
+      id: `day-${number}`,
+      dayNumber: number,
+      date: toDbDate(`2027-01-0${number}`),
+      verses,
+      readings: [
+        {
+          id: `reading-${number}`,
+          track: 0,
+          book: "Gen",
+          startChapter: chapter,
+          startVerse: 1,
+          endChapter: chapter,
+          endVerse: verses,
+          verses,
+          progress: [],
+        },
+      ],
+    })
+    return {
+      id: "enrollment-1",
+      status: "ACTIVE",
+      plan: {
+        id: "plan-1",
+        title: "Genèse",
+        templateKey: null,
+        startDate: toDbDate("2027-01-01"),
+        endDate: toDbDate("2027-01-03"),
+        activeWeekdays: [0, 1, 2, 3, 4, 5, 6],
+        tracks: [{}],
+        totalDays: 3,
+        totalVerses: 80,
+        totalReadings: 3,
+        days: [day(1, 1, 31), day(2, 2, 25), day(3, 3, 24)],
+      },
+    }
+  }
+
+  it("refuses a plan the user does not follow", async () => {
+    const fake = fakeDb()
+    fake.planEnrollment.findUnique.mockResolvedValue(null)
+    expect(
+      await applyCatchUp(fake.db, "intruder", "plan-1", "SHIFT", "2027-01-03")
+    ).toEqual({ ok: false, error: "not_found" })
+  })
+
+  it("only allows the free strategy on a shared plan", async () => {
+    const fake = fakeDb()
+    fake.planEnrollment.findUnique.mockResolvedValue(lateEnrollment())
+    fake.planEnrollment.count.mockResolvedValue(2)
+    expect(
+      await applyCatchUp(fake.db, "user-1", "plan-1", "SHIFT", "2027-01-03")
+    ).toEqual({ ok: false, error: "shared_plan" })
+    expect(fake.$transaction).not.toHaveBeenCalled()
+  })
+
+  it("changes nothing with the free strategy", async () => {
+    const fake = fakeDb()
+    fake.planEnrollment.findUnique.mockResolvedValue(lateEnrollment())
+    expect(
+      await applyCatchUp(fake.db, "user-1", "plan-1", "FREE", "2027-01-03")
+    ).toEqual({ ok: true, changed: false })
+    expect(fake.$transaction).not.toHaveBeenCalled()
+  })
+
+  it("explains why it cannot redistribute after the end date", async () => {
+    const fake = fakeDb()
+    fake.planEnrollment.findUnique.mockResolvedValue(lateEnrollment())
+    fake.planEnrollment.count.mockResolvedValue(1)
+    expect(
+      await applyCatchUp(
+        fake.db,
+        "user-1",
+        "plan-1",
+        "REDISTRIBUTE",
+        "2027-01-10"
+      )
+    ).toEqual({ ok: false, error: "no_active_days" })
+  })
+
+  it("never deletes a reading that has progress", async () => {
+    const fake = fakeDb()
+    fake.planEnrollment.findUnique.mockResolvedValue(lateEnrollment())
+    fake.planEnrollment.count.mockResolvedValue(1)
+    expect(
+      await applyCatchUp(
+        fake.db,
+        "user-1",
+        "plan-1",
+        "REDISTRIBUTE",
+        "2027-01-02"
+      )
+    ).toEqual({ ok: true, changed: true })
+    expect(fake.$transaction).toHaveBeenCalledTimes(1)
+    expect(fake.planReading.deleteMany).toHaveBeenCalledWith({
+      where: {
+        id: { in: ["reading-1", "reading-2", "reading-3"] },
+        day: { planId: "plan-1" },
+        progress: { none: {} },
+      },
+    })
   })
 })

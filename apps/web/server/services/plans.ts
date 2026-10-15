@@ -6,16 +6,26 @@ import { z } from "zod"
 
 import {
   generatePlan,
+  planCatchUp,
+  PlanGenerationError,
   isBookId,
   locales,
   resolveNewPlan,
+  type CatchUpChanges,
+  type CatchUpStrategy,
   type IsoDate,
   type Locale,
   type ParsedNewPlan,
   type Passage,
+  type PlanGenerationErrorCode,
+  type ScheduleDay,
   type Weekday,
 } from "@workspace/core"
-import type { PlanEnrollmentStatus, Prisma, PrismaClient } from "@workspace/db"
+import {
+  Prisma,
+  type PlanEnrollmentStatus,
+  type PrismaClient,
+} from "@workspace/db"
 
 export type PlansDb = Pick<
   PrismaClient,
@@ -447,4 +457,168 @@ export async function deletePlan(
     where: { planId, userId },
   })
   return left.count > 0
+}
+
+export type CatchUpError =
+  | "not_found"
+  /** Plans followed by several people only allow FREE. */
+  | "shared_plan"
+  | PlanGenerationErrorCode
+
+/**
+ * Brings a late plan back on schedule with a strategy (see planCatchUp),
+ * for the day `today` of the user. Readings already read are never deleted
+ * nor moved to another day. Returns whether anything changed.
+ */
+export async function applyCatchUp(
+  db: PlansDb,
+  userId: string,
+  planId: string,
+  strategy: CatchUpStrategy,
+  today: IsoDate
+): Promise<
+  { ok: true; changed: boolean } | { ok: false; error: CatchUpError }
+> {
+  const plan = await getPlan(db, userId, planId)
+  if (!plan) return { ok: false, error: "not_found" }
+  if (strategy !== "FREE") {
+    const followers = await db.planEnrollment.count({ where: { planId } })
+    if (followers > 1) return { ok: false, error: "shared_plan" }
+  }
+
+  const days: ScheduleDay[] = plan.days.map((day) => ({
+    id: day.id,
+    date: day.date,
+    readings: day.readings.map((reading) => ({
+      id: reading.id,
+      track: reading.track,
+      passage: reading.passage,
+      verses: reading.verses,
+      done: reading.completedAt !== null,
+    })),
+  }))
+  let changes: CatchUpChanges | null
+  try {
+    changes = planCatchUp(strategy, {
+      days,
+      today,
+      activeWeekdays: plan.activeWeekdays,
+      endDate: plan.endDate,
+    })
+  } catch (error) {
+    if (error instanceof PlanGenerationError) {
+      return { ok: false, error: error.code }
+    }
+    throw error
+  }
+  if (!changes) return { ok: true, changed: false }
+  const { moveDays, removeReadings, addDays } = changes
+
+  // Existing day of each date once the days are moved: new readings join it.
+  const moved = new Map(moveDays.map((move) => [move.dayId, move.date]))
+  const dayOfDate = new Map<IsoDate, string>()
+  for (const day of days) {
+    const date = moved.get(day.id) ?? day.date
+    if (!dayOfDate.has(date)) dayOfDate.set(date, day.id)
+  }
+  const newDays = addDays
+    .filter((day) => !dayOfDate.has(day.date))
+    .map((day) => ({ id: randomUUID(), date: day.date }))
+  for (const day of newDays) dayOfDate.set(day.date, day.id)
+
+  await db.$transaction(
+    async (tx) => {
+      // Unread readings to replace; a reading with any progress stays.
+      if (removeReadings.length > 0) {
+        await tx.planReading.deleteMany({
+          where: {
+            id: { in: removeReadings },
+            day: { planId },
+            progress: { none: {} },
+          },
+        })
+      }
+      if (moveDays.length > 0) {
+        const values = Prisma.join(
+          moveDays.map(
+            (move) => Prisma.sql`(${move.dayId}, ${move.date}::date)`
+          )
+        )
+        await tx.$executeRaw`
+          UPDATE "PlanDay" AS d SET "date" = v.date
+          FROM (VALUES ${values}) AS v(id, date)
+          WHERE d.id = v.id AND d."planId" = ${planId}`
+      }
+      if (newDays.length > 0) {
+        // Temporary numbers above any existing one; renumbered below.
+        await tx.planDay.createMany({
+          data: newDays.map((day, index) => ({
+            id: day.id,
+            planId,
+            dayNumber: 1_000_000 + index,
+            date: toDbDate(day.date),
+            verses: 0,
+          })),
+        })
+      }
+      if (addDays.length > 0) {
+        const dayIds = addDays.map((day) => dayOfDate.get(day.date)!)
+        const last = await tx.planReading.groupBy({
+          by: ["dayId"],
+          where: { dayId: { in: dayIds } },
+          _max: { position: true },
+        })
+        const nextPosition = new Map(
+          last.map((row) => [row.dayId, (row._max.position ?? -1) + 1])
+        )
+        await tx.planReading.createMany({
+          data: addDays.flatMap((day) => {
+            const dayId = dayOfDate.get(day.date)!
+            const start = nextPosition.get(dayId) ?? 0
+            return day.readings.map(({ track, passage, verses }, index) => ({
+              dayId,
+              position: start + index,
+              track,
+              book: passage.book,
+              startChapter: passage.start.chapter,
+              startVerse: passage.start.verse,
+              endChapter: passage.end.chapter,
+              endVerse: passage.end.verse,
+              verses,
+            }))
+          }),
+        })
+      }
+
+      // Days left without readings go; the others are counted again and
+      // numbered in date order (negative first: numbers must stay unique).
+      await tx.$executeRaw`
+        DELETE FROM "PlanDay" AS d WHERE d."planId" = ${planId}
+        AND NOT EXISTS (SELECT 1 FROM "PlanReading" r WHERE r."dayId" = d.id)`
+      await tx.$executeRaw`
+        UPDATE "PlanDay" AS d SET
+          "dayNumber" = -n.rank,
+          "verses" = (SELECT COALESCE(SUM(r.verses), 0) FROM "PlanReading" r WHERE r."dayId" = d.id)
+        FROM (
+          SELECT id, ROW_NUMBER() OVER (ORDER BY "date", "dayNumber") AS rank
+          FROM "PlanDay" WHERE "planId" = ${planId}
+        ) AS n
+        WHERE d.id = n.id`
+      await tx.$executeRaw`
+        UPDATE "PlanDay" SET "dayNumber" = -"dayNumber"
+        WHERE "planId" = ${planId}`
+      await tx.$executeRaw`
+        UPDATE "ReadingPlan" SET
+          "endDate" = (SELECT MAX("date") FROM "PlanDay" WHERE "planId" = ${planId}),
+          "totalDays" = (SELECT COUNT(*) FROM "PlanDay" WHERE "planId" = ${planId}),
+          "totalReadings" = (
+            SELECT COUNT(*) FROM "PlanReading" r
+            JOIN "PlanDay" d ON d.id = r."dayId" WHERE d."planId" = ${planId}
+          ),
+          "updatedAt" = NOW()
+        WHERE id = ${planId}`
+    },
+    { timeout: CREATE_TIMEOUT_MS }
+  )
+  return { ok: true, changed: true }
 }
