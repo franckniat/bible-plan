@@ -21,7 +21,7 @@ export const planPaceSchema = z.discriminatedUnion("mode", [
   z.object({ mode: z.literal("days"), days: z.int().min(1).max(maxPlanDays) }),
   // Every active day from the start date up to this date (included).
   z.object({ mode: z.literal("endDate"), endDate: isoDateSchema }),
-  // As many days as needed to read at most `minutes` a day.
+  // About `minutes` of reading on an average day (a guide, not a limit).
   z.object({
     mode: z.literal("minutesPerDay"),
     minutes: z.int().min(1).max(maxMinutesPerDay),

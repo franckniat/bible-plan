@@ -110,6 +110,19 @@ function verseKeys(passages: readonly Passage[]): string[] {
   return keys
 }
 
+/** Days of a minutes-per-day plan: total verses / verses read in the time. */
+function minutesPlanDays(
+  tracks: PlanInput["tracks"],
+  minutes: number,
+  readingWpm: number
+): number {
+  const total = tracks.reduce(
+    (sum, track) => sum + countVerses(track.passages),
+    0
+  )
+  return Math.ceil(total / versesForMinutes(minutes, readingWpm))
+}
+
 /** Generates the plan, or null when the input legitimately cannot work. */
 function tryGenerate(input: PlanInput): GeneratedPlan | null {
   try {
@@ -131,7 +144,7 @@ function tryGenerate(input: PlanInput): GeneratedPlan | null {
                 activeWeekdays,
                 endDate: pace.endDate,
               }).length
-            : Infinity
+            : minutesPlanDays(tracks, pace.minutes, pace.readingWpm)
       expect(smallest).toBeLessThan(days)
     } else {
       expect(error.code).toBe("no_active_days")
@@ -216,10 +229,14 @@ describe("generatePlan properties", () => {
           // No active day is left unused before the end date.
           expect(next > pace.endDate).toBe(true)
         } else {
-          const capacity = versesForMinutes(pace.minutes, pace.readingWpm)
-          for (const day of plan.days) {
-            expect(day.verses).toBeLessThanOrEqual(capacity)
-          }
+          // The minutes size the plan: an average day fits in them.
+          expect(plan.days).toHaveLength(
+            minutesPlanDays(input.tracks, pace.minutes, pace.readingWpm)
+          )
+          const perDay = versesForMinutes(pace.minutes, pace.readingWpm)
+          expect(plan.totalVerses / plan.days.length).toBeLessThanOrEqual(
+            perDay
+          )
         }
       }),
       runs
@@ -229,7 +246,6 @@ describe("generatePlan properties", () => {
   it("keeps the load of every day close to the average", () => {
     fc.assert(
       fc.property(inputArbitrary, (input) => {
-        if (input.pace.mode === "minutesPerDay") return
         const plan = tryGenerate(input)
         if (!plan) return
         input.tracks.forEach((track, index) => {

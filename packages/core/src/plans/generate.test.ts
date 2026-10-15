@@ -3,17 +3,25 @@ import { describe, expect, it } from "vitest"
 import { books } from "../bible/books"
 import { formatPassages } from "../bible/format"
 import { parseReference } from "../bible/parse"
-import { bookPassage } from "../bible/passage"
+import { bookPassage, coversWholeChapters } from "../bible/passage"
 import { countVerses, estimateReadingMinutes } from "../bible/weight"
 import { getWeekday } from "./dates"
 import { generatePlan } from "./generate"
-import { PlanGenerationError, type PlanDay, type PlanInput } from "./schema"
+import {
+  PlanGenerationError,
+  type PlanDay,
+  type PlanInput,
+  type PlanReading,
+} from "./schema"
 
 const newTestament = books
   .filter((book) => book.testament === "new")
   .map((book) => bookPassage(book.id))
 
 const track = (reference: string) => ({ passages: parseReference(reference)! })
+
+const wholeChapters = (reading: PlanReading) =>
+  coversWholeChapters(reading.passage)
 
 const readings = (day: PlanDay) =>
   formatPassages(
@@ -85,35 +93,37 @@ describe("generatePlan", () => {
     ).toEqual(["Genèse 1–3", "Genèse 4–6"])
   })
 
-  it("never goes beyond the minutes per day", () => {
+  it("sizes the plan from the minutes per day", () => {
     const plan = generatePlan({
       tracks: [{ passages: newTestament }],
       startDate: "2026-11-01",
       activeWeekdays: [1, 2, 3, 4, 5, 6],
       pace: { mode: "minutesPerDay", minutes: 15, readingWpm: 180 },
     })
-    const minutes = plan.days.map((day) =>
-      estimateReadingMinutes(day.verses, 180)
+    // 15 minutes at 180 words/min: 108 verses; 7,957 verses take 74 days.
+    expect(plan.days).toHaveLength(74)
+    const average = plan.totalVerses / plan.days.length
+    expect(estimateReadingMinutes(average, 180)).toBeLessThanOrEqual(15)
+    // A guide rather than a limit: whole chapters, so some days are longer.
+    expect(plan.days.every((day) => day.readings.every(wholeChapters))).toBe(
+      true
     )
-    expect(Math.max(...minutes)).toBeLessThanOrEqual(15)
-    // 7,957 verses at 108 verses (15 min) a day: at least 74 days. Whole
-    // chapters rarely fill a day exactly, so it takes a few more.
-    expect(plan.days.length).toBeGreaterThanOrEqual(74)
-    expect(plan.days.length).toBeLessThanOrEqual(90)
     expect(plan.days.every((day) => getWeekday(day.date) !== 0)).toBe(true)
     expect(plan.days.reduce((total, day) => total + day.verses, 0)).toBe(7957)
   })
 
-  it("cuts chapters longer than the time available", () => {
+  it("cuts chapters much longer than the time given", () => {
     const plan = generatePlan({
       tracks: [track("Ps 119")],
       startDate: "2026-10-01",
       pace: { mode: "minutesPerDay", minutes: 5, readingWpm: 130 },
     })
-    // 5 minutes at 130 words/min: 26 verses at most.
+    // 5 minutes at 130 words/min: 26 verses, so 176 verses take 7 days.
     expect(plan.days).toHaveLength(7)
-    expect(plan.days.every((day) => day.verses <= 26)).toBe(true)
-    expect(readings(plan.days[0]!)).toBe("Psaume 119:1–26")
+    expect(plan.days.every((day) => day.verses >= 20 && day.verses <= 30)).toBe(
+      true
+    )
+    expect(readings(plan.days[0]!)).toMatch(/^Psaume 119:1–/)
   })
 
   it("reads several tracks every day", () => {
@@ -145,14 +155,16 @@ describe("generatePlan", () => {
     expect(readings(plan.days[0]!)).toMatch(/^Genèse 1.*; Matthieu 1/)
   })
 
-  it("shares the minutes per day between the tracks", () => {
+  it("counts the minutes per day for all tracks together", () => {
     const plan = generatePlan({
       tracks: [track("Pr"), track("Ps 1-50")],
       startDate: "2026-10-01",
       pace: { mode: "minutesPerDay", minutes: 10, readingWpm: 180 },
     })
-    // 10 minutes at 180 words/min: 72 verses a day for both tracks.
-    expect(plan.days.every((day) => day.verses <= 72)).toBe(true)
+    // 10 minutes at 180 words/min: 72 verses a day for both tracks together.
+    expect(plan.days).toHaveLength(
+      Math.ceil(countVerses(parseReference("Pr; Ps 1-50")!) / 72)
+    )
     expect(
       plan.days.every((day) =>
         [0, 1].every((track) =>
