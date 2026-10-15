@@ -4,7 +4,7 @@ import { books } from "../bible/books"
 import { formatPassages } from "../bible/format"
 import { parseReference } from "../bible/parse"
 import { bookPassage } from "../bible/passage"
-import { estimateReadingMinutes } from "../bible/weight"
+import { countVerses, estimateReadingMinutes } from "../bible/weight"
 import { getWeekday } from "./dates"
 import { generatePlan } from "./generate"
 import { PlanGenerationError, type PlanDay, type PlanInput } from "./schema"
@@ -114,6 +114,63 @@ describe("generatePlan", () => {
     expect(plan.days).toHaveLength(7)
     expect(plan.days.every((day) => day.verses <= 26)).toBe(true)
     expect(readings(plan.days[0]!)).toBe("Psaume 119:1–26")
+  })
+
+  it("reads several tracks every day", () => {
+    const oldTestament = books
+      .filter((book) => book.testament === "old")
+      .map((book) => bookPassage(book.id))
+    const plan = generatePlan({
+      tracks: [{ passages: oldTestament }, { passages: newTestament }],
+      startDate: "2027-01-01",
+      pace: { mode: "days", days: 365 },
+    })
+
+    expect(plan.days).toHaveLength(365)
+    expect(plan.totalVerses).toBe(31102)
+    for (const day of plan.days) {
+      const tracks = day.readings.map((reading) => reading.track)
+      // Old Testament first, then New Testament, both every day.
+      expect(tracks[0]).toBe(0)
+      expect(tracks.at(-1)).toBe(1)
+      expect([...tracks].sort()).toEqual(tracks)
+    }
+    const versesOf = (track: number) =>
+      plan.days
+        .flatMap((day) => day.readings)
+        .filter((reading) => reading.track === track)
+        .reduce((total, reading) => total + reading.verses, 0)
+    expect(versesOf(0)).toBe(23145)
+    expect(versesOf(1)).toBe(7957)
+    expect(readings(plan.days[0]!)).toMatch(/^Genèse 1.*; Matthieu 1/)
+  })
+
+  it("shares the minutes per day between the tracks", () => {
+    const plan = generatePlan({
+      tracks: [track("Pr"), track("Ps 1-50")],
+      startDate: "2026-10-01",
+      pace: { mode: "minutesPerDay", minutes: 10, readingWpm: 180 },
+    })
+    // 10 minutes at 180 words/min: 72 verses a day for both tracks.
+    expect(plan.days.every((day) => day.verses <= 72)).toBe(true)
+    expect(
+      plan.days.every((day) =>
+        [0, 1].every((track) =>
+          day.readings.some((reading) => reading.track === track)
+        )
+      )
+    ).toBe(true)
+    expect(plan.totalVerses).toBe(countVerses(parseReference("Pr; Ps 1-50")!))
+  })
+
+  it("needs every track to have a reading each day", () => {
+    expect(() =>
+      generatePlan({
+        tracks: [track("Gn 1-50"), track("Ps 117")],
+        startDate: "2026-10-01",
+        pace: { mode: "days", days: 10 },
+      })
+    ).toThrow(/too_many_days/)
   })
 
   it("rejects an invalid input", () => {

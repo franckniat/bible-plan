@@ -45,50 +45,65 @@ function planOverDays(units: ReadingUnit[], days: number): ReadingUnit[][] {
   return partitionUnits(pieces, days)
 }
 
-/** Plan with at most `capacity` verses a day, in as few days as possible. */
+/**
+ * Plan of several tracks read together, with at most `capacity` verses a
+ * day in total and as few days as possible. The capacity is shared between
+ * the tracks in proportion to their length (at least one verse each), so
+ * they all end on the same day.
+ */
 function planWithinCapacity(
-  units: ReadingUnit[],
+  tracks: ReadingUnit[][],
   capacity: number
-): ReadingUnit[][] {
-  const pieces = splitLongUnits(units, { maxVerses: capacity })
-  const days = minimalGroups(
-    pieces.map((piece) => piece.verses),
-    capacity
+): ReadingUnit[][][] {
+  const totals = tracks.map(sumVerses)
+  const total = totals.reduce((sum, verses) => sum + verses, 0)
+  const capacities = totals.map((verses) =>
+    Math.max(1, Math.floor((capacity * verses) / total))
+  )
+  const pieces = tracks.map((units, track) =>
+    splitLongUnits(units, { maxVerses: capacities[track] })
+  )
+  const days = Math.max(
+    ...pieces.map((units, track) =>
+      minimalGroups(
+        units.map((unit) => unit.verses),
+        capacities[track]!
+      )
+    )
   )
   if (days > maxPlanDays) throw new PlanGenerationError("too_long")
-  return partitionUnits(pieces, days, capacity)
+  return pieces.map((units, track) => {
+    if (totals[track]! < days) throw new PlanGenerationError("too_many_days")
+    // A shorter track may need more, smaller units to fill every day.
+    const filled = splitLongUnits(units, { minUnits: days })
+    return partitionUnits(filled, days, capacities[track])
+  })
 }
 
-/** Readings of each day, and the reading dates. */
+/** Reading dates, and the readings of each track on each day. */
 function schedule(
   input: ParsedPlanInput,
-  units: ReadingUnit[]
-): { dates: IsoDate[]; groups: ReadingUnit[][] } {
+  tracks: ReadingUnit[][]
+): { dates: IsoDate[]; groups: ReadingUnit[][][] } {
   const { startDate, activeWeekdays, pace } = input
   switch (pace.mode) {
-    case "days": {
-      const dates = computeActiveDates({
-        startDate,
-        activeWeekdays,
-        count: pace.days,
-      })
-      return { dates, groups: planOverDays(units, dates.length) }
-    }
+    case "days":
     case "endDate": {
-      const dates = computeActiveDates({
-        startDate,
-        activeWeekdays,
-        endDate: pace.endDate,
-      })
-      return { dates, groups: planOverDays(units, dates.length) }
+      const dates = computeActiveDates(
+        pace.mode === "days"
+          ? { startDate, activeWeekdays, count: pace.days }
+          : { startDate, activeWeekdays, endDate: pace.endDate }
+      )
+      const groups = tracks.map((units) => planOverDays(units, dates.length))
+      return { dates, groups }
     }
     case "minutesPerDay": {
       const capacity = versesForMinutes(pace.minutes, pace.readingWpm)
-      const groups = planWithinCapacity(units, Math.max(1, capacity))
+      const groups = planWithinCapacity(tracks, Math.max(1, capacity))
       const dates = computeActiveDates({
         startDate,
         activeWeekdays,
-        count: groups.length,
+        count: groups[0]!.length,
       })
       return { dates, groups }
     }
@@ -96,26 +111,27 @@ function schedule(
 }
 
 /**
- * Builds a reading calendar: the passages are read in order, split over the
- * active days so that every day has a similar number of verses. With
- * minutes per day, no day goes beyond the time given (estimated from the
- * reading speed) and the plan lasts as few days as possible.
+ * Builds a reading calendar: the passages of each track are read in order,
+ * split over the active days so that every day has a similar number of
+ * verses; all tracks are read every day. With minutes per day, no day goes
+ * beyond the time given (estimated from the reading speed) and the plan
+ * lasts as few days as possible.
  *
  * Throws a ZodError for an invalid input and a PlanGenerationError when the
  * input cannot produce a plan (e.g. more days than verses).
  */
 export function generatePlan(input: PlanInput): GeneratedPlan {
   const parsed = planInputSchema.parse(input)
-  const units = toUnits(parsed.tracks[0]!.passages)
-  const { dates, groups } = schedule(parsed, units)
+  const tracks = parsed.tracks.map((track) => toUnits(track.passages))
+  const { dates, groups } = schedule(parsed, tracks)
 
   const days: PlanDay[] = dates.map((date, index) => {
-    const readings: PlanReading[] = mergeUnits(groups[index]!).map(
-      (passage) => ({
-        track: 0,
+    const readings: PlanReading[] = groups.flatMap((trackDays, track) =>
+      mergeUnits(trackDays[index]!).map((passage) => ({
+        track,
         passage,
         verses: countPassageVerses(passage),
-      })
+      }))
     )
     return {
       day: index + 1,
@@ -129,6 +145,6 @@ export function generatePlan(input: PlanInput): GeneratedPlan {
     startDate: parsed.startDate,
     endDate: dates.at(-1)!,
     days,
-    totalVerses: sumVerses(units),
+    totalVerses: tracks.flat().reduce((total, unit) => total + unit.verses, 0),
   }
 }
