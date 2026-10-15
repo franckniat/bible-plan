@@ -505,5 +505,13 @@
   "Readings": {
     "verses": "{verses, plural, one {# verset} other {# versets}}",
     "saveFailed": "La lecture n’a pas pu être enregistrée. Vérifiez votre connexion et réessayez."
+  },
+  "PlanDetail": {
+    "back": "Mes plans",
+    "tracks": "Lectures : {tracks}",
+    "calendar": "Calendrier",
+    "monthProgress": "{completed} / {total} lectures",
+    "today": "Aujourd’hui",
+    "day": "Jour {day}"
   }
 }

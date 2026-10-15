@@ -52,7 +52,14 @@ async function PlanCard({
       )}
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <h2 className="font-heading text-lg font-semibold">{plan.title}</h2>
+        <h2 className="font-heading text-lg font-semibold">
+          <Link
+            href={`/plans/${plan.id}`}
+            className="underline-offset-4 hover:underline"
+          >
+            {plan.title}
+          </Link>
+        </h2>
         <div className="flex gap-2">
           {completed && <Badge>{t("completed")}</Badge>}
           {plan.status !== "ACTIVE" && (

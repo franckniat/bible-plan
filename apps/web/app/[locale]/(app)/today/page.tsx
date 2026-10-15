@@ -23,7 +23,14 @@ async function TodayPlanCard({ plan }: { plan: TodayPlan }) {
   return (
     <li className="flex flex-col gap-4 rounded-3xl bg-white/85 p-5 ring-1 ring-brand-night/10 dark:bg-neutral-900/85 dark:ring-white/10">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 className="font-heading text-lg font-semibold">{plan.title}</h2>
+        <h2 className="font-heading text-lg font-semibold">
+          <Link
+            href={`/plans/${plan.id}`}
+            className="underline-offset-4 hover:underline"
+          >
+            {plan.title}
+          </Link>
+        </h2>
         <p className="text-xs text-brand-night/60 dark:text-neutral-100/60">
           {t("progress", {
             completed: plan.completedReadings,
