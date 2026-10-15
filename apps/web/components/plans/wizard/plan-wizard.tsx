@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useState, type ReactNode } from "react"
 
-import type { IsoDate } from "@workspace/core"
+import { maxCustomPassages, type IsoDate } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 
 import {
@@ -14,6 +14,7 @@ import {
   type WizardState,
   type WizardStep,
 } from "@/components/plans/wizard/state"
+import { SelectionStep } from "@/components/plans/wizard/selection-step"
 import { TypeStep } from "@/components/plans/wizard/type-step"
 
 type PlanWizardProps = {
@@ -32,6 +33,10 @@ function isStepComplete(step: WizardStep, state: WizardState): boolean {
       return (
         state.type !== null &&
         (state.type !== "template" || state.templateKey !== null)
+      )
+    case "selection":
+      return (
+        state.passages.length > 0 && state.passages.length <= maxCustomPassages
       )
     default:
       return true
@@ -76,6 +81,13 @@ export function PlanWizard({
             pace: defaultPace("template", { templateKey, readingWpm }),
           })
         }
+      />
+    ),
+    selection: (
+      <SelectionStep
+        passages={state.passages}
+        onChange={(passages) => update({ passages })}
+        free={state.type === "free"}
       />
     ),
   }

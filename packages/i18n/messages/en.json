@@ -365,6 +365,38 @@
       },
       "templateLegend": "Choose a template",
       "days": "{days, plural, one {# day} other {# days}}"
+    },
+    "selection": {
+      "presets": "Quick picks",
+      "preset": {
+        "bible": "The whole Bible",
+        "oldTestament": "Old Testament",
+        "newTestament": "New Testament",
+        "gospels": "The Gospels",
+        "psalms": "Psalms",
+        "proverbs": "Proverbs"
+      },
+      "books": "Or choose the books",
+      "testament": {
+        "old": "Old Testament",
+        "new": "New Testament"
+      },
+      "reference": {
+        "label": "Add a specific passage",
+        "placeholder": "E.g. John 3-5; Ps 23",
+        "add": "Add",
+        "invalid": "Reference not recognized. Examples: Jn 3, Genesis 1-11, Ps 119:1-88."
+      },
+      "list": {
+        "title": "Your selection",
+        "empty": "Nothing selected yet: choose books or a quick pick.",
+        "summary": "{chapters, plural, one {# chapter} other {# chapters}} · {verses, plural, one {# verse} other {# verses}}",
+        "from": "First chapter of {passage}",
+        "to": "Last chapter of {passage}",
+        "moveUp": "Read {passage} earlier",
+        "moveDown": "Read {passage} later",
+        "remove": "Remove {passage}"
+      }
     }
   }
 }
