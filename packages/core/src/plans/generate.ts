@@ -11,7 +11,7 @@ import {
   type PlanInput,
   type PlanReading,
 } from "./schema"
-import { mergeUnits, toUnits, type ReadingUnit } from "./units"
+import { mergeUnits, splitLongUnits, toUnits, type ReadingUnit } from "./units"
 
 function getDates(input: ParsedPlanInput): IsoDate[] {
   const { startDate, activeWeekdays, pace } = input
@@ -29,14 +29,24 @@ function getDates(input: ParsedPlanInput): IsoDate[] {
   }
 }
 
+/** A chapter longer than this many times the daily average is cut. */
+const LONG_UNIT_FACTOR = 2
+
 /** Readings of each day for one track: units split into balanced groups. */
 function planTrack(units: ReadingUnit[], days: number): ReadingUnit[][] {
-  if (days > units.length) throw new PlanGenerationError("too_many_days")
+  const verses = units.reduce((total, unit) => total + unit.verses, 0)
+  if (days > verses) throw new PlanGenerationError("too_many_days")
+  const pieces = splitLongUnits(units, {
+    maxVerses: Math.ceil((LONG_UNIT_FACTOR * verses) / days),
+    minUnits: days,
+  })
   const ends = balancedPartition(
-    units.map((unit) => unit.verses),
+    pieces.map((piece) => piece.verses),
     days
   )
-  return ends.map((end, day) => units.slice(day === 0 ? 0 : ends[day - 1], end))
+  return ends.map((end, day) =>
+    pieces.slice(day === 0 ? 0 : ends[day - 1], end)
+  )
 }
 
 /**

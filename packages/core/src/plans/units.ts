@@ -79,3 +79,50 @@ export function mergeUnits(units: readonly ReadingUnit[]): Passage[] {
   }
   return passages
 }
+
+/** Cuts a unit into `pieces` ranges of verses of nearly equal size. */
+function splitUnit(unit: ReadingUnit, pieces: number): ReadingUnit[] {
+  const size = Math.floor(unit.verses / pieces)
+  const larger = unit.verses % pieces
+  const result: ReadingUnit[] = []
+  let startVerse = unit.startVerse
+  for (let piece = 0; piece < pieces; piece++) {
+    const verses = size + (piece < larger ? 1 : 0)
+    result.push({
+      ...unit,
+      startVerse,
+      endVerse: startVerse + verses - 1,
+      verses,
+    })
+    startVerse += verses
+  }
+  return result
+}
+
+/**
+ * Cuts units longer than `maxVerses` into ranges of verses of nearly equal
+ * size (Ps 119 with at most 100 verses → 119:1-88 and 119:89-176), then keeps
+ * cutting the longest unit in two until there are at least `minUnits` units.
+ */
+export function splitLongUnits(
+  units: readonly ReadingUnit[],
+  {
+    maxVerses = Infinity,
+    minUnits = 0,
+  }: { maxVerses?: number; minUnits?: number }
+): ReadingUnit[] {
+  const result = units.flatMap((unit) =>
+    unit.verses > maxVerses
+      ? splitUnit(unit, Math.ceil(unit.verses / maxVerses))
+      : [unit]
+  )
+  while (result.length < minUnits) {
+    let longest = 0
+    result.forEach((unit, index) => {
+      if (unit.verses > result[longest]!.verses) longest = index
+    })
+    if (result[longest]!.verses < 2) break
+    result.splice(longest, 1, ...splitUnit(result[longest]!, 2))
+  }
+  return result
+}

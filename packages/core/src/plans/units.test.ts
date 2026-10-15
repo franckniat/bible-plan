@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import { formatPassages } from "../bible/format"
 import { parseReference } from "../bible/parse"
-import { mergeUnits, toUnits } from "./units"
+import { mergeUnits, splitLongUnits, toUnits } from "./units"
 
 const units = (reference: string) => toUnits(parseReference(reference)!)
 
@@ -29,5 +29,43 @@ describe("reading units", () => {
     ["Gn 1:1-30; Gn 2", "Genèse 1:1–30; Genèse 2"],
   ])("merges %s back into %s", (reference, expected) => {
     expect(formatPassages(mergeUnits(units(reference)), "fr")).toBe(expected)
+  })
+})
+
+describe("splitLongUnits", () => {
+  const ranges = (
+    reference: string,
+    options: Parameters<typeof splitLongUnits>[1]
+  ) =>
+    formatPassages(
+      splitLongUnits(units(reference), options).flatMap((unit) =>
+        mergeUnits([unit])
+      ),
+      "fr",
+      { style: "short" }
+    )
+
+  it("cuts units longer than the limit into nearly equal ranges", () => {
+    expect(ranges("Ps 119", { maxVerses: 100 })).toBe(
+      "Ps 119:1–88; Ps 119:89–176"
+    )
+    expect(ranges("Ps 119", { maxVerses: 60 })).toBe(
+      "Ps 119:1–59; Ps 119:60–118; Ps 119:119–176"
+    )
+    expect(ranges("Gn 1:2-11", { maxVerses: 3 })).toBe(
+      "Gn 1:2–4; Gn 1:5–7; Gn 1:8–9; Gn 1:10–11"
+    )
+  })
+
+  it("keeps short units", () => {
+    expect(ranges("Ps 117-118", { maxVerses: 50 })).toBe("Ps 117; Ps 118")
+  })
+
+  it("cuts the longest units until there are enough", () => {
+    expect(ranges("Ps 117-118", { minUnits: 3 })).toBe(
+      "Ps 117; Ps 118:1–15; Ps 118:16–29"
+    )
+    // Only as many units as verses.
+    expect(splitLongUnits(units("Ps 117"), { minUnits: 5 })).toHaveLength(2)
   })
 })

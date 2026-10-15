@@ -6,13 +6,19 @@ import { parseReference } from "../bible/parse"
 import { bookPassage } from "../bible/passage"
 import { getWeekday } from "./dates"
 import { generatePlan } from "./generate"
-import { PlanGenerationError, type PlanInput } from "./schema"
+import { PlanGenerationError, type PlanDay, type PlanInput } from "./schema"
 
 const newTestament = books
   .filter((book) => book.testament === "new")
   .map((book) => bookPassage(book.id))
 
 const track = (reference: string) => ({ passages: parseReference(reference)! })
+
+const readings = (day: PlanDay) =>
+  formatPassages(
+    day.readings.map((reading) => reading.passage),
+    "fr"
+  )
 
 describe("generatePlan", () => {
   it("reads the New Testament in 90 days without Sundays", () => {
@@ -87,13 +93,38 @@ describe("generatePlan", () => {
     expect(() => generatePlan(input)).toThrow()
   })
 
-  it("rejects more days than units to read", () => {
-    expect(() =>
+  it("cuts very long chapters", () => {
+    const plan = generatePlan({
+      tracks: [track("Ps 118-120")],
+      startDate: "2026-10-01",
+      pace: { mode: "days", days: 4 },
+    })
+    expect(plan.days.map((day) => readings(day))).toEqual([
+      "Psaume 118",
+      "Psaume 119:1–88",
+      "Psaume 119:89–176",
+      "Psaume 120",
+    ])
+  })
+
+  it("cuts chapters when there are more days than chapters", () => {
+    const plan = generatePlan({
+      tracks: [track("Gn 1-3")],
+      startDate: "2026-10-01",
+      pace: { mode: "days", days: 5 },
+    })
+    expect(plan.days).toHaveLength(5)
+    expect(plan.days.every((day) => day.verses >= 12)).toBe(true)
+  })
+
+  it("rejects more days than verses to read", () => {
+    const run = () =>
       generatePlan({
-        tracks: [track("Gn 1-3")],
+        tracks: [track("Ps 117")],
         startDate: "2026-10-01",
-        pace: { mode: "days", days: 5 },
+        pace: { mode: "days", days: 3 },
       })
-    ).toThrow(PlanGenerationError)
+    expect(run).toThrow(PlanGenerationError)
+    expect(run).toThrow(/too_many_days/)
   })
 })
