@@ -61,3 +61,22 @@ export function computeActiveDates(options: ActiveDatesOptions): IsoDate[] {
   if (dates.length === 0) throw new PlanGenerationError("no_active_days")
   return dates
 }
+
+/**
+ * Today's date in an IANA time zone (UTC when unknown or invalid), so "today"
+ * follows the user's day rather than the server's.
+ */
+export function getToday(timeZone?: string | null, now = new Date()): IsoDate {
+  const format = (zone: string) =>
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: zone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(now)
+  try {
+    return format(timeZone || "UTC")
+  } catch {
+    return format("UTC")
+  }
+}

@@ -330,5 +330,41 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "PlanWizard": {
+    "title": "New plan",
+    "description": "A few steps to a plan at your own pace.",
+    "stepOf": "Step {current} of {total}",
+    "steps": {
+      "type": "Kind of plan",
+      "selection": "What you read",
+      "schedule": "Pace",
+      "preview": "Preview"
+    },
+    "nav": {
+      "back": "Back",
+      "next": "Continue"
+    },
+    "type": {
+      "legend": "How do you want to build your plan?",
+      "template": {
+        "label": "From a template",
+        "description": "A proven plan, ready to follow: the Bible in a year, M’Cheyne, the Gospels…"
+      },
+      "duration": {
+        "label": "In a number of days",
+        "description": "Choose what you read and how long it takes."
+      },
+      "time": {
+        "label": "Based on my time",
+        "description": "Tell how much time you have each day: the length of the plan follows."
+      },
+      "free": {
+        "label": "Free selection",
+        "description": "Build your plan book by book, passage by passage, in the order you like."
+      },
+      "templateLegend": "Choose a template",
+      "days": "{days, plural, one {# day} other {# days}}"
+    }
   }
 }

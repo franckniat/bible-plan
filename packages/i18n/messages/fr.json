@@ -330,5 +330,41 @@
     "light": "Clair",
     "dark": "Sombre",
     "system": "Système"
+  },
+  "PlanWizard": {
+    "title": "Nouveau plan",
+    "description": "Quelques étapes pour un plan à votre rythme.",
+    "stepOf": "Étape {current} sur {total}",
+    "steps": {
+      "type": "Type de plan",
+      "selection": "Ce que vous lisez",
+      "schedule": "Rythme",
+      "preview": "Aperçu"
+    },
+    "nav": {
+      "back": "Retour",
+      "next": "Continuer"
+    },
+    "type": {
+      "legend": "Comment voulez-vous construire votre plan ?",
+      "template": {
+        "label": "À partir d’un modèle",
+        "description": "Un plan éprouvé, prêt à suivre : la Bible en un an, M’Cheyne, les Évangiles…"
+      },
+      "duration": {
+        "label": "En un nombre de jours",
+        "description": "Choisissez ce que vous lisez et en combien de temps."
+      },
+      "time": {
+        "label": "Selon mon temps",
+        "description": "Indiquez le temps que vous avez chaque jour : la durée du plan en découle."
+      },
+      "free": {
+        "label": "Sélection libre",
+        "description": "Composez votre plan livre par livre, passage par passage, dans l’ordre de votre choix."
+      },
+      "templateLegend": "Choisissez un modèle",
+      "days": "{days, plural, one {# jour} other {# jours}}"
+    }
   }
 }

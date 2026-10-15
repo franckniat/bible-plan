@@ -30,6 +30,10 @@ import {
 import { Input } from "@workspace/ui/components/input"
 
 import { AuthNotice } from "@/components/auth/auth-card"
+import {
+  choiceCardClassName,
+  choiceInputClassName,
+} from "@/components/choice-card"
 import { TimeZonePicker } from "@/components/settings/time-zone-picker"
 import { useRouter } from "@/i18n/navigation"
 import {
@@ -46,13 +50,6 @@ export type ProfileFormValues = {
 }
 
 const initialState: ProfileFormState = { status: "idle" }
-
-/** Radio button styled as a selectable card. */
-const optionClassName =
-  "flex cursor-pointer gap-3 rounded-2xl border border-brand-night/15 bg-white/60 p-3 text-sm transition-colors has-checked:border-brand-night has-checked:bg-brand-night/[0.04] has-focus-visible:ring-3 has-focus-visible:ring-ring/40 dark:border-white/15 dark:bg-neutral-900/60 dark:has-checked:border-brand-gold dark:has-checked:bg-brand-gold/10"
-
-const radioClassName =
-  "mt-0.5 size-4 shrink-0 accent-brand-night dark:accent-brand-gold"
 
 export function ProfileForm({ values }: { values: ProfileFormValues }) {
   const t = useTranslations("Settings")
@@ -125,13 +122,13 @@ export function ProfileForm({ values }: { values: ProfileFormValues }) {
           <FieldLegend variant="label">{t("fields.locale")}</FieldLegend>
           <div className="grid grid-cols-2 gap-3">
             {locales.map((locale) => (
-              <label key={locale} lang={locale} className={optionClassName}>
+              <label key={locale} lang={locale} className={choiceCardClassName}>
                 <input
                   type="radio"
                   name="locale"
                   value={locale}
                   defaultChecked={locale === values.locale}
-                  className={radioClassName}
+                  className={choiceInputClassName}
                 />
                 <span className="font-medium">
                   {tLocale("locale", { locale })}
@@ -178,13 +175,13 @@ export function ProfileForm({ values }: { values: ProfileFormValues }) {
             {(Object.keys(readingSpeeds) as ReadingSpeed[]).map((speed) => {
               const wpm = readingSpeeds[speed]
               return (
-                <label key={speed} className={optionClassName}>
+                <label key={speed} className={choiceCardClassName}>
                   <input
                     type="radio"
                     name="readingWpm"
                     value={wpm}
                     defaultChecked={wpm === values.readingWpm}
-                    className={radioClassName}
+                    className={choiceInputClassName}
                   />
                   <span className="flex flex-col gap-0.5">
                     <span className="font-medium">

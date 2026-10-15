@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest"
 
-import { addDays, computeActiveDates, daysBetween, getWeekday } from "./dates"
+import {
+  addDays,
+  computeActiveDates,
+  daysBetween,
+  getToday,
+  getWeekday,
+} from "./dates"
 import { PlanGenerationError } from "./schema"
 
 const weekdaysExceptSunday = [1, 2, 3, 4, 5, 6] as const
@@ -80,5 +86,20 @@ describe("computeActiveDates", () => {
         endDate: "2040-01-01",
       })
     ).toThrow(/too_long/)
+  })
+})
+
+describe("getToday", () => {
+  // 2026-10-15 at 23:30 UTC.
+  const now = new Date("2026-10-15T23:30:00Z")
+
+  it("follows the user's time zone", () => {
+    expect(getToday("Africa/Douala", now)).toBe("2026-10-16")
+    expect(getToday("America/New_York", now)).toBe("2026-10-15")
+  })
+
+  it("falls back to UTC", () => {
+    expect(getToday(null, now)).toBe("2026-10-15")
+    expect(getToday("Mars/Olympus", now)).toBe("2026-10-15")
   })
 })
