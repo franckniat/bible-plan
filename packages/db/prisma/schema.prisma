@@ -151,6 +151,8 @@ model ReadingPlan {
   pace           Json
   totalDays      Int
   totalVerses    Int
+  /// Number of PlanReading rows, to show the progress without loading them.
+  totalReadings  Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

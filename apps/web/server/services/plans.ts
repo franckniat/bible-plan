@@ -2,14 +2,20 @@ import "server-only"
 
 import { randomUUID } from "node:crypto"
 
+import { z } from "zod"
+
 import {
   generatePlan,
+  isBookId,
+  locales,
   resolveNewPlan,
   type IsoDate,
   type Locale,
   type ParsedNewPlan,
+  type Passage,
+  type Weekday,
 } from "@workspace/core"
-import type { PrismaClient } from "@workspace/db"
+import type { PlanEnrollmentStatus, PrismaClient } from "@workspace/db"
 
 export type PlansDb = Pick<
   PrismaClient,
@@ -85,6 +91,7 @@ export async function createPlan(
           pace: input.pace,
           totalDays: generated.days.length,
           totalVerses: generated.totalVerses,
+          totalReadings: readingRows.length,
         },
       })
       await tx.planDay.createMany({ data: dayRows })
@@ -94,4 +101,201 @@ export async function createPlan(
     { timeout: CREATE_TIMEOUT_MS }
   )
   return { id: planId }
+}
+
+export type PlanSummary = {
+  id: string
+  title: string
+  templateKey: string | null
+  startDate: IsoDate
+  endDate: IsoDate
+  totalDays: number
+  status: PlanEnrollmentStatus
+  completedReadings: number
+  totalReadings: number
+}
+
+/**
+ * Plans the user follows, most recent first. Archived plans are left out
+ * unless asked for.
+ */
+export async function listPlans(
+  db: PlansDb,
+  userId: string,
+  { includeArchived = false }: { includeArchived?: boolean } = {}
+): Promise<PlanSummary[]> {
+  const enrollments = await db.planEnrollment.findMany({
+    where: {
+      userId,
+      ...(includeArchived ? {} : { status: { not: "ARCHIVED" } }),
+    },
+    orderBy: { createdAt: "desc" },
+    select: {
+      status: true,
+      _count: { select: { progress: true } },
+      plan: {
+        select: {
+          id: true,
+          title: true,
+          templateKey: true,
+          startDate: true,
+          endDate: true,
+          totalDays: true,
+          totalReadings: true,
+        },
+      },
+    },
+  })
+  return enrollments.map(({ status, _count, plan }) => ({
+    id: plan.id,
+    title: plan.title,
+    templateKey: plan.templateKey,
+    startDate: fromDbDate(plan.startDate),
+    endDate: fromDbDate(plan.endDate),
+    totalDays: plan.totalDays,
+    status,
+    completedReadings: _count.progress,
+    totalReadings: plan.totalReadings,
+  }))
+}
+
+export type PlanDetailReading = {
+  id: string
+  track: number
+  passage: Passage
+  verses: number
+  /** When the user marked it as read, or null. */
+  completedAt: Date | null
+}
+
+export type PlanDetailDay = {
+  id: string
+  day: number
+  date: IsoDate
+  verses: number
+  readings: PlanDetailReading[]
+}
+
+export type PlanDetail = PlanSummary & {
+  enrollmentId: string
+  activeWeekdays: Weekday[]
+  totalVerses: number
+  /** Names of the tracks (null when unnamed), for plans with several. */
+  trackNames: (Record<Locale, string> | null)[]
+  days: PlanDetailDay[]
+}
+
+const localizedSchema = z.object(
+  Object.fromEntries(locales.map((locale) => [locale, z.string()])) as Record<
+    Locale,
+    z.ZodString
+  >
+)
+const storedTracksSchema = z.array(
+  z.object({ name: localizedSchema.optional() })
+)
+
+/**
+ * A plan with all its days and the progress of the user, or null when the
+ * plan does not exist or the user does not follow it.
+ */
+export async function getPlan(
+  db: PlansDb,
+  userId: string,
+  planId: string
+): Promise<PlanDetail | null> {
+  const enrollment = await db.planEnrollment.findUnique({
+    where: { planId_userId: { planId, userId } },
+    select: {
+      id: true,
+      status: true,
+      plan: {
+        select: {
+          id: true,
+          title: true,
+          templateKey: true,
+          startDate: true,
+          endDate: true,
+          activeWeekdays: true,
+          tracks: true,
+          totalDays: true,
+          totalVerses: true,
+          totalReadings: true,
+          days: {
+            orderBy: { dayNumber: "asc" },
+            select: {
+              id: true,
+              dayNumber: true,
+              date: true,
+              verses: true,
+              readings: {
+                orderBy: { position: "asc" },
+                select: {
+                  id: true,
+                  track: true,
+                  book: true,
+                  startChapter: true,
+                  startVerse: true,
+                  endChapter: true,
+                  endVerse: true,
+                  verses: true,
+                  progress: {
+                    where: { enrollment: { userId } },
+                    select: { completedAt: true },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  if (!enrollment) return null
+
+  const { plan } = enrollment
+  const days: PlanDetailDay[] = plan.days.map((day) => ({
+    id: day.id,
+    day: day.dayNumber,
+    date: fromDbDate(day.date),
+    verses: day.verses,
+    // Books are written by createPlan from the canon: a stored code is valid.
+    readings: day.readings
+      .filter((reading) => isBookId(reading.book))
+      .map((reading) => ({
+        id: reading.id,
+        track: reading.track,
+        passage: {
+          book: reading.book as Passage["book"],
+          start: { chapter: reading.startChapter, verse: reading.startVerse },
+          end: { chapter: reading.endChapter, verse: reading.endVerse },
+        },
+        verses: reading.verses,
+        completedAt: reading.progress[0]?.completedAt ?? null,
+      })),
+  }))
+  const tracks = storedTracksSchema.safeParse(plan.tracks)
+
+  return {
+    id: plan.id,
+    enrollmentId: enrollment.id,
+    title: plan.title,
+    templateKey: plan.templateKey,
+    startDate: fromDbDate(plan.startDate),
+    endDate: fromDbDate(plan.endDate),
+    activeWeekdays: plan.activeWeekdays as Weekday[],
+    totalDays: plan.totalDays,
+    totalVerses: plan.totalVerses,
+    totalReadings: plan.totalReadings,
+    status: enrollment.status,
+    trackNames: tracks.success
+      ? tracks.data.map((track) => track.name ?? null)
+      : [],
+    completedReadings: days.reduce(
+      (total, day) =>
+        total + day.readings.filter((reading) => reading.completedAt).length,
+      0
+    ),
+    days,
+  }
 }
