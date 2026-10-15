@@ -56,3 +56,7 @@ Create branches in the Neon console (**Branches → New branch**), then copy the
 5. In production, `pnpm db:deploy` applies the committed migrations (set up in the production deployment issue).
 
 Never edit a migration that has already been applied to production: create a new one instead.
+
+### Authentication models
+
+`User`, `Session`, `Account` and `Verification` come from better-auth: after changing the auth configuration, run `pnpm --filter @workspace/auth auth:generate`, then migrate as above. The CLI adds the missing fields and keeps the others, such as the relations from `User` to the app models (`ownedPlans`, `enrollments`); check the diff before migrating.

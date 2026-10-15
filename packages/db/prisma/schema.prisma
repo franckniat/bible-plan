@@ -54,15 +54,17 @@ model EmailDailyUsage {
 // ─── Authentication (better-auth, generated: pnpm --filter @workspace/auth auth:generate) ─
 
 model User {
-  id            String    @id
+  id            String           @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean          @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
   sessions      Session[]
   accounts      Account[]
+  ownedPlans    ReadingPlan[]
+  enrollments   PlanEnrollment[]
 
   locale       String  @default("fr")
   timezone     String?
@@ -119,4 +121,103 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+// ─── Reading plans ──────────────────────────────────────────────────────────
+// A plan is generated once by @workspace/core (generatePlan) and stored day by
+// day. People follow a plan through an enrollment, which holds their progress:
+// the same plan can later be followed by every member of a group.
+
+enum PlanEnrollmentStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+model ReadingPlan {
+  id             String   @id @default(uuid(7))
+  ownerId        String
+  owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title          String
+  /// Key of the template it was created from (core plan templates), if any.
+  templateKey    String?
+  startDate      DateTime @db.Date
+  endDate        DateTime @db.Date
+  /// Days of the week with a reading, 0 = Sunday.
+  activeWeekdays Int[]
+  /// Generator input, to rebuild the remaining days (catch-up):
+  /// tracks = [{ name?: { fr, en }, passages: Passage[] }], pace = PlanPace.
+  tracks         Json
+  pace           Json
+  totalDays      Int
+  totalVerses    Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  days        PlanDay[]
+  enrollments PlanEnrollment[]
+
+  @@index([ownerId])
+}
+
+model PlanDay {
+  id        String        @id @default(uuid(7))
+  planId    String
+  plan      ReadingPlan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  /// 1 for the first reading day.
+  dayNumber Int
+  date      DateTime      @db.Date
+  verses    Int
+  readings  PlanReading[]
+
+  @@unique([planId, dayNumber])
+  @@index([planId, date])
+}
+
+/// One passage of a day (verse range inside one book, OSIS book code).
+model PlanReading {
+  id           String            @id @default(uuid(7))
+  dayId        String
+  day          PlanDay           @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  /// Order inside the day.
+  position     Int
+  /// Index of the track in ReadingPlan.tracks.
+  track        Int
+  book         String
+  startChapter Int
+  startVerse   Int
+  endChapter   Int
+  endVerse     Int
+  verses       Int
+  progress     ReadingProgress[]
+
+  @@unique([dayId, position])
+}
+
+model PlanEnrollment {
+  id        String               @id @default(uuid(7))
+  planId    String
+  plan      ReadingPlan          @relation(fields: [planId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    PlanEnrollmentStatus @default(ACTIVE)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  progress  ReadingProgress[]
+
+  @@unique([planId, userId])
+  @@index([userId, status])
+}
+
+/// A reading marked as read by an enrollment. Unique, so marking twice is a no-op.
+model ReadingProgress {
+  id           String         @id @default(uuid(7))
+  enrollmentId String
+  enrollment   PlanEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  readingId    String
+  reading      PlanReading    @relation(fields: [readingId], references: [id], onDelete: Cascade)
+  completedAt  DateTime       @default(now())
+
+  @@unique([enrollmentId, readingId])
+  @@index([readingId])
 }
