@@ -446,7 +446,8 @@
         "no_active_days": "Aucun jour de lecture entre ces dates : avancez la date de fin ou ajoutez des jours.",
         "too_long": "Ce plan dépasserait dix ans : choisissez une durée plus courte ou plus de temps par jour.",
         "invalid": "Ce plan ne peut pas être calculé : vérifiez les étapes précédentes."
-      }
+      },
+      "titleRequired": "Donnez un nom à votre plan pour le créer."
     },
     "create": {
       "submit": "Créer le plan",

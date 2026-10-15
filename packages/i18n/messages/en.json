@@ -446,7 +446,8 @@
         "no_active_days": "No reading day between these dates: move the end date or add days.",
         "too_long": "This plan would last more than ten years: choose a shorter length or more time per day.",
         "invalid": "This plan cannot be computed: check the previous steps."
-      }
+      },
+      "titleRequired": "Give your plan a name to create it."
     },
     "create": {
       "submit": "Create the plan",

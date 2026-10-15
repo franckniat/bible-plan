@@ -16,6 +16,7 @@ import {
   defaultPace,
   getSteps,
   initialWizardState,
+  suggestDays,
   suggestTitle,
   toNewPlan,
   type WizardState,
@@ -118,6 +119,7 @@ export function PlanWizard({
         onTypeChange={(type) =>
           update({
             type,
+            paceEdited: false,
             pace: defaultPace(type, {
               templateKey: state.templateKey,
               readingWpm,
@@ -146,7 +148,10 @@ export function PlanWizard({
         activeWeekdays={state.activeWeekdays}
         pace={state.pace}
         readingWpm={readingWpm}
-        onChange={update}
+        suggestedDays={suggestDays(state, readingWpm)}
+        onChange={(changes) =>
+          update({ ...changes, paceEdited: state.paceEdited || !!changes.pace })
+        }
       />
     ),
     preview: preview && (
@@ -226,6 +231,17 @@ export function PlanWizard({
             className="h-11 sm:px-6"
             disabled={!isStepComplete(step, state)}
             onClick={() => {
+              // Leaving the selection: size the plan from it, unless the user
+              // already chose a length.
+              if (
+                step === "selection" &&
+                !state.paceEdited &&
+                state.pace.mode === "days"
+              ) {
+                update({
+                  pace: { mode: "days", days: suggestDays(state, readingWpm) },
+                })
+              }
               // Arriving on the preview: suggest a title if there is none.
               if (steps[stepIndex + 1] === "preview" && !state.title.trim()) {
                 const preset = findPreset(state.passages)

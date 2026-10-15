@@ -1,8 +1,11 @@
 import {
   allWeekdays,
+  countVerses,
   getBookName,
   getPlanTemplate,
+  maxPlanDays,
   templatePlanInput,
+  versesForMinutes,
   type IsoDate,
   type Locale,
   type NewPlan,
@@ -26,6 +29,8 @@ export type WizardState = {
   startDate: IsoDate
   activeWeekdays: Weekday[]
   pace: PlanPace
+  /** Whether the user changed the pace; until then it follows the selection. */
+  paceEdited: boolean
   title: string
 }
 
@@ -51,8 +56,30 @@ export function initialWizardState({
     startDate: today,
     activeWeekdays: [...allWeekdays],
     pace: { mode: "days", days: template?.days ?? 30 },
+    paceEdited: false,
     title: "",
   }
+}
+
+/** Reading time used to suggest how long a selection takes. */
+const SUGGESTED_MINUTES_PER_DAY = 10
+
+/**
+ * Number of days suggested for the plan: the template length, or about ten
+ * minutes of reading a day for the selection.
+ */
+export function suggestDays(state: WizardState, readingWpm: number): number {
+  if (state.type === "template") {
+    return (state.templateKey && getPlanTemplate(state.templateKey)?.days) || 30
+  }
+  const perDay = Math.max(
+    1,
+    versesForMinutes(SUGGESTED_MINUTES_PER_DAY, readingWpm)
+  )
+  return Math.min(
+    maxPlanDays,
+    Math.max(1, Math.ceil(countVerses(state.passages) / perDay))
+  )
 }
 
 /** Pace suggested for a kind of plan, when the user picks it. */

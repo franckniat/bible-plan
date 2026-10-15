@@ -15,7 +15,7 @@ import {
   type PlanGenerationErrorCode,
 } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
-import { Field, FieldLabel } from "@workspace/ui/components/field"
+import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
 
 import { toPlanInput, type WizardState } from "@/components/plans/wizard/state"
@@ -94,8 +94,15 @@ export function PreviewStep({
           required
           onChange={(event) => onTitleChange(event.target.value)}
           placeholder={t("titlePlaceholder")}
+          aria-invalid={!state.title.trim() || undefined}
+          aria-describedby={
+            !state.title.trim() ? "plan-title-error" : undefined
+          }
           className="h-10"
         />
+        {!state.title.trim() && (
+          <FieldError id="plan-title-error">{t("titleRequired")}</FieldError>
+        )}
       </Field>
 
       <dl className="grid gap-3 sm:grid-cols-3">

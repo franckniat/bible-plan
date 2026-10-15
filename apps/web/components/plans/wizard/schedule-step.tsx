@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl"
 
 import {
+  addDays,
   maxMinutesPerDay,
   maxPlanDays,
   type IsoDate,
@@ -71,6 +72,7 @@ export function ScheduleStep({
   activeWeekdays,
   pace,
   readingWpm,
+  suggestedDays,
   onChange,
 }: {
   type: WizardType
@@ -78,6 +80,8 @@ export function ScheduleStep({
   activeWeekdays: Weekday[]
   pace: PlanPace
   readingWpm: number
+  /** Default length when switching to a number of days or an end date. */
+  suggestedDays: number
   onChange: (changes: {
     startDate?: IsoDate
     activeWeekdays?: Weekday[]
@@ -91,9 +95,11 @@ export function ScheduleStep({
   function setMode(mode: PaceMode) {
     switch (mode) {
       case "days":
-        return onChange({ pace: { mode, days: 90 } })
+        return onChange({ pace: { mode, days: suggestedDays } })
       case "endDate":
-        return onChange({ pace: { mode, endDate: startDate } })
+        return onChange({
+          pace: { mode, endDate: addDays(startDate, suggestedDays - 1) },
+        })
       case "minutesPerDay":
         return onChange({ pace: { mode, minutes: 15, readingWpm } })
     }
