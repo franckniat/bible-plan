@@ -477,14 +477,22 @@
     "created": "Votre plan est prêt. Bonne lecture !",
     "dates": "{start} – {end}",
     "days": "{days, plural, one {# jour de lecture} other {# jours de lecture}}",
-    "progress": "{completed, plural, one {# lecture faite} other {# lectures faites}} sur {total}",
+    "progress": "{completed, plural, one {# lecture faite} other {# lectures faites}} sur {total} ({percent} %)",
     "progressLabel": "Progression de {title}",
     "paused": "En pause",
     "empty": {
       "title": "Aucun plan pour l’instant",
       "description": "Créez un plan à votre rythme, ou partez d’un modèle comme la Bible en un an."
     },
-    "templates": "Parcourir les modèles"
+    "templates": "Parcourir les modèles",
+    "completed": "Terminé",
+    "archived": "Archivé",
+    "archivedEmpty": "Aucun plan archivé.",
+    "views": {
+      "label": "Plans affichés",
+      "current": "En cours ({count})",
+      "archived": "Archivés ({count})"
+    }
   },
   "Templates": {
     "title": "Modèles de plans",

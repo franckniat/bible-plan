@@ -35,6 +35,8 @@ async function PlanCard({
   const percent = plan.totalReadings
     ? Math.round((plan.completedReadings / plan.totalReadings) * 100)
     : 0
+  const completed =
+    plan.totalReadings > 0 && plan.completedReadings >= plan.totalReadings
   const date = (value: string) =>
     formatIsoDate(value, locale, {
       day: "numeric",
@@ -51,9 +53,14 @@ async function PlanCard({
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <h2 className="font-heading text-lg font-semibold">{plan.title}</h2>
-        {plan.status === "PAUSED" && (
-          <Badge variant="secondary">{t("paused")}</Badge>
-        )}
+        <div className="flex gap-2">
+          {completed && <Badge>{t("completed")}</Badge>}
+          {plan.status !== "ACTIVE" && (
+            <Badge variant="secondary">
+              {t(plan.status === "PAUSED" ? "paused" : "archived")}
+            </Badge>
+          )}
+        </div>
       </div>
       <p className="text-sm text-brand-night/65 dark:text-neutral-100/65">
         {t("dates", { start: date(plan.startDate), end: date(plan.endDate) })}
@@ -78,6 +85,7 @@ async function PlanCard({
           {t("progress", {
             completed: plan.completedReadings,
             total: plan.totalReadings,
+            percent,
           })}
         </p>
       </div>
@@ -90,9 +98,13 @@ export default async function PlansPage({
 }: PageProps<"/[locale]/plans">) {
   const user = await requireUser()
   const t = await getTranslations("Plans")
-  const plans = await listPlans(prisma, user.id)
-  // ?created=<id> comes from the plan wizard.
-  const { created } = await searchParams
+  // ?created=<id> comes from the plan wizard, ?view=archived from the tabs.
+  const { created, view } = await searchParams
+  const all = await listPlans(prisma, user.id, { includeArchived: true })
+  const archivedView = view === "archived"
+  const archived = all.filter((plan) => plan.status === "ARCHIVED")
+  const current = all.filter((plan) => plan.status !== "ARCHIVED")
+  const plans = archivedView ? archived : current
   const actions = (
     <div className="flex flex-wrap gap-3">
       <Link
@@ -124,8 +136,34 @@ export default async function PlansPage({
             {t("description")}
           </p>
         </div>
-        {plans.length > 0 && actions}
+        {current.length > 0 && actions}
       </div>
+
+      {archived.length > 0 && (
+        <nav aria-label={t("views.label")} className="flex gap-2">
+          {(["current", "archived"] as const).map((value) => {
+            const active = (value === "archived") === archivedView
+            return (
+              <Link
+                key={value}
+                href={value === "archived" ? "/plans?view=archived" : "/plans"}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 text-sm transition-colors",
+                  active
+                    ? "border-brand-night bg-brand-night text-brand-cream dark:border-brand-gold dark:bg-brand-gold dark:text-neutral-950"
+                    : "border-brand-night/15 hover:border-brand-night/40 dark:border-white/15 dark:hover:border-white/40"
+                )}
+              >
+                {t(`views.${value}`, {
+                  count:
+                    value === "archived" ? archived.length : current.length,
+                })}
+              </Link>
+            )
+          })}
+        </nav>
+      )}
 
       {typeof created === "string" &&
         plans.some((plan) => plan.id === created) && (
@@ -137,7 +175,11 @@ export default async function PlansPage({
           </p>
         )}
 
-      {plans.length === 0 ? (
+      {archivedView && plans.length === 0 ? (
+        <p className="text-brand-night/70 dark:text-neutral-100/70">
+          {t("archivedEmpty")}
+        </p>
+      ) : plans.length === 0 ? (
         <div className="flex flex-col items-start gap-4 rounded-3xl border border-dashed border-brand-night/20 p-6 dark:border-white/20">
           <div className="flex flex-col gap-1">
             <h2 className="font-heading text-xl font-semibold">
