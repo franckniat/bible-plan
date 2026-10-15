@@ -424,6 +424,28 @@
         "quick": "{minutes} min",
         "hint": "C’est un repère pour fixer la durée du plan : certains jours seront un peu plus longs, d’autres plus courts. Estimation à {wpm} mots par minute (<settings>modifier ma vitesse de lecture</settings>)."
       }
+    },
+    "preview": {
+      "title": "Nom du plan",
+      "titlePlaceholder": "Ex. : Les Évangiles avant Pâques",
+      "summary": {
+        "dates": "Du … au …",
+        "datesValue": "{start} – {end}",
+        "days": "Jours de lecture",
+        "daysValue": "{days, plural, one {# jour} other {# jours}}",
+        "load": "Par jour, en moyenne",
+        "loadValue": "{verses, plural, one {# verset} other {# versets}} · ≈ {minutes} min"
+      },
+      "calendar": "Calendrier",
+      "track": "{name} :",
+      "showAll": "Afficher les {days} jours",
+      "showLess": "Afficher moins",
+      "errors": {
+        "too_many_days": "Il y a plus de jours que de versets à lire : raccourcissez la durée ou ajoutez des passages.",
+        "no_active_days": "Aucun jour de lecture entre ces dates : avancez la date de fin ou ajoutez des jours.",
+        "too_long": "Ce plan dépasserait dix ans : choisissez une durée plus courte ou plus de temps par jour.",
+        "invalid": "Ce plan ne peut pas être calculé : vérifiez les étapes précédentes."
+      }
     }
   }
 }

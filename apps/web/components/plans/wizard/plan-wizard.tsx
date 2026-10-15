@@ -1,13 +1,14 @@
 "use client"
 
 import { ArrowLeft, ArrowRight } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useState, type ReactNode } from "react"
 
 import {
   maxCustomPassages,
   planPaceSchema,
   type IsoDate,
+  type Locale,
 } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 
@@ -15,9 +16,11 @@ import {
   defaultPace,
   getSteps,
   initialWizardState,
+  suggestTitle,
   type WizardState,
   type WizardStep,
 } from "@/components/plans/wizard/state"
+import { PreviewStep } from "@/components/plans/wizard/preview-step"
 import { ScheduleStep } from "@/components/plans/wizard/schedule-step"
 import { SelectionStep } from "@/components/plans/wizard/selection-step"
 import { TypeStep } from "@/components/plans/wizard/type-step"
@@ -61,6 +64,7 @@ export function PlanWizard({
   initialTemplateKey,
 }: PlanWizardProps) {
   const t = useTranslations("PlanWizard")
+  const locale = useLocale() as Locale
   const [state, setState] = useState(() =>
     initialWizardState({ today, templateKey: initialTemplateKey })
   )
@@ -111,6 +115,13 @@ export function PlanWizard({
         onChange={update}
       />
     ),
+    preview: (
+      <PreviewStep
+        state={state}
+        readingWpm={readingWpm}
+        onTitleChange={(title) => update({ title })}
+      />
+    ),
   }
   const hasNext = stepIndex < steps.length - 1 && views[steps[stepIndex + 1]!]
 
@@ -159,7 +170,13 @@ export function PlanWizard({
             size="lg"
             className="h-11 sm:px-6"
             disabled={!isStepComplete(step, state)}
-            onClick={() => setStepIndex(stepIndex + 1)}
+            onClick={() => {
+              // Arriving on the preview: suggest a title if there is none.
+              if (steps[stepIndex + 1] === "preview" && !state.title.trim()) {
+                update({ title: suggestTitle(state, locale) })
+              }
+              setStepIndex(stepIndex + 1)
+            }}
           >
             {t("nav.next")}
             <ArrowRight />

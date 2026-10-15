@@ -1,8 +1,12 @@
 import {
   allWeekdays,
+  getBookName,
   getPlanTemplate,
+  templatePlanInput,
   type IsoDate,
+  type Locale,
   type Passage,
+  type PlanInput,
   type PlanPace,
   type Weekday,
 } from "@workspace/core"
@@ -71,4 +75,31 @@ export function defaultPace(
     case "free":
       return { mode: "days", days: 30 }
   }
+}
+
+/** Generator input of the wizard (a template brings its own tracks). */
+export function toPlanInput(state: WizardState): PlanInput | null {
+  const { startDate, activeWeekdays, pace } = state
+  if (state.type === "template") {
+    const template = state.templateKey && getPlanTemplate(state.templateKey)
+    return template
+      ? templatePlanInput(template, { startDate, activeWeekdays, pace })
+      : null
+  }
+  return {
+    tracks: [{ passages: state.passages }],
+    startDate,
+    activeWeekdays,
+    pace,
+  }
+}
+
+/** Title suggested for the plan: the template, or the single book read. */
+export function suggestTitle(state: WizardState, locale: Locale): string {
+  if (state.type === "template" && state.templateKey) {
+    return getPlanTemplate(state.templateKey)?.title[locale] ?? ""
+  }
+  const bookIds = new Set(state.passages.map((passage) => passage.book))
+  const [only] = bookIds
+  return bookIds.size === 1 && only ? getBookName(only, locale) : ""
 }

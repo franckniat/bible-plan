@@ -424,6 +424,28 @@
         "quick": "{minutes} min",
         "hint": "A guide to set the length of the plan: some days will be a little longer, others shorter. Estimated at {wpm} words per minute (<settings>change my reading speed</settings>)."
       }
+    },
+    "preview": {
+      "title": "Plan name",
+      "titlePlaceholder": "E.g. The Gospels before Easter",
+      "summary": {
+        "dates": "From … to …",
+        "datesValue": "{start} – {end}",
+        "days": "Reading days",
+        "daysValue": "{days, plural, one {# day} other {# days}}",
+        "load": "Per day, on average",
+        "loadValue": "{verses, plural, one {# verse} other {# verses}} · ≈ {minutes} min"
+      },
+      "calendar": "Calendar",
+      "track": "{name}:",
+      "showAll": "Show all {days} days",
+      "showLess": "Show less",
+      "errors": {
+        "too_many_days": "There are more days than verses to read: shorten the plan or add passages.",
+        "no_active_days": "No reading day between these dates: move the end date or add days.",
+        "too_long": "This plan would last more than ten years: choose a shorter length or more time per day.",
+        "invalid": "This plan cannot be computed: check the previous steps."
+      }
     }
   }
 }
