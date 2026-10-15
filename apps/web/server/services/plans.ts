@@ -15,7 +15,7 @@ import {
   type Passage,
   type Weekday,
 } from "@workspace/core"
-import type { PlanEnrollmentStatus, PrismaClient } from "@workspace/db"
+import type { PlanEnrollmentStatus, Prisma, PrismaClient } from "@workspace/db"
 
 export type PlansDb = Pick<
   PrismaClient,
@@ -195,6 +195,66 @@ const storedTracksSchema = z.array(
   z.object({ name: localizedSchema.optional() })
 )
 
+/** Track names stored with a plan (ReadingPlan.tracks). */
+function parseTrackNames(tracks: unknown): (Record<Locale, string> | null)[] {
+  const parsed = storedTracksSchema.safeParse(tracks)
+  return parsed.success ? parsed.data.map((track) => track.name ?? null) : []
+}
+
+/** A day with its readings and the progress of one user. */
+function daySelect(userId: string) {
+  return {
+    id: true,
+    dayNumber: true,
+    date: true,
+    verses: true,
+    readings: {
+      orderBy: { position: "asc" },
+      select: {
+        id: true,
+        track: true,
+        book: true,
+        startChapter: true,
+        startVerse: true,
+        endChapter: true,
+        endVerse: true,
+        verses: true,
+        progress: {
+          where: { enrollment: { userId } },
+          select: { completedAt: true },
+        },
+      },
+    },
+  } satisfies Prisma.PlanDaySelect
+}
+
+type DayRow = Prisma.PlanDayGetPayload<{
+  select: ReturnType<typeof daySelect>
+}>
+
+function toDetailDay(day: DayRow): PlanDetailDay {
+  return {
+    id: day.id,
+    day: day.dayNumber,
+    date: fromDbDate(day.date),
+    verses: day.verses,
+    // Books are written by createPlan from the canon: a stored code is valid.
+    readings: day.readings
+      .filter((reading) => isBookId(reading.book))
+      .map((reading) => ({
+        id: reading.id,
+        track: reading.track,
+        passage: {
+          book: reading.book as Passage["book"],
+          start: { chapter: reading.startChapter, verse: reading.startVerse },
+          end: { chapter: reading.endChapter, verse: reading.endVerse },
+        },
+        verses: reading.verses,
+        completedAt: reading.progress[0]?.completedAt ?? null,
+      })),
+  }
+}
+
 /**
  * A plan with all its days and the progress of the user, or null when the
  * plan does not exist or the user does not follow it.
@@ -223,29 +283,7 @@ export async function getPlan(
           totalReadings: true,
           days: {
             orderBy: { dayNumber: "asc" },
-            select: {
-              id: true,
-              dayNumber: true,
-              date: true,
-              verses: true,
-              readings: {
-                orderBy: { position: "asc" },
-                select: {
-                  id: true,
-                  track: true,
-                  book: true,
-                  startChapter: true,
-                  startVerse: true,
-                  endChapter: true,
-                  endVerse: true,
-                  verses: true,
-                  progress: {
-                    where: { enrollment: { userId } },
-                    select: { completedAt: true },
-                  },
-                },
-              },
-            },
+            select: daySelect(userId),
           },
         },
       },
@@ -254,27 +292,7 @@ export async function getPlan(
   if (!enrollment) return null
 
   const { plan } = enrollment
-  const days: PlanDetailDay[] = plan.days.map((day) => ({
-    id: day.id,
-    day: day.dayNumber,
-    date: fromDbDate(day.date),
-    verses: day.verses,
-    // Books are written by createPlan from the canon: a stored code is valid.
-    readings: day.readings
-      .filter((reading) => isBookId(reading.book))
-      .map((reading) => ({
-        id: reading.id,
-        track: reading.track,
-        passage: {
-          book: reading.book as Passage["book"],
-          start: { chapter: reading.startChapter, verse: reading.startVerse },
-          end: { chapter: reading.endChapter, verse: reading.endVerse },
-        },
-        verses: reading.verses,
-        completedAt: reading.progress[0]?.completedAt ?? null,
-      })),
-  }))
-  const tracks = storedTracksSchema.safeParse(plan.tracks)
+  const days = plan.days.map(toDetailDay)
 
   return {
     id: plan.id,
@@ -288,9 +306,7 @@ export async function getPlan(
     totalVerses: plan.totalVerses,
     totalReadings: plan.totalReadings,
     status: enrollment.status,
-    trackNames: tracks.success
-      ? tracks.data.map((track) => track.name ?? null)
-      : [],
+    trackNames: parseTrackNames(plan.tracks),
     completedReadings: days.reduce(
       (total, day) =>
         total + day.readings.filter((reading) => reading.completedAt).length,
@@ -338,4 +354,60 @@ export async function setReadingProgress(
     await db.readingProgress.deleteMany({ where: { enrollmentId, readingId } })
   }
   return true
+}
+
+export type TodayPlan = {
+  id: string
+  title: string
+  trackNames: (Record<Locale, string> | null)[]
+  completedReadings: number
+  totalReadings: number
+  /** The reading day of today, or else the next one; null once the plan is over. */
+  day: PlanDetailDay | null
+  /** Whether `day` is today. */
+  isToday: boolean
+}
+
+/**
+ * Active plans of the user with their readings for `today` (a date in the
+ * user's time zone), or their next reading day when today has none.
+ */
+export async function getTodayPlans(
+  db: PlansDb,
+  userId: string,
+  today: IsoDate
+): Promise<TodayPlan[]> {
+  const enrollments = await db.planEnrollment.findMany({
+    where: { userId, status: "ACTIVE" },
+    orderBy: { createdAt: "asc" },
+    select: {
+      _count: { select: { progress: true } },
+      plan: {
+        select: {
+          id: true,
+          title: true,
+          tracks: true,
+          totalReadings: true,
+          days: {
+            where: { date: { gte: toDbDate(today) } },
+            orderBy: { date: "asc" },
+            take: 1,
+            select: daySelect(userId),
+          },
+        },
+      },
+    },
+  })
+  return enrollments.map(({ _count, plan }) => {
+    const day = plan.days[0] ? toDetailDay(plan.days[0]) : null
+    return {
+      id: plan.id,
+      title: plan.title,
+      trackNames: parseTrackNames(plan.tracks),
+      completedReadings: _count.progress,
+      totalReadings: plan.totalReadings,
+      day,
+      isToday: day?.date === today,
+    }
+  })
 }

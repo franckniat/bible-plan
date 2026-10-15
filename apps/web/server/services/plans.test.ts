@@ -10,6 +10,7 @@ import {
   createPlan,
   fromDbDate,
   getPlan,
+  getTodayPlans,
   listPlans,
   setReadingProgress,
   toDbDate,
@@ -345,5 +346,69 @@ describe("setReadingProgress", () => {
       false
     )
     expect(fake.readingProgress.createMany).not.toHaveBeenCalled()
+  })
+})
+
+describe("getTodayPlans", () => {
+  const dayRow = (date: string, completed: boolean) => ({
+    id: `day-${date}`,
+    dayNumber: 3,
+    date: toDbDate(date),
+    verses: 31,
+    readings: [
+      {
+        id: `reading-${date}`,
+        track: 0,
+        book: "Gen",
+        startChapter: 1,
+        startVerse: 1,
+        endChapter: 1,
+        endVerse: 31,
+        verses: 31,
+        progress: completed ? [{ completedAt: new Date() }] : [],
+      },
+    ],
+  })
+  const enrollment = (title: string, days: unknown[]) => ({
+    _count: { progress: 2 },
+    plan: { id: title, title, tracks: [{}], totalReadings: 30, days },
+  })
+
+  it("reads the active plans from the user's today", async () => {
+    const fake = fakeDb()
+    fake.planEnrollment.findMany.mockResolvedValue([])
+    await getTodayPlans(fake.db, "user-1", "2027-01-03")
+
+    const query = fake.planEnrollment.findMany.mock.calls[0]![0]
+    expect(query.where).toEqual({ userId: "user-1", status: "ACTIVE" })
+    expect(query.select.plan.select.days).toMatchObject({
+      where: { date: { gte: toDbDate("2027-01-03") } },
+      orderBy: { date: "asc" },
+      take: 1,
+    })
+  })
+
+  it("tells today's readings from the next ones and finished plans", async () => {
+    const fake = fakeDb()
+    fake.planEnrollment.findMany.mockResolvedValue([
+      enrollment("today", [dayRow("2027-01-03", true)]),
+      enrollment("later", [dayRow("2027-01-05", false)]),
+      enrollment("over", []),
+    ])
+    const plans = await getTodayPlans(fake.db, "user-1", "2027-01-03")
+
+    expect(
+      plans.map((plan) => [plan.id, plan.isToday, plan.day?.date])
+    ).toEqual([
+      ["today", true, "2027-01-03"],
+      ["later", false, "2027-01-05"],
+      ["over", false, undefined],
+    ])
+    expect(plans[0]).toMatchObject({
+      completedReadings: 2,
+      totalReadings: 30,
+      trackNames: [null],
+    })
+    expect(plans[0]!.day!.readings[0]!.completedAt).toBeInstanceOf(Date)
   })
 })
