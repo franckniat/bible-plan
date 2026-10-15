@@ -411,3 +411,40 @@ export async function getTodayPlans(
     }
   })
 }
+
+/**
+ * Pauses, resumes or archives a plan for the user (their enrollment only).
+ * Returns false when the user does not follow the plan.
+ */
+export async function setPlanStatus(
+  db: PlansDb,
+  userId: string,
+  planId: string,
+  status: PlanEnrollmentStatus
+): Promise<boolean> {
+  const { count } = await db.planEnrollment.updateMany({
+    where: { planId, userId },
+    data: { status },
+  })
+  return count > 0
+}
+
+/**
+ * Deletes a plan owned by the user, with its days and everyone's progress.
+ * Someone who only follows the plan leaves it instead. Returns false when
+ * the user neither owns nor follows the plan.
+ */
+export async function deletePlan(
+  db: PlansDb,
+  userId: string,
+  planId: string
+): Promise<boolean> {
+  const deleted = await db.readingPlan.deleteMany({
+    where: { id: planId, ownerId: userId },
+  })
+  if (deleted.count > 0) return true
+  const left = await db.planEnrollment.deleteMany({
+    where: { planId, userId },
+  })
+  return left.count > 0
+}

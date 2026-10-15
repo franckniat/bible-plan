@@ -10,6 +10,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { toChecklist } from "@/components/plans/checklist"
+import { PlanActions } from "@/components/plans/plan-actions"
 import { ReadingChecklist } from "@/components/plans/reading-checklist"
 import { Link } from "@/i18n/navigation"
 import { formatIsoDate } from "@/lib/dates"
@@ -130,6 +131,7 @@ export default async function PlanPage({
             })}
           </p>
         </div>
+        <PlanActions planId={plan.id} status={plan.status} />
       </div>
 
       <section aria-labelledby="calendar-title" className="flex flex-col gap-3">

@@ -512,6 +512,19 @@
     "calendar": "Calendar",
     "monthProgress": "{completed} / {total} readings",
     "today": "Today",
-    "day": "Day {day}"
+    "day": "Day {day}",
+    "actions": {
+      "pause": "Pause",
+      "resume": "Resume",
+      "archive": "Archive",
+      "restore": "Restore",
+      "delete": "Delete",
+      "pausedHint": "This plan is paused: it no longer shows on Today. Resume it whenever you like.",
+      "archivedHint": "This plan is archived: it stays available here, with your progress.",
+      "deleteQuestion": "Delete this plan and all your progress? This cannot be undone.",
+      "deleteConfirm": "Delete permanently",
+      "cancel": "Cancel",
+      "failed": "The action did not go through. Please try again."
+    }
   }
 }

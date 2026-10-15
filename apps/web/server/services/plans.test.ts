@@ -8,10 +8,12 @@ import {
 
 import {
   createPlan,
+  deletePlan,
   fromDbDate,
   getPlan,
   getTodayPlans,
   listPlans,
+  setPlanStatus,
   setReadingProgress,
   toDbDate,
   type PlansDb,
@@ -20,13 +22,15 @@ import {
 /** A fake client whose transaction runs the callback on the same mocks. */
 function fakeDb() {
   const mocks = {
-    readingPlan: { create: vi.fn() },
+    readingPlan: { create: vi.fn(), deleteMany: vi.fn() },
     planDay: { createMany: vi.fn() },
     planReading: { createMany: vi.fn(), findUnique: vi.fn() },
     planEnrollment: {
       create: vi.fn(),
       findMany: vi.fn(),
       findUnique: vi.fn(),
+      updateMany: vi.fn(),
+      deleteMany: vi.fn(),
     },
     readingProgress: { createMany: vi.fn(), deleteMany: vi.fn() },
   }
@@ -410,5 +414,56 @@ describe("getTodayPlans", () => {
       trackNames: [null],
     })
     expect(plans[0]!.day!.readings[0]!.completedAt).toBeInstanceOf(Date)
+  })
+})
+
+describe("setPlanStatus", () => {
+  it("changes only the user's enrollment", async () => {
+    const fake = fakeDb()
+    fake.planEnrollment.updateMany.mockResolvedValue({ count: 1 })
+    expect(await setPlanStatus(fake.db, "user-1", "plan-1", "PAUSED")).toBe(
+      true
+    )
+    expect(fake.planEnrollment.updateMany).toHaveBeenCalledWith({
+      where: { planId: "plan-1", userId: "user-1" },
+      data: { status: "PAUSED" },
+    })
+  })
+
+  it("refuses a plan the user does not follow", async () => {
+    const fake = fakeDb()
+    fake.planEnrollment.updateMany.mockResolvedValue({ count: 0 })
+    expect(await setPlanStatus(fake.db, "intruder", "plan-1", "ARCHIVED")).toBe(
+      false
+    )
+  })
+})
+
+describe("deletePlan", () => {
+  it("deletes a plan the user owns", async () => {
+    const fake = fakeDb()
+    fake.readingPlan.deleteMany.mockResolvedValue({ count: 1 })
+    expect(await deletePlan(fake.db, "user-1", "plan-1")).toBe(true)
+    expect(fake.readingPlan.deleteMany).toHaveBeenCalledWith({
+      where: { id: "plan-1", ownerId: "user-1" },
+    })
+    expect(fake.planEnrollment.deleteMany).not.toHaveBeenCalled()
+  })
+
+  it("only leaves a plan owned by someone else", async () => {
+    const fake = fakeDb()
+    fake.readingPlan.deleteMany.mockResolvedValue({ count: 0 })
+    fake.planEnrollment.deleteMany.mockResolvedValue({ count: 1 })
+    expect(await deletePlan(fake.db, "member-1", "plan-1")).toBe(true)
+    expect(fake.planEnrollment.deleteMany).toHaveBeenCalledWith({
+      where: { planId: "plan-1", userId: "member-1" },
+    })
+  })
+
+  it("refuses a plan the user neither owns nor follows", async () => {
+    const fake = fakeDb()
+    fake.readingPlan.deleteMany.mockResolvedValue({ count: 0 })
+    fake.planEnrollment.deleteMany.mockResolvedValue({ count: 0 })
+    expect(await deletePlan(fake.db, "intruder", "plan-1")).toBe(false)
   })
 })

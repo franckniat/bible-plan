@@ -512,6 +512,19 @@
     "calendar": "Calendrier",
     "monthProgress": "{completed} / {total} lectures",
     "today": "Aujourd’hui",
-    "day": "Jour {day}"
+    "day": "Jour {day}",
+    "actions": {
+      "pause": "Mettre en pause",
+      "resume": "Reprendre",
+      "archive": "Archiver",
+      "restore": "Restaurer",
+      "delete": "Supprimer",
+      "pausedHint": "Ce plan est en pause : il n’apparaît plus dans Aujourd’hui. Reprenez-le quand vous voulez.",
+      "archivedHint": "Ce plan est archivé : il reste consultable ici, avec votre progression.",
+      "deleteQuestion": "Supprimer ce plan et toute votre progression ? Cette action est définitive.",
+      "deleteConfirm": "Supprimer définitivement",
+      "cancel": "Annuler",
+      "failed": "L’action n’a pas pu aboutir. Veuillez réessayer."
+    }
   }
 }

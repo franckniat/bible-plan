@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { getLocale } from "next-intl/server"
+import { z } from "zod"
 
 import {
   newPlanSchema,
@@ -13,7 +14,12 @@ import {
 import { prisma } from "@workspace/db"
 
 import { redirect } from "@/i18n/navigation"
-import { createPlan, setReadingProgress } from "@/server/services/plans"
+import {
+  createPlan,
+  deletePlan,
+  setPlanStatus,
+  setReadingProgress,
+} from "@/server/services/plans"
 import { requireUser } from "@/server/session"
 
 /** Translated by the wizard ("PlanWizard.create.errors.<code>"). */
@@ -64,4 +70,31 @@ export async function setReadingProgressAction(
   // Progress shows on Today, the plan list and the plan page.
   if (ok) revalidatePath("/[locale]", "layout")
   return { ok }
+}
+
+const statusSchema = z.enum(["ACTIVE", "PAUSED", "ARCHIVED"])
+
+/** Pauses, resumes, archives or restores a plan of the user. */
+export async function setPlanStatusAction(
+  planId: string,
+  status: "ACTIVE" | "PAUSED" | "ARCHIVED"
+): Promise<{ ok: boolean }> {
+  const user = await requireUser()
+  const parsed = statusSchema.safeParse(status)
+  if (typeof planId !== "string" || !parsed.success) return { ok: false }
+  const ok = await setPlanStatus(prisma, user.id, planId, parsed.data)
+  if (ok) revalidatePath("/[locale]", "layout")
+  return { ok }
+}
+
+/** Deletes a plan of the user (or leaves it), then opens the plan list. */
+export async function deletePlanAction(
+  planId: string
+): Promise<{ ok: boolean }> {
+  const user = await requireUser()
+  if (typeof planId !== "string") return { ok: false }
+  const ok = await deletePlan(prisma, user.id, planId)
+  if (!ok) return { ok }
+  revalidatePath("/[locale]", "layout")
+  return redirect({ href: "/plans", locale: await getLocale() })
 }
