@@ -1,4 +1,6 @@
-import type { BookId } from "./books"
+import { z } from "zod"
+
+import { bookIds, type BookId } from "./books"
 import { getChapterCount, getVerseCount } from "./verse-counts"
 
 /** A verse of a book, e.g. chapter 3, verse 16. */
@@ -51,3 +53,17 @@ export function isValidPassage({ book, start, end }: Passage): boolean {
 export function coversWholeChapters({ book, start, end }: Passage): boolean {
   return start.verse === 1 && end.verse === getVerseCount(book, end.chapter)
 }
+
+const versePositionSchema = z.object({
+  chapter: z.int().min(1),
+  verse: z.int().min(1),
+})
+
+/** A passage received from outside (form, API), checked against the canon. */
+export const passageSchema = z
+  .object({
+    book: z.enum(bookIds),
+    start: versePositionSchema,
+    end: versePositionSchema,
+  })
+  .refine(isValidPassage, { error: "invalid_passage" })
