@@ -473,6 +473,15 @@
     "empty": {
       "title": "No plan yet",
       "description": "Create a plan at your own pace, or start from a template such as the Bible in a year."
-    }
+    },
+    "templates": "Browse templates"
+  },
+  "Templates": {
+    "title": "Plan templates",
+    "description": "Proven plans, ready to follow. You then choose the start date and your reading days.",
+    "days": "{days, plural, one {# day} other {# days}}",
+    "readingsPerDay": "{count, plural, one {# reading a day} other {# readings a day}}",
+    "choose": "Start this plan",
+    "chooseLabel": "Start the plan “{title}”"
   }
 }

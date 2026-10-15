@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react"
+import { Library, Plus } from "lucide-react"
 import type { Metadata } from "next"
 import { hasLocale } from "next-intl"
 import { getLocale, getTranslations } from "next-intl/server"
@@ -93,14 +93,26 @@ export default async function PlansPage({
   const plans = await listPlans(prisma, user.id)
   // ?created=<id> comes from the plan wizard.
   const { created } = await searchParams
-  const newButton = (
-    <Link
-      href="/plans/new"
-      className={cn(buttonVariants({ size: "lg" }), "h-11 self-start sm:px-5")}
-    >
-      <Plus />
-      {t("new")}
-    </Link>
+  const actions = (
+    <div className="flex flex-wrap gap-3">
+      <Link
+        href="/plans/new"
+        className={cn(buttonVariants({ size: "lg" }), "h-11 sm:px-5")}
+      >
+        <Plus />
+        {t("new")}
+      </Link>
+      <Link
+        href="/plans/templates"
+        className={cn(
+          buttonVariants({ size: "lg", variant: "outline" }),
+          "h-11 sm:px-5"
+        )}
+      >
+        <Library />
+        {t("templates")}
+      </Link>
+    </div>
   )
 
   return (
@@ -112,7 +124,7 @@ export default async function PlansPage({
             {t("description")}
           </p>
         </div>
-        {plans.length > 0 && newButton}
+        {plans.length > 0 && actions}
       </div>
 
       {typeof created === "string" &&
@@ -135,7 +147,7 @@ export default async function PlansPage({
               {t("empty.description")}
             </p>
           </div>
-          {newButton}
+          {actions}
         </div>
       ) : (
         <ul className="flex flex-col gap-4">

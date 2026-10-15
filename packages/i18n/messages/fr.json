@@ -473,6 +473,15 @@
     "empty": {
       "title": "Aucun plan pour l’instant",
       "description": "Créez un plan à votre rythme, ou partez d’un modèle comme la Bible en un an."
-    }
+    },
+    "templates": "Parcourir les modèles"
+  },
+  "Templates": {
+    "title": "Modèles de plans",
+    "description": "Des plans éprouvés, prêts à suivre. Vous choisissez ensuite la date de début et vos jours de lecture.",
+    "days": "{days, plural, one {# jour} other {# jours}}",
+    "readingsPerDay": "{count, plural, one {# lecture par jour} other {# lectures par jour}}",
+    "choose": "Commencer ce plan",
+    "chooseLabel": "Commencer le plan « {title} »"
   }
 }
