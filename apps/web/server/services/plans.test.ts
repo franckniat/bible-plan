@@ -31,6 +31,7 @@ function fakeDb() {
       findUnique: vi.fn(),
       deleteMany: vi.fn(),
       groupBy: vi.fn().mockResolvedValue([]),
+      count: vi.fn().mockResolvedValue(0),
     },
     planEnrollment: {
       create: vi.fn(),
@@ -600,5 +601,34 @@ describe("setCatchUpStrategy", () => {
     expect(
       await setCatchUpStrategy(fake.db, "member-1", "plan-1", "FREE")
     ).toBe(false)
+  })
+})
+
+describe("getTodayPlans late readings", () => {
+  it("counts the unread readings planned before the user's today", async () => {
+    const fake = fakeDb()
+    fake.planEnrollment.findMany.mockResolvedValue([
+      {
+        _count: { progress: 0 },
+        plan: {
+          id: "plan-1",
+          title: "Genèse",
+          tracks: [{}],
+          totalReadings: 30,
+          catchUpStrategy: "SHIFT",
+          days: [],
+        },
+      },
+    ])
+    fake.planReading.count.mockResolvedValue(5)
+    const [plan] = await getTodayPlans(fake.db, "user-1", "2027-01-06")
+
+    expect(plan).toMatchObject({ lateReadings: 5, catchUpStrategy: "SHIFT" })
+    expect(fake.planReading.count).toHaveBeenCalledWith({
+      where: {
+        day: { planId: "plan-1", date: { lt: toDbDate("2027-01-06") } },
+        progress: { none: { enrollment: { userId: "user-1" } } },
+      },
+    })
   })
 })

@@ -6,6 +6,7 @@ import { prisma } from "@workspace/db"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { CatchUpBanner } from "@/components/plans/catch-up-banner"
 import { toChecklist } from "@/components/plans/checklist"
 import { ReadingChecklist } from "@/components/plans/reading-checklist"
 import { Link } from "@/i18n/navigation"
@@ -38,6 +39,15 @@ async function TodayPlanCard({ plan }: { plan: TodayPlan }) {
           })}
         </p>
       </div>
+
+      {plan.lateReadings > 0 && (
+        <CatchUpBanner
+          planId={plan.id}
+          lateReadings={plan.lateReadings}
+          strategy={plan.catchUpStrategy}
+          planHref={`/plans/${plan.id}`}
+        />
+      )}
 
       {day === null ? (
         <p className="text-sm text-brand-night/70 dark:text-neutral-100/70">

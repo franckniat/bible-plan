@@ -6,6 +6,7 @@ import { z } from "zod"
 
 import {
   catchUpStrategies,
+  getToday,
   newPlanSchema,
   PlanGenerationError,
   type CatchUpStrategy,
@@ -17,11 +18,13 @@ import { prisma } from "@workspace/db"
 
 import { redirect } from "@/i18n/navigation"
 import {
+  applyCatchUp,
   createPlan,
   deletePlan,
   setCatchUpStrategy,
   setPlanStatus,
   setReadingProgress,
+  type CatchUpError,
 } from "@/server/services/plans"
 import { requireUser } from "@/server/session"
 
@@ -113,4 +116,34 @@ export async function setCatchUpStrategyAction(
   const ok = await setCatchUpStrategy(prisma, user.id, planId, parsed.data)
   if (ok) revalidatePath("/[locale]", "layout")
   return { ok }
+}
+
+/**
+ * Brings a late plan back on schedule with a strategy, for the user's own
+ * day. Returns an error code when it cannot.
+ */
+export async function applyCatchUpAction(
+  planId: string,
+  strategy: CatchUpStrategy
+): Promise<{ ok: true } | { ok: false; error: CatchUpError | "unexpected" }> {
+  const user = await requireUser()
+  const parsed = z.enum(catchUpStrategies).safeParse(strategy)
+  if (typeof planId !== "string" || !parsed.success) {
+    return { ok: false, error: "unexpected" }
+  }
+  try {
+    const result = await applyCatchUp(
+      prisma,
+      user.id,
+      planId,
+      parsed.data,
+      getToday(user.timezone)
+    )
+    if (!result.ok) return result
+  } catch (error) {
+    console.error("Catch-up failed", error)
+    return { ok: false, error: "unexpected" }
+  }
+  revalidatePath("/[locale]", "layout")
+  return { ok: true }
 }

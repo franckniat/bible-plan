@@ -4,18 +4,32 @@ import { notFound } from "next/navigation"
 import { getLocale, getTranslations } from "next-intl/server"
 import { cache } from "react"
 
-import { getToday, type Locale } from "@workspace/core"
+import {
+  getOverdueReadings,
+  getToday,
+  planCatchUp,
+  PlanGenerationError,
+  type CatchUpStrategy,
+  type IsoDate,
+  type Locale,
+  type ScheduleDay,
+} from "@workspace/core"
 import { prisma } from "@workspace/db"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { CatchUpBanner } from "@/components/plans/catch-up-banner"
 import { CatchUpSetting } from "@/components/plans/catch-up-setting"
 import { toChecklist } from "@/components/plans/checklist"
 import { PlanActions } from "@/components/plans/plan-actions"
 import { ReadingChecklist } from "@/components/plans/reading-checklist"
 import { Link } from "@/i18n/navigation"
 import { formatIsoDate } from "@/lib/dates"
-import { getPlan, type PlanDetailDay } from "@/server/services/plans"
+import {
+  getPlan,
+  type PlanDetail,
+  type PlanDetailDay,
+} from "@/server/services/plans"
 import { getSession, requireUser } from "@/server/session"
 
 /** One query per request, shared by the metadata and the page. */
@@ -34,6 +48,59 @@ export async function generateMetadata({
 
 const isDone = (day: PlanDetailDay) =>
   day.readings.every((reading) => reading.completedAt !== null)
+
+/** The plan as planCatchUp sees it. */
+function toSchedule(plan: PlanDetail): ScheduleDay[] {
+  return plan.days.map((day) => ({
+    id: day.id,
+    date: day.date,
+    readings: day.readings.map((reading) => ({
+      id: reading.id,
+      track: reading.track,
+      passage: reading.passage,
+      verses: reading.verses,
+      done: reading.completedAt !== null,
+    })),
+  }))
+}
+
+/** What each way of catching up would change, in words. */
+async function catchUpHints(
+  plan: PlanDetail,
+  schedule: ScheduleDay[],
+  today: IsoDate,
+  locale: Locale
+) {
+  const t = await getTranslations("CatchUp")
+  const date = (value: IsoDate) =>
+    formatIsoDate(value, locale, { day: "numeric", month: "long" })
+  const hint = (strategy: Exclude<CatchUpStrategy, "FREE">) => {
+    try {
+      const changes = planCatchUp(strategy, {
+        days: schedule,
+        today,
+        activeWeekdays: plan.activeWeekdays,
+        endDate: plan.endDate,
+      })
+      if (!changes) return undefined
+      if (strategy === "SHIFT") {
+        return t("shiftHint", { date: date(changes.endDate) })
+      }
+      const verses = changes.addDays
+        .flatMap((day) => day.readings)
+        .reduce((total, reading) => total + reading.verses, 0)
+      return t("redistributeHint", {
+        date: date(plan.endDate),
+        verses: Math.round(verses / Math.max(1, changes.addDays.length)),
+      })
+    } catch (error) {
+      if (error instanceof PlanGenerationError)
+        return t("errors.no_active_days")
+      throw error
+    }
+  }
+  return { SHIFT: hint("SHIFT"), REDISTRIBUTE: hint("REDISTRIBUTE") }
+}
 
 /** Days grouped by calendar month ("2027-01"), in order. */
 function byMonth(days: PlanDetailDay[]): [string, PlanDetailDay[]][] {
@@ -64,6 +131,17 @@ export default async function PlanPage({
     plan.totalReadings > 0 && plan.completedReadings >= plan.totalReadings
   // The month to open: where the first unfinished day is.
   const current = plan.days.find((day) => !isDone(day)) ?? plan.days.at(-1)
+  const schedule = toSchedule(plan)
+  const late =
+    plan.status === "ARCHIVED" ? 0 : getOverdueReadings(schedule, today).length
+  const hints =
+    late > 0 ? await catchUpHints(plan, schedule, today, locale) : {}
+  // The chosen way first; only the owner can change the calendar.
+  const options = !plan.isOwner
+    ? []
+    : plan.catchUpStrategy === "REDISTRIBUTE"
+      ? (["REDISTRIBUTE", "SHIFT"] as const)
+      : (["SHIFT", "REDISTRIBUTE"] as const)
   const trackNames = plan.trackNames
     .map((name) => name?.[locale])
     .filter((name): name is string => Boolean(name))
@@ -132,6 +210,15 @@ export default async function PlanPage({
             })}
           </p>
         </div>
+        {late > 0 && (
+          <CatchUpBanner
+            planId={plan.id}
+            lateReadings={late}
+            strategy={plan.catchUpStrategy}
+            hints={hints}
+            options={[...options]}
+          />
+        )}
         <PlanActions planId={plan.id} status={plan.status} />
       </div>
 
@@ -165,6 +252,7 @@ export default async function PlanPage({
               <ol className="flex flex-col divide-y divide-brand-night/10 border-t border-brand-night/10 dark:divide-white/10 dark:border-white/10">
                 {days.map((day) => {
                   const isToday = day.date === today
+                  const isLate = day.date < today && !isDone(day)
                   return (
                     <li
                       key={day.id}
@@ -183,7 +271,11 @@ export default async function PlanPage({
                           })}
                         </span>
                         <span className="text-xs text-brand-night/60 dark:text-neutral-100/60">
-                          {isToday ? t("today") : t("day", { day: day.day })}
+                          {isToday
+                            ? t("today")
+                            : isLate
+                              ? t("late")
+                              : t("day", { day: day.day })}
                         </span>
                       </div>
                       <ReadingChecklist

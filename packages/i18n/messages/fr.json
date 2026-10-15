@@ -544,6 +544,24 @@
       "saving": "Enregistrement…",
       "saved": "Choix enregistré.",
       "failed": "Le choix n’a pas pu être enregistré. Veuillez réessayer."
+    },
+    "late": "En attente"
+  },
+  "CatchUp": {
+    "late": "{count, plural, one {Une lecture vous attend} other {# lectures vous attendent}} dans ce plan. Pas de souci, reprenez à votre rythme.",
+    "free": "Vous avez choisi de rattraper librement : cochez-les quand vous le souhaitez.",
+    "SHIFT": "Décaler le plan",
+    "REDISTRIBUTE": "Répartir les lectures",
+    "shiftHint": "Même rythme qu’avant, fin du plan le {date}.",
+    "redistributeHint": "Fin du plan inchangée ({date}), environ {verses} versets par jour.",
+    "seePlan": "Voir le plan",
+    "errors": {
+      "shared_plan": "Ce plan est suivi par plusieurs personnes : son calendrier ne peut pas changer. Rattrapez les lectures quand vous le souhaitez.",
+      "no_active_days": "La date de fin est passée : décalez plutôt le plan.",
+      "too_many_days": "Les lectures n’ont pas pu être réparties. Essayez de décaler le plan.",
+      "too_long": "Le plan deviendrait trop long. Essayez de répartir les lectures.",
+      "not_found": "Ce plan est introuvable.",
+      "unexpected": "Le plan n’a pas pu être mis à jour. Veuillez réessayer."
     }
   }
 }

@@ -383,6 +383,9 @@ export type TodayPlan = {
   day: PlanDetailDay | null
   /** Whether `day` is today. */
   isToday: boolean
+  /** Unread readings planned before today. */
+  lateReadings: number
+  catchUpStrategy: CatchUpStrategy
 }
 
 /**
@@ -405,6 +408,7 @@ export async function getTodayPlans(
           title: true,
           tracks: true,
           totalReadings: true,
+          catchUpStrategy: true,
           days: {
             where: { date: { gte: toDbDate(today) } },
             orderBy: { date: "asc" },
@@ -415,9 +419,21 @@ export async function getTodayPlans(
       },
     },
   })
-  return enrollments.map(({ _count, plan }) => {
+  const late = await Promise.all(
+    enrollments.map(({ plan }) =>
+      db.planReading.count({
+        where: {
+          day: { planId: plan.id, date: { lt: toDbDate(today) } },
+          progress: { none: { enrollment: { userId } } },
+        },
+      })
+    )
+  )
+  return enrollments.map(({ _count, plan }, index) => {
     const day = plan.days[0] ? toDetailDay(plan.days[0]) : null
     return {
+      lateReadings: late[index]!,
+      catchUpStrategy: plan.catchUpStrategy,
       id: plan.id,
       title: plan.title,
       trackNames: parseTrackNames(plan.tracks),

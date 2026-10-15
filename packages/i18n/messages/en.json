@@ -544,6 +544,24 @@
       "saving": "Saving…",
       "saved": "Choice saved.",
       "failed": "The choice could not be saved. Please try again."
+    },
+    "late": "Waiting"
+  },
+  "CatchUp": {
+    "late": "{count, plural, one {One reading is waiting} other {# readings are waiting}} in this plan. No worries, pick up at your own pace.",
+    "free": "You chose to catch up freely: tick them off whenever you like.",
+    "SHIFT": "Shift the plan",
+    "REDISTRIBUTE": "Spread the readings",
+    "shiftHint": "Same pace as before, plan ends on {date}.",
+    "redistributeHint": "Same end date ({date}), about {verses} verses a day.",
+    "seePlan": "See the plan",
+    "errors": {
+      "shared_plan": "Several people follow this plan, so its calendar cannot change. Catch up on the readings whenever you like.",
+      "no_active_days": "The end date has passed: shift the plan instead.",
+      "too_many_days": "The readings could not be spread. Try shifting the plan.",
+      "too_long": "The plan would become too long. Try spreading the readings.",
+      "not_found": "This plan cannot be found.",
+      "unexpected": "The plan could not be updated. Please try again."
     }
   }
 }
