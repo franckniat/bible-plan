@@ -155,7 +155,8 @@
     "nav": {
       "label": "Main navigation",
       "today": "Today",
-      "settings": "Settings"
+      "settings": "Settings",
+      "plans": "Plans"
     },
     "account": {
       "signOut": "Sign out",
@@ -446,6 +447,32 @@
         "too_long": "This plan would last more than ten years: choose a shorter length or more time per day.",
         "invalid": "This plan cannot be computed: check the previous steps."
       }
+    },
+    "create": {
+      "submit": "Create the plan",
+      "submitting": "Creating…",
+      "errors": {
+        "too_many_days": "There are more days than verses to read: shorten the plan or add passages.",
+        "no_active_days": "No reading day between these dates: move the end date or add days.",
+        "too_long": "This plan would last more than ten years: choose a shorter length or more time per day.",
+        "invalid": "Some details are not valid: check the previous steps.",
+        "unexpected": "The plan could not be created. Please try again."
+      }
+    }
+  },
+  "Plans": {
+    "title": "My plans",
+    "description": "The reading plans you follow.",
+    "new": "New plan",
+    "created": "Your plan is ready. Enjoy your reading!",
+    "dates": "{start} – {end}",
+    "days": "{days, plural, one {# reading day} other {# reading days}}",
+    "progress": "{completed, plural, one {# reading done} other {# readings done}} out of {total}",
+    "progressLabel": "Progress of {title}",
+    "paused": "Paused",
+    "empty": {
+      "title": "No plan yet",
+      "description": "Create a plan at your own pace, or start from a template such as the Bible in a year."
     }
   }
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useLocale, useTranslations } from "next-intl"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 
 import {
   estimateReadingMinutes,
@@ -24,11 +24,12 @@ import { formatIsoDate } from "@/lib/dates"
 /** Days shown before "show all". */
 const FIRST_DAYS = 14
 
-type Preview =
+export type PlanPreview =
   | { plan: GeneratedPlan; error?: undefined }
   | { plan?: undefined; error: PlanGenerationErrorCode | "invalid" }
 
-function preview(state: WizardState): Preview {
+/** The plan the wizard would create, computed in the browser. */
+export function previewPlan(state: WizardState): PlanPreview {
   const input = toPlanInput(state)
   if (!input) return { error: "invalid" }
   try {
@@ -43,17 +44,18 @@ function preview(state: WizardState): Preview {
 /** Step 4: the calendar computed in the browser, and the plan title. */
 export function PreviewStep({
   state,
+  result,
   readingWpm,
   onTitleChange,
 }: {
   state: WizardState
+  result: PlanPreview
   readingWpm: number
   onTitleChange: (title: string) => void
 }) {
   const t = useTranslations("PlanWizard.preview")
   const locale = useLocale() as Locale
   const [showAll, setShowAll] = useState(false)
-  const result = useMemo(() => preview(state), [state])
 
   if (!result.plan) {
     return (

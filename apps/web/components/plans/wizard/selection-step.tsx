@@ -46,7 +46,7 @@ const presets = {
   proverbs: () => [bookPassage("Prov")],
 } satisfies Record<string, () => Passage[]>
 
-type Preset = keyof typeof presets
+export type Preset = keyof typeof presets
 
 const chipClassName =
   "rounded-full border px-3 py-1.5 text-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
@@ -60,6 +60,15 @@ const sameList = (a: Passage[], b: Passage[]) =>
   a.every(
     (passage, index) => JSON.stringify(passage) === JSON.stringify(b[index])
   )
+
+/** The quick pick that gives exactly these passages, if any. */
+export function findPreset(passages: Passage[]): Preset | null {
+  return (
+    (Object.keys(presets) as Preset[]).find((preset) =>
+      sameList(passages, presets[preset]())
+    ) ?? null
+  )
+}
 
 /** Inserts a whole book before the first passage of a later book. */
 function insertBook(passages: Passage[], book: BookId): Passage[] {

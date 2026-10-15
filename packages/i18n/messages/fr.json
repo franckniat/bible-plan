@@ -155,7 +155,8 @@
     "nav": {
       "label": "Navigation principale",
       "today": "Aujourd’hui",
-      "settings": "Réglages"
+      "settings": "Réglages",
+      "plans": "Plans"
     },
     "account": {
       "signOut": "Se déconnecter",
@@ -446,6 +447,32 @@
         "too_long": "Ce plan dépasserait dix ans : choisissez une durée plus courte ou plus de temps par jour.",
         "invalid": "Ce plan ne peut pas être calculé : vérifiez les étapes précédentes."
       }
+    },
+    "create": {
+      "submit": "Créer le plan",
+      "submitting": "Création…",
+      "errors": {
+        "too_many_days": "Il y a plus de jours que de versets à lire : raccourcissez la durée ou ajoutez des passages.",
+        "no_active_days": "Aucun jour de lecture entre ces dates : avancez la date de fin ou ajoutez des jours.",
+        "too_long": "Ce plan dépasserait dix ans : choisissez une durée plus courte ou plus de temps par jour.",
+        "invalid": "Certaines informations ne sont pas valides : vérifiez les étapes précédentes.",
+        "unexpected": "Le plan n’a pas pu être créé. Veuillez réessayer."
+      }
+    }
+  },
+  "Plans": {
+    "title": "Mes plans",
+    "description": "Les plans de lecture que vous suivez.",
+    "new": "Nouveau plan",
+    "created": "Votre plan est prêt. Bonne lecture !",
+    "dates": "{start} – {end}",
+    "days": "{days, plural, one {# jour de lecture} other {# jours de lecture}}",
+    "progress": "{completed, plural, one {# lecture faite} other {# lectures faites}} sur {total}",
+    "progressLabel": "Progression de {title}",
+    "paused": "En pause",
+    "empty": {
+      "title": "Aucun plan pour l’instant",
+      "description": "Créez un plan à votre rythme, ou partez d’un modèle comme la Bible en un an."
     }
   }
 }

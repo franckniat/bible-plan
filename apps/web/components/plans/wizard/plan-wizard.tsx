@@ -1,8 +1,8 @@
 "use client"
 
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, Check, LoaderCircle } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { useState, type ReactNode } from "react"
+import { useMemo, useState, useTransition, type ReactNode } from "react"
 
 import {
   maxCustomPassages,
@@ -17,13 +17,24 @@ import {
   getSteps,
   initialWizardState,
   suggestTitle,
+  toNewPlan,
   type WizardState,
   type WizardStep,
 } from "@/components/plans/wizard/state"
-import { PreviewStep } from "@/components/plans/wizard/preview-step"
+import {
+  previewPlan,
+  PreviewStep,
+} from "@/components/plans/wizard/preview-step"
 import { ScheduleStep } from "@/components/plans/wizard/schedule-step"
-import { SelectionStep } from "@/components/plans/wizard/selection-step"
+import {
+  findPreset,
+  SelectionStep,
+} from "@/components/plans/wizard/selection-step"
 import { TypeStep } from "@/components/plans/wizard/type-step"
+import {
+  createPlanAction,
+  type CreatePlanErrorCode,
+} from "@/server/actions/plans"
 
 type PlanWizardProps = {
   /** Today in the user's time zone: the default start date. */
@@ -76,6 +87,29 @@ export function PlanWizard({
   const update = (changes: Partial<WizardState>) =>
     setState((current) => ({ ...current, ...changes }))
 
+  const onPreview = step === "preview"
+  const preview = useMemo(
+    () => (onPreview ? previewPlan(state) : null),
+    [onPreview, state]
+  )
+  const [creating, startCreating] = useTransition()
+  const [createError, setCreateError] = useState<CreatePlanErrorCode | null>(
+    null
+  )
+  const canCreate =
+    preview?.plan !== undefined && state.title.trim() !== "" && !creating
+
+  function create() {
+    const request = toNewPlan(state)
+    if (!request) return
+    setCreateError(null)
+    startCreating(async () => {
+      // On success the action redirects to the plan list.
+      const result = await createPlanAction(request)
+      if (result?.error) setCreateError(result.error)
+    })
+  }
+
   const views: Partial<Record<WizardStep, ReactNode>> = {
     type: (
       <TypeStep
@@ -115,15 +149,16 @@ export function PlanWizard({
         onChange={update}
       />
     ),
-    preview: (
+    preview: preview && (
       <PreviewStep
         state={state}
+        result={preview}
         readingWpm={readingWpm}
         onTitleChange={(title) => update({ title })}
       />
     ),
   }
-  const hasNext = stepIndex < steps.length - 1 && views[steps[stepIndex + 1]!]
+  const isLast = stepIndex === steps.length - 1
 
   return (
     <div className="flex flex-col gap-8">
@@ -149,6 +184,15 @@ export function PlanWizard({
 
       {views[step]}
 
+      {createError && (
+        <p
+          role="alert"
+          className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive"
+        >
+          {t(`create.errors.${createError}`)}
+        </p>
+      )}
+
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
         {stepIndex > 0 ? (
           <Button
@@ -164,7 +208,18 @@ export function PlanWizard({
         ) : (
           <span />
         )}
-        {hasNext && (
+        {isLast ? (
+          <Button
+            type="button"
+            size="lg"
+            className="h-11 sm:px-6"
+            disabled={!canCreate}
+            onClick={create}
+          >
+            {creating ? <LoaderCircle className="animate-spin" /> : <Check />}
+            {creating ? t("create.submitting") : t("create.submit")}
+          </Button>
+        ) : (
           <Button
             type="button"
             size="lg"
@@ -173,7 +228,12 @@ export function PlanWizard({
             onClick={() => {
               // Arriving on the preview: suggest a title if there is none.
               if (steps[stepIndex + 1] === "preview" && !state.title.trim()) {
-                update({ title: suggestTitle(state, locale) })
+                const preset = findPreset(state.passages)
+                update({
+                  title:
+                    suggestTitle(state, locale) ||
+                    (preset ? t(`selection.preset.${preset}`) : ""),
+                })
               }
               setStepIndex(stepIndex + 1)
             }}

@@ -5,6 +5,7 @@ import {
   templatePlanInput,
   type IsoDate,
   type Locale,
+  type NewPlan,
   type Passage,
   type PlanInput,
   type PlanPace,
@@ -102,4 +103,29 @@ export function suggestTitle(state: WizardState, locale: Locale): string {
   const bookIds = new Set(state.passages.map((passage) => passage.book))
   const [only] = bookIds
   return bookIds.size === 1 && only ? getBookName(only, locale) : ""
+}
+
+/** The request sent to the server to create the plan. */
+export function toNewPlan(state: WizardState): NewPlan | null {
+  const { title, startDate, activeWeekdays, pace } = state
+  if (state.type === "template") {
+    return state.templateKey
+      ? {
+          source: "template",
+          templateKey: state.templateKey,
+          title: title.trim() || undefined,
+          startDate,
+          activeWeekdays,
+          pace,
+        }
+      : null
+  }
+  return {
+    source: "custom",
+    title,
+    passages: state.passages,
+    startDate,
+    activeWeekdays,
+    pace,
+  }
 }
