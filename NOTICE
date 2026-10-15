@@ -52,6 +52,16 @@ Datasets
   (e.g. chronological order) included in this repository are listed below
   with their source and license as they are added.
 
+  - Verse counts per chapter (packages/core/src/bible/verse-counts.ts):
+    King James Version versification (1769 text, public domain), i.e. 66
+    books, 1,189 chapters and 31,102 verses. They are facts counted from
+    the public-domain text and were checked chapter by chapter against a
+    digital edition of the KJV.
+
+  - Book names and abbreviations (packages/core/src/bible/books.ts): OSIS
+    book identifiers (public standard, https://crosswire.org/osis), Louis
+    Segond 1910 names in French and King James Version names in English.
+
   - Country codes (ISO 3166-1 alpha-2) and flags: flag-icons
     (https://github.com/lipis/flag-icons), MIT License, Copyright (c) 2013
     Panayiotis Lipiridis. Country names are generated at runtime by
