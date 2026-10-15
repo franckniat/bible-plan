@@ -70,6 +70,11 @@ Datasets
     reproduce any published chronological plan; the dates of several books
     are debated, so the order is approximate.
 
+  - M'Cheyne's Calendar for Daily Readings (Robert Murray M'Cheyne, 1842):
+    public domain. The template follows its structure (four readings a day,
+    the Old Testament once, the New Testament and the Psalms twice); the
+    day-by-day split is computed by this project's plan generator.
+
   - Country codes (ISO 3166-1 alpha-2) and flags: flag-icons
     (https://github.com/lipis/flag-icons), MIT License, Copyright (c) 2013
     Panayiotis Lipiridis. Country names are generated at runtime by

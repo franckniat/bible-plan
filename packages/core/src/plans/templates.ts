@@ -66,6 +66,44 @@ const chronologicalBible: PlanTemplate = {
   days: 365,
 }
 
+const mCheyne: PlanTemplate = {
+  key: "mcheyne-1-year",
+  title: { fr: "Le plan de M’Cheyne", en: "M’Cheyne’s reading plan" },
+  description: {
+    fr: "Le calendrier de Robert Murray M’Cheyne (1842) : quatre lectures par jour, deux en famille et deux personnelles. En un an, l’Ancien Testament une fois, le Nouveau Testament et les Psaumes deux fois. Répartition jour par jour calculée par Bible Plan.",
+    en: "Robert Murray M’Cheyne’s calendar (1842): four readings a day, two with the family and two in private. In a year, the Old Testament once, the New Testament and the Psalms twice. Day-by-day split computed by Bible Plan.",
+  },
+  tracks: [
+    {
+      name: { fr: "Famille 1", en: "Family 1" },
+      passages: references(
+        "Gen; Exod; Lev; Num; Deut; Josh; Judg; Ruth; 1 Sam; 2 Sam; 1 Kgs; 2 Kgs; 1 Chr; 2 Chr"
+      ),
+    },
+    { name: { fr: "Famille 2", en: "Family 2" }, passages: wholeBooks("new") },
+    {
+      name: { fr: "Personnel 1", en: "Secret 1" },
+      passages: references(
+        "Ezra; Neh; Esth; Job; Ps; Prov; Eccl; Song; Isa; Jer; Lam; Ezek; Dan; Hos; Joel; Amos; Obad; Jonah; Mic; Nah; Hab; Zeph; Hag; Zech; Mal"
+      ),
+    },
+    {
+      name: { fr: "Personnel 2", en: "Secret 2" },
+      passages: [
+        ...wholeBooks("new").filter(
+          (passage) =>
+            passage.book !== "Matt" &&
+            passage.book !== "Mark" &&
+            passage.book !== "Luke" &&
+            passage.book !== "John"
+        ),
+        ...references("Ps; Matt; Mark; Luke; John"),
+      ],
+    },
+  ],
+  days: 365,
+}
+
 const newTestament90Days: PlanTemplate = {
   key: "new-testament-90-days",
   title: {
@@ -112,6 +150,7 @@ const psalmsAndProverbs: PlanTemplate = {
 export const planTemplates: readonly PlanTemplate[] = [
   bibleInAYear,
   chronologicalBible,
+  mCheyne,
   newTestament90Days,
   gospels30Days,
   psalmsAndProverbs,
