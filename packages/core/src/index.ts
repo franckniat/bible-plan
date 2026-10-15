@@ -1,6 +1,8 @@
 // Pure business logic shared by the web app and the future mobile app.
 // Modules can also be imported by subpath, e.g. "@workspace/core/schemas/common".
 export * from "./bible/books"
+export * from "./bible/parse"
+export * from "./bible/passage"
 export * from "./bible/verse-counts"
 export * from "./countries"
 export * from "./profile/reading-speed"
