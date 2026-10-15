@@ -13,7 +13,7 @@ import {
 import { prisma } from "@workspace/db"
 
 import { redirect } from "@/i18n/navigation"
-import { createPlan } from "@/server/services/plans"
+import { createPlan, setReadingProgress } from "@/server/services/plans"
 import { requireUser } from "@/server/session"
 
 /** Translated by the wizard ("PlanWizard.create.errors.<code>"). */
@@ -46,4 +46,22 @@ export async function createPlanAction(
     href: { pathname: "/plans", query: { created: planId } },
     locale,
   })
+}
+
+/**
+ * Marks a reading of the user's plans as read or not read. Returns false
+ * when the reading is not one of theirs.
+ */
+export async function setReadingProgressAction(
+  readingId: string,
+  read: boolean
+): Promise<{ ok: boolean }> {
+  const user = await requireUser()
+  if (typeof readingId !== "string" || typeof read !== "boolean") {
+    return { ok: false }
+  }
+  const ok = await setReadingProgress(prisma, user.id, readingId, read)
+  // Progress shows on Today, the plan list and the plan page.
+  if (ok) revalidatePath("/[locale]", "layout")
+  return { ok }
 }

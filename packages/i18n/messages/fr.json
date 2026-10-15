@@ -149,7 +149,16 @@
   "App": {
     "today": {
       "greeting": "Bonjour, {name} !",
-      "placeholder": "Votre programme du jour arrive bientôt."
+      "progress": "{completed} / {total} lectures",
+      "next": "Pas de lecture prévue aujourd’hui. Prochaine lecture : {date}.",
+      "finished": "Plan terminé. Bravo pour votre fidélité !",
+      "done": "Lecture du jour faite. À demain !",
+      "empty": {
+        "title": "Aucun plan en cours",
+        "description": "Choisissez un plan pour retrouver ici vos lectures de chaque jour.",
+        "create": "Créer un plan",
+        "templates": "Parcourir les modèles"
+      }
     },
     "home": "Aujourd’hui — Bible Plan",
     "nav": {
@@ -484,5 +493,9 @@
     "readingsPerDay": "{count, plural, one {# lecture par jour} other {# lectures par jour}}",
     "choose": "Commencer ce plan",
     "chooseLabel": "Commencer le plan « {title} »"
+  },
+  "Readings": {
+    "verses": "{verses, plural, one {# verset} other {# versets}}",
+    "saveFailed": "La lecture n’a pas pu être enregistrée. Vérifiez votre connexion et réessayez."
   }
 }
