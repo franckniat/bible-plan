@@ -20,7 +20,7 @@
       "subtitle": "Une seule application pour avancer dans la Parole, à votre rythme.",
       "plans": {
         "title": "Un plan qui vous ressemble",
-        "description": "Toute la Bible en un an, le Nouveau Testament en 90 jours ou 15 minutes par jour : les lectures sont réparties selon vos jours disponibles, et le plan s’adapte si vous prenez du retard."
+        "description": "Toute la Bible en un an, le Nouveau Testament en 90 jours ou 15 minutes par jour : les lectures sont réparties selon vos jours disponibles, et le plan s’adapte si vous prenez du retard."
       },
       "reminders": {
         "title": "Des rappels au bon moment",
@@ -37,7 +37,7 @@
     },
     "closing": {
       "title": "Soyez parmi les premiers lecteurs",
-      "description": "Inscrivez-vous : nous vous préviendrons dès l’ouverture de Bible Plan.",
+      "description": "Inscrivez-vous : nous vous préviendrons dès l’ouverture de Bible Plan.",
       "cta": "Rejoindre la liste d’attente"
     },
     "footer": {
@@ -66,12 +66,12 @@
     "consent": "J’accepte que Bible Plan conserve ces informations pour me prévenir du lancement (<link>confidentialité</link>).",
     "submit": "Rejoindre la liste d’attente",
     "submitting": "Inscription…",
-    "successTitle": "Merci, vous êtes sur la liste !",
+    "successTitle": "Merci, vous êtes sur la liste !",
     "successDescription": "Nous vous préviendrons par email dès que Bible Plan sera prêt. En attendant, partagez-le avec ceux qui aimeraient lire la Bible avec régularité.",
     "shareWhatsApp": "Partager sur WhatsApp",
     "copyLink": "Copier le lien",
     "linkCopied": "Lien copié",
-    "shareMessage": "Je viens de m’inscrire à Bible Plan, une application pour lire la Bible à son rythme. Rejoins la liste d’attente : {url}",
+    "shareMessage": "Je viens de m’inscrire à Bible Plan, une application pour lire la Bible à son rythme. Rejoins la liste d’attente : {url}",
     "errors": {
       "invalid_email": "Saisissez une adresse email valide.",
       "too_long": "Ce texte est trop long.",
@@ -82,7 +82,7 @@
     }
   },
   "Legal": {
-    "updated": "Dernière mise à jour : {date, date, long}",
+    "updated": "Dernière mise à jour : {date, date, long}",
     "privacy": {
       "title": "Politique de confidentialité",
       "description": "Quelles données Bible Plan collecte, pourquoi, et comment vous gardez la main dessus."
@@ -115,17 +115,17 @@
     "test": {
       "subject": "Email de test de Bible Plan",
       "preview": "L’envoi d’emails fonctionne.",
-      "heading": "Tout fonctionne !",
+      "heading": "Tout fonctionne !",
       "body": "Cet email confirme que l’envoi d’emails de Bible Plan est bien configuré."
     },
     "verifyEmail": {
       "subject": "Confirmez votre adresse email",
       "preview": "Plus qu’une étape pour commencer à lire avec Bible Plan.",
-      "heading": "Bienvenue, {name} !",
+      "heading": "Bienvenue, {name} !",
       "body": "Confirmez votre adresse email pour activer votre compte Bible Plan.",
       "button": "Confirmer mon email",
       "expiry": "Ce lien est valable une heure.",
-      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
+      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
     },
     "resetPassword": {
       "subject": "Réinitialisez votre mot de passe",
@@ -133,8 +133,8 @@
       "heading": "Nouveau mot de passe",
       "body": "Vous avez demandé à réinitialiser le mot de passe de votre compte Bible Plan.",
       "button": "Choisir un nouveau mot de passe",
-      "expiry": "Ce lien est valable une heure. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email : votre mot de passe reste inchangé.",
-      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
+      "expiry": "Ce lien est valable une heure. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email : votre mot de passe reste inchangé.",
+      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
     },
     "magicLink": {
       "subject": "Votre lien de connexion",
@@ -143,12 +143,12 @@
       "body": "Cliquez sur le bouton ci-dessous pour vous connecter, sans mot de passe.",
       "button": "Me connecter",
       "expiry": "Ce lien est valable 5 minutes et ne fonctionne qu’une fois. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.",
-      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
+      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
     }
   },
   "App": {
     "today": {
-      "greeting": "Bonjour, {name} !",
+      "greeting": "Bonjour, {name} !",
       "placeholder": "Votre programme du jour arrive bientôt."
     },
     "home": "Aujourd’hui — Bible Plan",
@@ -189,12 +189,12 @@
       "hidePassword": "Masquer le mot de passe"
     },
     "signIn": {
-      "title": "Bon retour !",
+      "title": "Bon retour !",
       "description": "Connectez-vous pour retrouver vos plans de lecture.",
       "submit": "Se connecter",
       "submitting": "Connexion…",
-      "forgotPassword": "Mot de passe oublié ?",
-      "noAccount": "Pas encore de compte ?",
+      "forgotPassword": "Mot de passe oublié ?",
+      "noAccount": "Pas encore de compte ?",
       "signUpLink": "Créer un compte"
     },
     "signUp": {
@@ -202,7 +202,7 @@
       "description": "Commencez à lire la Bible à votre rythme.",
       "submit": "Créer mon compte",
       "submitting": "Création…",
-      "hasAccount": "Déjà un compte ?",
+      "hasAccount": "Déjà un compte ?",
       "signInLink": "Se connecter",
       "legal": "En créant un compte, vous acceptez les <terms>conditions d’utilisation</terms> et la <privacy>politique de confidentialité</privacy>."
     },
@@ -228,7 +228,7 @@
     },
     "verifyEmail": {
       "successTitle": "Adresse email confirmée",
-      "successDescription": "Votre compte est activé. Bienvenue dans Bible Plan !",
+      "successDescription": "Votre compte est activé. Bienvenue dans Bible Plan !",
       "start": "Commencer",
       "errorTitle": "Lien invalide ou expiré",
       "errorDescription": "Ce lien de confirmation n’est plus valide. Saisissez votre email pour en recevoir un nouveau.",
@@ -239,7 +239,7 @@
     },
     "forgotPassword": {
       "title": "Mot de passe oublié",
-      "description": "Saisissez votre email : nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+      "description": "Saisissez votre email : nous vous enverrons un lien pour choisir un nouveau mot de passe.",
       "submit": "Envoyer le lien",
       "submitting": "Envoi…",
       "sent": "Si un compte existe avec cette adresse, vous allez recevoir un email avec un lien valable une heure.",
@@ -267,7 +267,7 @@
     "magicLink": {
       "switchToMagicLink": "Recevoir un lien de connexion par email",
       "switchToPassword": "Se connecter avec un mot de passe",
-      "description": "Nous vous envoyons un lien : un clic suffit pour vous connecter, sans mot de passe.",
+      "description": "Nous vous envoyons un lien : un clic suffit pour vous connecter, sans mot de passe.",
       "submit": "Recevoir le lien",
       "submitting": "Envoi…",
       "sent": "Un lien de connexion vient de vous être envoyé. Il est valable 5 minutes.",
@@ -323,7 +323,7 @@
     },
     "appearance": {
       "title": "Apparence",
-      "description": "Le thème « Système » suit le réglage de votre appareil. Raccourci : touche D."
+      "description": "Le thème « Système » suit le réglage de votre appareil. Raccourci : touche D."
     }
   },
   "Theme": {
@@ -347,10 +347,10 @@
       "next": "Continuer"
     },
     "type": {
-      "legend": "Comment voulez-vous construire votre plan ?",
+      "legend": "Comment voulez-vous construire votre plan ?",
       "template": {
         "label": "À partir d’un modèle",
-        "description": "Un plan éprouvé, prêt à suivre : la Bible en un an, M’Cheyne, les Évangiles…"
+        "description": "Un plan éprouvé, prêt à suivre : la Bible en un an, M’Cheyne, les Évangiles…"
       },
       "duration": {
         "label": "En un nombre de jours",
@@ -358,7 +358,7 @@
       },
       "time": {
         "label": "Selon mon temps",
-        "description": "Indiquez le temps que vous avez chaque jour : la durée du plan en découle."
+        "description": "Indiquez le temps que vous avez chaque jour : la durée du plan en découle."
       },
       "free": {
         "label": "Sélection libre",
@@ -384,13 +384,13 @@
       },
       "reference": {
         "label": "Ajouter un passage précis",
-        "placeholder": "Ex. : Jean 3-5 ; Ps 23",
+        "placeholder": "Ex. : Jean 3-5 ; Ps 23",
         "add": "Ajouter",
-        "invalid": "Référence non reconnue. Exemples : Jn 3, Genèse 1-11, Ps 119:1-88."
+        "invalid": "Référence non reconnue. Exemples : Jn 3, Genèse 1-11, Ps 119:1-88."
       },
       "list": {
         "title": "Votre sélection",
-        "empty": "Rien n’est sélectionné pour l’instant : choisissez des livres ou un raccourci.",
+        "empty": "Rien n’est sélectionné pour l’instant : choisissez des livres ou un raccourci.",
         "summary": "{chapters, plural, one {# chapitre} other {# chapitres}} · {verses, plural, one {# verset} other {# versets}}",
         "from": "Premier chapitre de {passage}",
         "to": "Dernier chapitre de {passage}",
@@ -403,7 +403,7 @@
       "startDate": "Date de début",
       "weekdays": {
         "legend": "Jours de lecture",
-        "hint": "Ne gardez que les jours qui vous conviennent : le plan s’y adapte.",
+        "hint": "Ne gardez que les jours qui vous conviennent : le plan s’y adapte.",
         "required": "Choisissez au moins un jour."
       },
       "mode": {
@@ -423,12 +423,12 @@
       "minutes": {
         "label": "Minutes par jour, en moyenne",
         "quick": "{minutes} min",
-        "hint": "C’est un repère pour fixer la durée du plan : certains jours seront un peu plus longs, d’autres plus courts. Estimation à {wpm} mots par minute (<settings>modifier ma vitesse de lecture</settings>)."
+        "hint": "C’est un repère pour fixer la durée du plan : certains jours seront un peu plus longs, d’autres plus courts. Estimation à {wpm} mots par minute (<settings>modifier ma vitesse de lecture</settings>)."
       }
     },
     "preview": {
       "title": "Nom du plan",
-      "titlePlaceholder": "Ex. : Les Évangiles avant Pâques",
+      "titlePlaceholder": "Ex. : Les Évangiles avant Pâques",
       "summary": {
         "dates": "Du … au …",
         "datesValue": "{start} – {end}",
@@ -438,14 +438,14 @@
         "loadValue": "{verses, plural, one {# verset} other {# versets}} · ≈ {minutes} min"
       },
       "calendar": "Calendrier",
-      "track": "{name} :",
+      "track": "{name} :",
       "showAll": "Afficher les {days} jours",
       "showLess": "Afficher moins",
       "errors": {
-        "too_many_days": "Il y a plus de jours que de versets à lire : raccourcissez la durée ou ajoutez des passages.",
-        "no_active_days": "Aucun jour de lecture entre ces dates : avancez la date de fin ou ajoutez des jours.",
-        "too_long": "Ce plan dépasserait dix ans : choisissez une durée plus courte ou plus de temps par jour.",
-        "invalid": "Ce plan ne peut pas être calculé : vérifiez les étapes précédentes."
+        "too_many_days": "Il y a plus de jours que de versets à lire : raccourcissez la durée ou ajoutez des passages.",
+        "no_active_days": "Aucun jour de lecture entre ces dates : avancez la date de fin ou ajoutez des jours.",
+        "too_long": "Ce plan dépasserait dix ans : choisissez une durée plus courte ou plus de temps par jour.",
+        "invalid": "Ce plan ne peut pas être calculé : vérifiez les étapes précédentes."
       },
       "titleRequired": "Donnez un nom à votre plan pour le créer."
     },
@@ -453,10 +453,10 @@
       "submit": "Créer le plan",
       "submitting": "Création…",
       "errors": {
-        "too_many_days": "Il y a plus de jours que de versets à lire : raccourcissez la durée ou ajoutez des passages.",
-        "no_active_days": "Aucun jour de lecture entre ces dates : avancez la date de fin ou ajoutez des jours.",
-        "too_long": "Ce plan dépasserait dix ans : choisissez une durée plus courte ou plus de temps par jour.",
-        "invalid": "Certaines informations ne sont pas valides : vérifiez les étapes précédentes.",
+        "too_many_days": "Il y a plus de jours que de versets à lire : raccourcissez la durée ou ajoutez des passages.",
+        "no_active_days": "Aucun jour de lecture entre ces dates : avancez la date de fin ou ajoutez des jours.",
+        "too_long": "Ce plan dépasserait dix ans : choisissez une durée plus courte ou plus de temps par jour.",
+        "invalid": "Certaines informations ne sont pas valides : vérifiez les étapes précédentes.",
         "unexpected": "Le plan n’a pas pu être créé. Veuillez réessayer."
       }
     }
@@ -465,7 +465,7 @@
     "title": "Mes plans",
     "description": "Les plans de lecture que vous suivez.",
     "new": "Nouveau plan",
-    "created": "Votre plan est prêt. Bonne lecture !",
+    "created": "Votre plan est prêt. Bonne lecture !",
     "dates": "{start} – {end}",
     "days": "{days, plural, one {# jour de lecture} other {# jours de lecture}}",
     "progress": "{completed, plural, one {# lecture faite} other {# lectures faites}} sur {total}",
@@ -483,6 +483,6 @@
     "days": "{days, plural, one {# jour} other {# jours}}",
     "readingsPerDay": "{count, plural, one {# lecture par jour} other {# lectures par jour}}",
     "choose": "Commencer ce plan",
-    "chooseLabel": "Commencer le plan « {title} »"
+    "chooseLabel": "Commencer le plan « {title} »"
   }
 }

@@ -58,4 +58,12 @@ describe("messages", async () => {
       }
     }
   )
+
+  // French puts a space before ; : ! ? and inside « »: it must be a no-break
+  // space, or the sign can start a new line.
+  it("fr uses no-break spaces around punctuation", () => {
+    for (const [key, message] of Object.entries(reference!.messages)) {
+      expect(message, key).not.toMatch(/ [;:!?»]|« /)
+    }
+  })
 })

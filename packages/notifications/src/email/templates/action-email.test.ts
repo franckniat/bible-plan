@@ -7,7 +7,8 @@ const url =
 
 describe("renderVerifyEmail", () => {
   it.each([
-    ["fr", "Confirmez votre adresse email", "Bienvenue, Marie !"],
+    // French puts a narrow no-break space before "!".
+    ["fr", "Confirmez votre adresse email", "Bienvenue, Marie\u202F!"],
     ["en", "Confirm your email address", "Welcome, Marie!"],
   ] as const)(
     "renders the %s version with the link",
