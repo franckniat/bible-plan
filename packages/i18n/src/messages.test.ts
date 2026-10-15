@@ -18,9 +18,15 @@ function flatten(tree: Tree, prefix = ""): Record<string, string> {
   )
 }
 
-/** ICU arguments (`{name}`) and rich-text tags (`<tag>`) used by a message. */
+/**
+ * ICU arguments (`{name}`, `{name, plural, ...}`) and rich-text tags
+ * (`<tag>`) used by a message. Text inside a plural branch such as
+ * `{One reading}` is not an argument.
+ */
 function placeholders(message: string): string[] {
-  const args = [...message.matchAll(/\{(\w+)/g)].map((match) => `{${match[1]}}`)
+  const args = [...message.matchAll(/\{(\w+)\s*[},]/g)].map(
+    (match) => `{${match[1]}}`
+  )
   const tags = [...message.matchAll(/<(\w+)>/g)].map((match) => `<${match[1]}>`)
   return [...new Set([...args, ...tags])].sort()
 }
