@@ -1,5 +1,6 @@
+import { books, type Testament } from "../bible/books"
 import { parseReference } from "../bible/parse"
-import type { Passage } from "../bible/passage"
+import { bookPassage, type Passage } from "../bible/passage"
 import type { IsoDate, Locale, Weekday } from "../schemas/common"
 import type { PlanInput, PlanPace } from "./schema"
 
@@ -32,8 +33,73 @@ export function references(text: string): Passage[] {
   return passages
 }
 
+/** Whole books of a testament, or of the whole Bible, in canonical order. */
+function wholeBooks(testament?: Testament): Passage[] {
+  return books
+    .filter((book) => !testament || book.testament === testament)
+    .map((book) => bookPassage(book.id))
+}
+
+const bibleInAYear: PlanTemplate = {
+  key: "bible-1-year",
+  title: { fr: "La Bible en un an", en: "The Bible in a year" },
+  description: {
+    fr: "Toute la Bible, de la Genèse à l’Apocalypse, dans l’ordre des livres : environ 85 versets par jour pendant 365 jours.",
+    en: "The whole Bible, from Genesis to Revelation, in book order: about 85 verses a day for 365 days.",
+  },
+  tracks: [{ passages: wholeBooks() }],
+  days: 365,
+}
+
+const newTestament90Days: PlanTemplate = {
+  key: "new-testament-90-days",
+  title: {
+    fr: "Le Nouveau Testament en 90 jours",
+    en: "The New Testament in 90 days",
+  },
+  description: {
+    fr: "De Matthieu à l’Apocalypse en trois mois, environ trois chapitres par jour.",
+    en: "From Matthew to Revelation in three months, about three chapters a day.",
+  },
+  tracks: [{ passages: wholeBooks("new") }],
+  days: 90,
+}
+
+const gospels30Days: PlanTemplate = {
+  key: "gospels-30-days",
+  title: { fr: "Les Évangiles en 30 jours", en: "The Gospels in 30 days" },
+  description: {
+    fr: "La vie de Jésus selon Matthieu, Marc, Luc et Jean, environ trois chapitres par jour pendant un mois.",
+    en: "The life of Jesus according to Matthew, Mark, Luke and John, about three chapters a day for a month.",
+  },
+  tracks: [{ passages: references("Matt; Mark; Luke; John") }],
+  days: 30,
+}
+
+const psalmsAndProverbs: PlanTemplate = {
+  key: "psalms-proverbs-31-days",
+  title: {
+    fr: "Psaumes et Proverbes en un mois",
+    en: "Psalms and Proverbs in a month",
+  },
+  description: {
+    fr: "Chaque jour quelques psaumes et un chapitre des Proverbes : les 150 psaumes et les 31 chapitres des Proverbes en 31 jours.",
+    en: "Every day a few psalms and one chapter of Proverbs: all 150 psalms and the 31 chapters of Proverbs in 31 days.",
+  },
+  tracks: [
+    { name: { fr: "Psaumes", en: "Psalms" }, passages: references("Ps") },
+    { name: { fr: "Proverbes", en: "Proverbs" }, passages: references("Prov") },
+  ],
+  days: 31,
+}
+
 /** Plans ready to adopt, in the order they are offered. */
-export const planTemplates: readonly PlanTemplate[] = []
+export const planTemplates: readonly PlanTemplate[] = [
+  bibleInAYear,
+  newTestament90Days,
+  gospels30Days,
+  psalmsAndProverbs,
+]
 
 export function getPlanTemplate(key: string): PlanTemplate | undefined {
   return planTemplates.find((template) => template.key === key)
