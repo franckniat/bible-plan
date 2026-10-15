@@ -4,6 +4,7 @@ import { books } from "../bible/books"
 import { formatPassages } from "../bible/format"
 import { parseReference } from "../bible/parse"
 import { bookPassage } from "../bible/passage"
+import { estimateReadingMinutes } from "../bible/weight"
 import { getWeekday } from "./dates"
 import { generatePlan } from "./generate"
 import { PlanGenerationError, type PlanDay, type PlanInput } from "./schema"
@@ -82,6 +83,37 @@ describe("generatePlan", () => {
         )
       )
     ).toEqual(["Genèse 1–3", "Genèse 4–6"])
+  })
+
+  it("never goes beyond the minutes per day", () => {
+    const plan = generatePlan({
+      tracks: [{ passages: newTestament }],
+      startDate: "2026-11-01",
+      activeWeekdays: [1, 2, 3, 4, 5, 6],
+      pace: { mode: "minutesPerDay", minutes: 15, readingWpm: 180 },
+    })
+    const minutes = plan.days.map((day) =>
+      estimateReadingMinutes(day.verses, 180)
+    )
+    expect(Math.max(...minutes)).toBeLessThanOrEqual(15)
+    // 7,957 verses at 108 verses (15 min) a day: at least 74 days. Whole
+    // chapters rarely fill a day exactly, so it takes a few more.
+    expect(plan.days.length).toBeGreaterThanOrEqual(74)
+    expect(plan.days.length).toBeLessThanOrEqual(90)
+    expect(plan.days.every((day) => getWeekday(day.date) !== 0)).toBe(true)
+    expect(plan.days.reduce((total, day) => total + day.verses, 0)).toBe(7957)
+  })
+
+  it("cuts chapters longer than the time available", () => {
+    const plan = generatePlan({
+      tracks: [track("Ps 119")],
+      startDate: "2026-10-01",
+      pace: { mode: "minutesPerDay", minutes: 5, readingWpm: 130 },
+    })
+    // 5 minutes at 130 words/min: 26 verses at most.
+    expect(plan.days).toHaveLength(7)
+    expect(plan.days.every((day) => day.verses <= 26)).toBe(true)
+    expect(readings(plan.days[0]!)).toBe("Psaume 119:1–26")
   })
 
   it("rejects an invalid input", () => {
