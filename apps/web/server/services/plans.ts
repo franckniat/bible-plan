@@ -299,3 +299,43 @@ export async function getPlan(
     days,
   }
 }
+
+/**
+ * Marks a reading as read (or not read) for the user. Idempotent: marking
+ * twice keeps one record, even when two requests arrive together. Returns
+ * false when the reading does not exist or the user does not follow its
+ * plan.
+ */
+export async function setReadingProgress(
+  db: PlansDb,
+  userId: string,
+  readingId: string,
+  read: boolean
+): Promise<boolean> {
+  const reading = await db.planReading.findUnique({
+    where: { id: readingId },
+    select: {
+      day: {
+        select: {
+          plan: {
+            select: {
+              enrollments: { where: { userId }, select: { id: true } },
+            },
+          },
+        },
+      },
+    },
+  })
+  const enrollmentId = reading?.day.plan.enrollments[0]?.id
+  if (!enrollmentId) return false
+
+  if (read) {
+    await db.readingProgress.createMany({
+      data: [{ enrollmentId, readingId }],
+      skipDuplicates: true,
+    })
+  } else {
+    await db.readingProgress.deleteMany({ where: { enrollmentId, readingId } })
+  }
+  return true
+}
