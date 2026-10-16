@@ -12,6 +12,7 @@ import {
   type Locale,
 } from "@workspace/core"
 
+import { RecentReadings } from "@/components/reader/recent-readings"
 import { ResumeReading } from "@/components/reader/resume-reading"
 import { Link } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
@@ -46,6 +47,8 @@ export default async function BibleIndexPage() {
         </div>
         <ResumeReading />
       </div>
+
+      <RecentReadings />
 
       {(["old", "new"] as const).map((testament) => (
         <section
