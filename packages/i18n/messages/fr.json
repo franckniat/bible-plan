@@ -586,6 +586,8 @@
       "done": "Lu",
       "backToToday": "Retour à Aujourd’hui",
       "failed": "La lecture n’a pas pu être enregistrée. Vérifiez votre connexion et réessayez."
-    }
+    },
+    "youVersion": "Lire dans une autre traduction (YouVersion)",
+    "newTab": "(s’ouvre dans un nouvel onglet)"
   }
 }

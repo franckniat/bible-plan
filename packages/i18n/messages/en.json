@@ -586,6 +586,8 @@
       "done": "Read",
       "backToToday": "Back to Today",
       "failed": "The reading could not be saved. Check your connection and try again."
-    }
+    },
+    "youVersion": "Read in another translation (YouVersion)",
+    "newTab": "(opens in a new tab)"
   }
 }

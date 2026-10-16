@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { getLocale, getTranslations } from "next-intl/server"
@@ -7,6 +7,7 @@ import {
   defaultBibleVersion,
   getBibleVersion,
   isBibleVersionId,
+  youVersionUrl,
 } from "@workspace/bible-data"
 import {
   adjacentChapter,
@@ -88,7 +89,19 @@ export default async function ReadPage({
         <h1 className="font-heading text-3xl font-semibold">
           {formatPassage(passage, locale)}
         </h1>
-        <VersionSwitch version={version.id} />
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <VersionSwitch version={version.id} />
+          <a
+            href={youVersionUrl(passage, version.id)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-sm text-brand-night/70 underline-offset-4 hover:underline dark:text-neutral-100/70"
+          >
+            {t("youVersion")}
+            <ExternalLink aria-hidden className="size-3.5" />
+            <span className="sr-only">{t("newTab")}</span>
+          </a>
+        </div>
       </header>
 
       <PassageText passage={passage} version={versionId} className="text-lg" />
