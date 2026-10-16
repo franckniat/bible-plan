@@ -7,11 +7,14 @@ import { useEffect, useState } from "react"
 import {
   displayVerse,
   fetchChaptersFrom,
+  getBibleVersion,
   loadPassage,
+  mapPassage,
   type BibleVersionId,
   type PassageText as Text,
 } from "@workspace/bible-data"
 import {
+  chaptersPassage,
   getBookName,
   toPassageSlug,
   type Locale,
@@ -23,21 +26,31 @@ import { saveLastRead } from "@/components/reader/last-read"
 
 const fetchChapter = fetchChaptersFrom("/bible")
 
-/** The text of a passage, loaded from the static chapter files. */
+/**
+ * The text of a passage, loaded from the static chapter files. With
+ * `wholeChapter`, the passage (part of one chapter) is shown within its whole
+ * chapter, the verses around it dimmed.
+ */
 export function PassageText({
   passage,
   version,
   showVerseNumbers = true,
+  wholeChapter = false,
   className,
 }: {
   passage: Passage
   version: BibleVersionId
   showVerseNumbers?: boolean
+  wholeChapter?: boolean
   className?: string
 }) {
   const t = useTranslations("Reader")
   const locale = useLocale() as Locale
-  const key = `${version}:${JSON.stringify(passage)}`
+  const key = `${version}:${JSON.stringify(passage)}:${wholeChapter}`
+  // The passage's verses, in the version's numbering, when shown in context.
+  const range = wholeChapter
+    ? mapPassage(passage, getBibleVersion(version))[0]
+    : undefined
   // The last result, with the passage and version it is for: anything
   // else is still loading.
   const [result, setResult] = useState<
@@ -46,7 +59,10 @@ export function PassageText({
 
   useEffect(() => {
     let current = true
-    loadPassage(passage, version, fetchChapter)
+    const shown = wholeChapter
+      ? chaptersPassage(passage.book, passage.start.chapter)
+      : passage
+    loadPassage(shown, version, fetchChapter)
       .then((text) => {
         saveLastRead(toPassageSlug(passage))
         if (current) setResult({ key, text })
@@ -93,8 +109,14 @@ export function PassageText({
           <p className="font-heading leading-[1.85]">
             {verses.map(([number, verse], index) => {
               const { paragraph, segments } = displayVerse(version, verse)
+              const around = range && (number < range.from || number > range.to)
               return (
-                <span key={number}>
+                <span
+                  key={number}
+                  className={cn(
+                    around && "text-brand-night/45 dark:text-neutral-100/45"
+                  )}
+                >
                   {paragraph && index > 0 && (
                     <span aria-hidden className="block h-3" />
                   )}

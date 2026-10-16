@@ -597,6 +597,8 @@
       "previous": "Étape précédente : {passage}",
       "next": "Suivant : {passage}"
     },
+    "wholeChapter": "Lire tout le chapitre",
+    "passageOnly": "Revenir au passage",
     "youVersion": "Lire dans une autre traduction (YouVersion)",
     "newTab": "(s’ouvre dans un nouvel onglet)",
     "numbering": "Dans la {version}, ces versets portent les numéros {verses}.",

@@ -1,11 +1,15 @@
 "use client"
 
-import { Hash, Minus, Plus } from "lucide-react"
+import { BookOpenText, Hash, Minus, Plus } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { useSyncExternalStore } from "react"
+import { useState, useSyncExternalStore } from "react"
 
 import type { BibleVersionId } from "@workspace/bible-data"
-import type { Passage } from "@workspace/core"
+import {
+  coversWholeChapters,
+  toPassageSlug,
+  type Passage,
+} from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -64,7 +68,10 @@ function save(display: Display) {
   window.dispatchEvent(new Event(CHANGE_EVENT))
 }
 
-/** The passage with the reader's display settings (size, verse numbers). */
+/**
+ * The passage with the reader's display settings (size, verse numbers). Part
+ * of a chapter can be read within the whole chapter.
+ */
 export function ReaderText({
   passage,
   version,
@@ -73,53 +80,75 @@ export function ReaderText({
   version: BibleVersionId
 }) {
   const t = useTranslations("Reader.display")
+  const tReader = useTranslations("Reader")
   const display = parse(useSyncExternalStore(subscribe, read, () => ""))
+  const partial =
+    passage.start.chapter === passage.end.chapter &&
+    !coversWholeChapters(passage)
+  // The passage shown in its whole chapter, until another one is opened.
+  const slug = toPassageSlug(passage)
+  const [wholeFor, setWholeFor] = useState<string | null>(null)
+  const wholeChapter = partial && wholeFor === slug
 
   return (
     <div className="flex flex-col gap-4">
-      <div
-        role="toolbar"
-        aria-label={t("label")}
-        className="flex flex-wrap items-center gap-1 self-end"
-      >
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={display.size === 0}
-          onClick={() => save({ ...display, size: display.size - 1 })}
-          aria-label={t("smaller")}
-          title={t("smaller")}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        {partial ? (
+          <Button
+            variant="outline"
+            onClick={() => setWholeFor(wholeChapter ? null : slug)}
+          >
+            <BookOpenText />
+            {wholeChapter ? tReader("passageOnly") : tReader("wholeChapter")}
+          </Button>
+        ) : (
+          <span />
+        )}
+        <div
+          role="toolbar"
+          aria-label={t("label")}
+          className="flex flex-wrap items-center gap-1"
         >
-          <Minus />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={display.size === sizes.length - 1}
-          onClick={() => save({ ...display, size: display.size + 1 })}
-          aria-label={t("larger")}
-          title={t("larger")}
-        >
-          <Plus />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-pressed={display.verseNumbers}
-          onClick={() =>
-            save({ ...display, verseNumbers: !display.verseNumbers })
-          }
-          aria-label={t("verseNumbers")}
-          title={t("verseNumbers")}
-          className={cn(display.verseNumbers && "text-brand-gold")}
-        >
-          <Hash />
-        </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={display.size === 0}
+            onClick={() => save({ ...display, size: display.size - 1 })}
+            aria-label={t("smaller")}
+            title={t("smaller")}
+          >
+            <Minus />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={display.size === sizes.length - 1}
+            onClick={() => save({ ...display, size: display.size + 1 })}
+            aria-label={t("larger")}
+            title={t("larger")}
+          >
+            <Plus />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-pressed={display.verseNumbers}
+            onClick={() =>
+              save({ ...display, verseNumbers: !display.verseNumbers })
+            }
+            aria-label={t("verseNumbers")}
+            title={t("verseNumbers")}
+            className={cn(display.verseNumbers && "text-brand-gold")}
+          >
+            <Hash />
+          </Button>
+        </div>
       </div>
       <PassageText
         passage={passage}
         version={version}
         showVerseNumbers={display.verseNumbers}
+        wholeChapter={wholeChapter}
         className={sizes[display.size]}
       />
     </div>
