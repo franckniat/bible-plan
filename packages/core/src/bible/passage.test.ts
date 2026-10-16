@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import {
   bookPassage,
+  chapterSteps,
   chaptersPassage,
   comparePositions,
   coversWholeChapters,
@@ -53,5 +54,21 @@ describe("passages", () => {
     expect(coversWholeChapters(chaptersPassage("Gen", 1, 2))).toBe(true)
     expect(coversWholeChapters(passage("Gen", [1, 1], [2, 3]))).toBe(false)
     expect(coversWholeChapters(passage("Gen", [1, 2], [1, 31]))).toBe(false)
+  })
+
+  it("cuts a passage into one step per chapter", () => {
+    expect(chapterSteps(chaptersPassage("Matt", 1, 3))).toEqual([
+      chaptersPassage("Matt", 1),
+      chaptersPassage("Matt", 2),
+      chaptersPassage("Matt", 3),
+    ])
+    expect(chapterSteps(passage("Matt", [1, 18], [3, 10]))).toEqual([
+      passage("Matt", [1, 18], [1, 25]),
+      chaptersPassage("Matt", 2),
+      passage("Matt", [3, 1], [3, 10]),
+    ])
+    expect(chapterSteps(passage("Ps", [119, 1], [119, 88]))).toEqual([
+      passage("Ps", [119, 1], [119, 88]),
+    ])
   })
 })

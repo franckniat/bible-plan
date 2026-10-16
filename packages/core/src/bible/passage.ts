@@ -54,6 +54,25 @@ export function coversWholeChapters({ book, start, end }: Passage): boolean {
   return start.verse === 1 && end.verse === getVerseCount(book, end.chapter)
 }
 
+/**
+ * The passage cut into one step per chapter, to be read one page at a time:
+ * "Mt 1:18–3:10" gives Mt 1:18–25, Mt 2 and Mt 3:1–10.
+ */
+export function chapterSteps({ book, start, end }: Passage): Passage[] {
+  return Array.from({ length: end.chapter - start.chapter + 1 }, (_, index) => {
+    const chapter = start.chapter + index
+    return {
+      book,
+      start: { chapter, verse: chapter === start.chapter ? start.verse : 1 },
+      end: {
+        chapter,
+        verse:
+          chapter === end.chapter ? end.verse : getVerseCount(book, chapter),
+      },
+    }
+  })
+}
+
 const versePositionSchema = z.object({
   chapter: z.int().min(1),
   verse: z.int().min(1),
