@@ -37,15 +37,22 @@ Bible texts
   The application only ships Bible translations that are in the public
   domain. They are not covered by the AGPL and remain free for anyone to use:
 
-  - Louis Segond 1910 (French) - public domain.
-  - King James Version (English) - public domain, except in the United
-    Kingdom where it is subject to Crown rights.
+  - Louis Segond 1910 (French) - public domain ("Cette Bible est dans le
+    domaine public"). Source: eBible.org, "fraLSG", VPL edition
+    (https://ebible.org/find/details.php?id=fraLSG).
+    Stored in packages/bible-data/data/lsg1910.
+  - King James Version, 1769 standard text (English) - public domain,
+    except in the United Kingdom where printing it is subject to Crown
+    rights (letters patent). Source: eBible.org, "eng-kjv2006", VPL
+    edition, without Strong's numbers
+    (https://ebible.org/find/details.php?id=eng-kjv2006).
+    Stored in packages/bible-data/data/kjv.
 
-  Source files come from eBible.org (https://ebible.org) and are converted
-  by the project's import script. Exact sources are listed in
-  packages/bible-data once added. Copyrighted modern translations are never
-  included; the application only links to external readers (e.g. YouVersion)
-  for them.
+  The texts are converted, not edited, by
+  packages/bible-data/scripts/import-ebible.ts (one JSON file per chapter,
+  Unicode normalization and spacing only). Copyrighted modern translations
+  are never included; the application only links to external readers
+  (e.g. YouVersion) for them.
 
 Datasets
   Bible structure data (books, chapters, verse counts) and reading orders
