@@ -8,12 +8,17 @@ import type { IsoDate } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { ChecklistReading } from "@/components/plans/reading-checklist"
+import {
+  ReadingChecklist,
+  type ChecklistReading,
+} from "@/components/plans/reading-checklist"
 import { formatIsoDate } from "@/lib/dates"
 
 export type CalendarDay = {
   id: string
   date: IsoDate
+  /** Day number in the plan. */
+  day: number
   readings: ChecklistReading[]
 }
 
@@ -54,23 +59,30 @@ const weekdays = Array.from(
   (_, index) => `2024-01-0${index + 1}` as IsoDate
 )
 
-/** The plan as a month grid: each day shows whether it is read, late or to come. */
+/**
+ * The plan as a month grid: each day shows whether it is read, late or to
+ * come. Choosing a day shows its readings below.
+ */
 export function PlanCalendar({
   days,
   today,
   showLate,
-  initialMonth,
+  initialDate,
 }: {
   days: CalendarDay[]
   today: IsoDate
   /** False for an archived plan: nothing is late any more. */
   showLate: boolean
-  initialMonth: string
+  /** The day chosen first; its month is shown. */
+  initialDate: IsoDate
 }) {
   const t = useTranslations("PlanDetail")
   const locale = useLocale()
+  const initialMonth = initialDate.slice(0, 7)
   const [month, setMonth] = useState(initialMonth)
+  const [selectedDate, setSelectedDate] = useState(initialDate)
   const byDate = new Map(days.map((day) => [day.date, day]))
+  const selected = byDate.get(selectedDate)
   const firstMonth = days[0]?.date.slice(0, 7) ?? initialMonth
   const lastMonth = days.at(-1)?.date.slice(0, 7) ?? initialMonth
 
@@ -130,28 +142,55 @@ export function PlanCalendar({
           const day = byDate.get(date)
           const status = day && statusOf(day)
           const isToday = date === today
-          return (
-            <span
-              key={date}
-              aria-current={isToday ? "date" : undefined}
-              className={cn(
-                "flex aspect-square items-center justify-center rounded-xl text-sm tabular-nums",
-                status
-                  ? statusClassName[status]
-                  : "text-brand-night/35 dark:text-neutral-100/35",
-                isToday &&
-                  "font-bold outline-2 outline-offset-2 outline-brand-night dark:outline-neutral-100"
-              )}
-            >
+          const className = cn(
+            "relative flex aspect-square items-center justify-center rounded-xl text-sm tabular-nums",
+            status
+              ? statusClassName[status]
+              : "text-brand-night/35 dark:text-neutral-100/35",
+            isToday && "font-bold"
+          )
+          const content = (
+            <>
               <span aria-hidden>{Number(date.slice(8))}</span>
+              {isToday && (
+                <span
+                  aria-hidden
+                  className="absolute bottom-1.5 size-1 rounded-full bg-current"
+                />
+              )}
               <span className="sr-only">
                 {formatIsoDate(date, locale, {
                   weekday: "long",
                   day: "numeric",
                   month: "long",
-                }) + (status ? ` · ${t(`legend.${status}`)}` : "")}
+                }) +
+                  (isToday ? ` · ${t("today")}` : "") +
+                  (status ? ` · ${t(`legend.${status}`)}` : "")}
               </span>
-            </span>
+            </>
+          )
+          if (!day) {
+            return (
+              <span key={date} className={className}>
+                {content}
+              </span>
+            )
+          }
+          return (
+            <button
+              key={date}
+              type="button"
+              aria-pressed={date === selectedDate}
+              onClick={() => setSelectedDate(date)}
+              className={cn(
+                className,
+                "outline-none focus-visible:ring-3 focus-visible:ring-ring/60",
+                date === selectedDate &&
+                  "ring-2 ring-brand-night ring-offset-2 ring-offset-white dark:ring-neutral-100 dark:ring-offset-neutral-900"
+              )}
+            >
+              {content}
+            </button>
           )
         })}
       </div>
@@ -171,11 +210,34 @@ export function PlanCalendar({
         <li className="flex items-center gap-1.5">
           <span
             aria-hidden
-            className="size-3 rounded outline-2 outline-offset-1 outline-brand-night dark:outline-neutral-100"
+            className="mx-1 size-1 rounded-full bg-brand-night dark:bg-neutral-100"
           />
           {t("today")}
         </li>
       </ul>
+
+      {selected && (
+        <div
+          aria-live="polite"
+          className="flex flex-col gap-3 border-t border-brand-night/10 pt-4 dark:border-white/10"
+        >
+          <h3 className="flex flex-wrap items-baseline gap-x-2 font-medium">
+            <span className="first-letter:uppercase">
+              {formatIsoDate(selected.date, locale, {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+              })}
+            </span>
+            <span className="text-sm font-normal text-brand-night/60 dark:text-neutral-100/60">
+              {selected.date === today
+                ? t("today")
+                : t("day", { day: selected.day })}
+            </span>
+          </h3>
+          <ReadingChecklist key={selected.id} readings={selected.readings} />
+        </div>
+      )}
     </div>
   )
 }

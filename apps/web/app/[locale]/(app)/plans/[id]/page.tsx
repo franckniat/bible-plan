@@ -299,14 +299,15 @@ export default async function PlanPage({
             days={plan.days.map((day) => ({
               id: day.id,
               date: day.date,
+              day: day.day,
               readings: toChecklist(day, plan.trackNames, locale),
             }))}
             today={today}
             showLate={plan.status !== "ARCHIVED"}
-            initialMonth={
-              today >= plan.startDate && today <= plan.endDate
-                ? today.slice(0, 7)
-                : (current?.date ?? plan.startDate).slice(0, 7)
+            initialDate={
+              plan.days.some((day) => day.date === today)
+                ? today
+                : (current?.date ?? plan.startDate)
             }
           />
         }
