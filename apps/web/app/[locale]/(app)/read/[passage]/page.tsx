@@ -26,6 +26,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { ReaderText } from "@/components/reader/reader-text"
 import { ReadingDone } from "@/components/reader/reading-done"
+import { RecordReading } from "@/components/reader/record-reading"
 import { VersionSwitch } from "@/components/reader/version-switch"
 import { Link, redirect } from "@/i18n/navigation"
 import { getReadingForUser } from "@/server/services/plans"
@@ -133,6 +134,12 @@ export default async function ReadPage({
 
   return (
     <article className="flex flex-col gap-6">
+      <RecordReading
+        slug={toPassageSlug(passage)}
+        reading={
+          reading ? { id: reading.id, planTitle: reading.planTitle } : undefined
+        }
+      />
       <header className="flex flex-col gap-1">
         {reading && steps.length > 1 && (
           <div className="mb-3 flex flex-col gap-2">

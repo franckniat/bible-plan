@@ -16,13 +16,10 @@ import {
 import {
   chaptersPassage,
   getBookName,
-  toPassageSlug,
   type Locale,
   type Passage,
 } from "@workspace/core"
 import { cn } from "@workspace/ui/lib/utils"
-
-import { saveLastRead } from "@/components/reader/last-read"
 
 const fetchChapter = fetchChaptersFrom("/bible")
 
@@ -64,7 +61,6 @@ export function PassageText({
       : passage
     loadPassage(shown, version, fetchChapter)
       .then((text) => {
-        saveLastRead(toPassageSlug(passage))
         if (current) setResult({ key, text })
       })
       .catch(() => current && setResult({ key, failed: true }))
