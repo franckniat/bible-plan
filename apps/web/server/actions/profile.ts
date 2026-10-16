@@ -9,9 +9,14 @@ import {
   type Locale,
   type ProfileSettings,
 } from "@workspace/core"
+import { isBibleVersionId } from "@workspace/bible-data"
 import { prisma } from "@workspace/db"
 
-import { setDetectedTimeZone, updateProfile } from "@/server/services/profile"
+import {
+  setBibleVersion,
+  setDetectedTimeZone,
+  updateProfile,
+} from "@/server/services/profile"
 import { requireUser } from "@/server/session"
 
 type ProfileField = keyof ProfileSettings
@@ -75,4 +80,15 @@ export async function detectTimeZoneAction(timezone: string): Promise<void> {
   const parsed = timeZoneSchema.safeParse(timezone)
   if (!parsed.success || user.timezone) return
   await setDetectedTimeZone(prisma, user.id, parsed.data)
+}
+
+/** Chooses the Bible version of the reader (one shipped with the app). */
+export async function setBibleVersionAction(
+  version: string
+): Promise<{ ok: boolean }> {
+  const user = await requireUser()
+  if (!isBibleVersionId(version)) return { ok: false }
+  await setBibleVersion(prisma, user.id, version)
+  revalidatePath("/[locale]", "layout")
+  return { ok: true }
 }

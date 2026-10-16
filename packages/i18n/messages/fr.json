@@ -333,6 +333,14 @@
     "appearance": {
       "title": "Apparence",
       "description": "Le thème « Système » suit le réglage de votre appareil. Raccourci : touche D."
+    },
+    "bible": {
+      "title": "Bible",
+      "description": "La version lue dans l’application. Les deux sont du domaine public ; pour une autre traduction, le lecteur propose un lien vers YouVersion.",
+      "details": "{language}, {year}",
+      "saving": "Enregistrement…",
+      "saved": "Version enregistrée.",
+      "failed": "La version n’a pas pu être enregistrée. Veuillez réessayer."
     }
   },
   "Theme": {
@@ -570,6 +578,7 @@
     "chapter": "Chapitre {chapter}",
     "chapters": "Chapitres",
     "previous": "Chapitre précédent : {chapter}",
-    "next": "Chapitre suivant : {chapter}"
+    "next": "Chapitre suivant : {chapter}",
+    "version": "Version de la Bible"
   }
 }

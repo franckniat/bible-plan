@@ -333,6 +333,14 @@
     "appearance": {
       "title": "Appearance",
       "description": "The “System” theme follows your device setting. Shortcut: D key."
+    },
+    "bible": {
+      "title": "Bible",
+      "description": "The version read in the app. Both are in the public domain; for another translation, the reader offers a link to YouVersion.",
+      "details": "{language}, {year}",
+      "saving": "Saving…",
+      "saved": "Version saved.",
+      "failed": "The version could not be saved. Please try again."
     }
   },
   "Theme": {
@@ -570,6 +578,7 @@
     "chapter": "Chapter {chapter}",
     "chapters": "Chapters",
     "previous": "Previous chapter: {chapter}",
-    "next": "Next chapter: {chapter}"
+    "next": "Next chapter: {chapter}",
+    "version": "Bible version"
   }
 }

@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 import { hasLocale } from "next-intl"
-import { getTranslations } from "next-intl/server"
+import { getLocale, getTranslations } from "next-intl/server"
 import type { ReactNode } from "react"
 
-import { localeSchema, defaultLocale } from "@workspace/core"
+import { defaultBibleVersion, isBibleVersionId } from "@workspace/bible-data"
+import { localeSchema, defaultLocale, type Locale } from "@workspace/core"
 
+import { BibleVersionSetting } from "@/components/settings/bible-version-setting"
 import { ProfileForm } from "@/components/settings/profile-form"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { routing } from "@/i18n/routing"
@@ -51,6 +53,7 @@ function SettingsSection({
 export default async function SettingsPage() {
   const user = await requireUser()
   const t = await getTranslations("Settings")
+  const locale = (await getLocale()) as Locale
 
   return (
     <div className="flex flex-col gap-8">
@@ -74,6 +77,20 @@ export default async function SettingsPage() {
             timezone: user.timezone ?? null,
             readingWpm: user.readingWpm,
           }}
+        />
+      </SettingsSection>
+
+      <SettingsSection
+        id="bible"
+        title={t("bible.title")}
+        description={t("bible.description")}
+      >
+        <BibleVersionSetting
+          version={
+            isBibleVersionId(user.bibleVersion)
+              ? user.bibleVersion
+              : defaultBibleVersion(locale)
+          }
         />
       </SettingsSection>
 

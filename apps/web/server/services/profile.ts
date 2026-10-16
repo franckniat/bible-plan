@@ -36,3 +36,15 @@ export async function setDetectedTimeZone(
     data: { timezone },
   })
 }
+
+/** Saves the Bible version the user reads in. */
+export async function setBibleVersion(
+  db: ProfileDb,
+  userId: string,
+  version: string
+): Promise<void> {
+  await db.user.update({
+    where: { id: userId },
+    data: { bibleVersion: version },
+  })
+}

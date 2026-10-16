@@ -21,6 +21,7 @@ import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { PassageText } from "@/components/reader/passage-text"
+import { VersionSwitch } from "@/components/reader/version-switch"
 import { Link } from "@/i18n/navigation"
 import { requireUser } from "@/server/session"
 
@@ -76,9 +77,7 @@ export default async function ReadPage({
         <h1 className="font-heading text-3xl font-semibold">
           {formatPassage(passage, locale)}
         </h1>
-        <p className="text-sm text-brand-night/60 dark:text-neutral-100/60">
-          {version.name}
-        </p>
+        <VersionSwitch version={version.id} />
       </header>
 
       <PassageText passage={passage} version={versionId} className="text-lg" />
