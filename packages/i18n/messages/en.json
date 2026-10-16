@@ -522,7 +522,21 @@
   "PlanDetail": {
     "back": "My plans",
     "tracks": "Readings: {tracks}",
-    "calendar": "Calendar",
+    "schedule": "Schedule",
+    "view": {
+      "label": "View",
+      "list": "List",
+      "calendar": "Calendar"
+    },
+    "month": {
+      "previous": "Previous month",
+      "next": "Next month"
+    },
+    "legend": {
+      "done": "Read",
+      "late": "Late",
+      "upcoming": "To come"
+    },
     "monthProgress": "{completed} / {total} readings",
     "today": "Today",
     "day": "Day {day}",

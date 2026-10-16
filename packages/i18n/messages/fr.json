@@ -522,7 +522,21 @@
   "PlanDetail": {
     "back": "Mes plans",
     "tracks": "Lectures : {tracks}",
-    "calendar": "Calendrier",
+    "schedule": "Programme",
+    "view": {
+      "label": "Affichage",
+      "list": "Liste",
+      "calendar": "Calendrier"
+    },
+    "month": {
+      "previous": "Mois précédent",
+      "next": "Mois suivant"
+    },
+    "legend": {
+      "done": "Lu",
+      "late": "En retard",
+      "upcoming": "À venir"
+    },
     "monthProgress": "{completed} / {total} lectures",
     "today": "Aujourd’hui",
     "day": "Jour {day}",

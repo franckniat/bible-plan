@@ -22,6 +22,8 @@ import { CatchUpBanner } from "@/components/plans/catch-up-banner"
 import { CatchUpSetting } from "@/components/plans/catch-up-setting"
 import { toChecklist } from "@/components/plans/checklist"
 import { PlanActions } from "@/components/plans/plan-actions"
+import { PlanCalendar } from "@/components/plans/plan-calendar"
+import { PlanSchedule } from "@/components/plans/plan-schedule"
 import { ReadingChecklist } from "@/components/plans/reading-checklist"
 import { Link } from "@/i18n/navigation"
 import { formatIsoDate } from "@/lib/dates"
@@ -222,74 +224,93 @@ export default async function PlanPage({
         <PlanActions planId={plan.id} status={plan.status} />
       </div>
 
-      <section aria-labelledby="calendar-title" className="flex flex-col gap-3">
-        <h2 id="calendar-title" className="font-heading text-xl font-semibold">
-          {t("calendar")}
-        </h2>
-        {byMonth(plan.days).map(([month, days]) => {
-          const readings = days.flatMap((day) => day.readings)
-          const done = readings.filter((reading) => reading.completedAt).length
-          return (
-            <details
-              key={month}
-              open={current?.date.startsWith(month)}
-              className="group rounded-3xl bg-white/85 ring-1 ring-brand-night/10 dark:bg-neutral-900/85 dark:ring-white/10"
-            >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-3xl px-5 py-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/40 [&::-webkit-details-marker]:hidden">
-                <span className="font-heading text-lg font-semibold first-letter:uppercase">
-                  {formatIsoDate(`${month}-01`, locale, {
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-                <span className="text-sm text-brand-night/60 dark:text-neutral-100/60">
-                  {t("monthProgress", {
-                    completed: done,
-                    total: readings.length,
-                  })}
-                </span>
-              </summary>
-              <ol className="flex flex-col divide-y divide-brand-night/10 border-t border-brand-night/10 dark:divide-white/10 dark:border-white/10">
-                {days.map((day) => {
-                  const isToday = day.date === today
-                  const isLate = day.date < today && !isDone(day)
-                  return (
-                    <li
-                      key={day.id}
-                      id={isToday ? "today" : undefined}
-                      className={cn(
-                        "flex flex-col gap-3 px-5 py-4 sm:flex-row sm:gap-6",
-                        isToday && "bg-brand-gold/10"
-                      )}
-                    >
-                      <div className="flex shrink-0 flex-row items-baseline gap-2 sm:w-32 sm:flex-col sm:gap-0.5">
-                        <span className="font-medium first-letter:uppercase">
-                          {formatIsoDate(day.date, locale, {
-                            weekday: "short",
-                            day: "numeric",
-                            month: "short",
-                          })}
-                        </span>
-                        <span className="text-xs text-brand-night/60 dark:text-neutral-100/60">
-                          {isToday
-                            ? t("today")
-                            : isLate
-                              ? t("late")
-                              : t("day", { day: day.day })}
-                        </span>
-                      </div>
-                      <ReadingChecklist
-                        readings={toChecklist(day, plan.trackNames, locale)}
-                        className="flex-1"
-                      />
-                    </li>
-                  )
-                })}
-              </ol>
-            </details>
-          )
-        })}
-      </section>
+      <PlanSchedule
+        list={
+          <div className="flex flex-col gap-3">
+            {byMonth(plan.days).map(([month, days]) => {
+              const readings = days.flatMap((day) => day.readings)
+              const done = readings.filter(
+                (reading) => reading.completedAt
+              ).length
+              return (
+                <details
+                  key={month}
+                  open={current?.date.startsWith(month)}
+                  className="group rounded-3xl bg-white/85 ring-1 ring-brand-night/10 dark:bg-neutral-900/85 dark:ring-white/10"
+                >
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-3xl px-5 py-4 outline-none focus-visible:ring-3 focus-visible:ring-ring/40 [&::-webkit-details-marker]:hidden">
+                    <span className="font-heading text-lg font-semibold first-letter:uppercase">
+                      {formatIsoDate(`${month}-01`, locale, {
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </span>
+                    <span className="text-sm text-brand-night/60 dark:text-neutral-100/60">
+                      {t("monthProgress", {
+                        completed: done,
+                        total: readings.length,
+                      })}
+                    </span>
+                  </summary>
+                  <ol className="flex flex-col divide-y divide-brand-night/10 border-t border-brand-night/10 dark:divide-white/10 dark:border-white/10">
+                    {days.map((day) => {
+                      const isToday = day.date === today
+                      const isLate = day.date < today && !isDone(day)
+                      return (
+                        <li
+                          key={day.id}
+                          id={isToday ? "today" : undefined}
+                          className={cn(
+                            "flex flex-col gap-3 px-5 py-4 sm:flex-row sm:gap-6",
+                            isToday && "bg-brand-gold/10"
+                          )}
+                        >
+                          <div className="flex shrink-0 flex-row items-baseline gap-2 sm:w-32 sm:flex-col sm:gap-0.5">
+                            <span className="font-medium first-letter:uppercase">
+                              {formatIsoDate(day.date, locale, {
+                                weekday: "short",
+                                day: "numeric",
+                                month: "short",
+                              })}
+                            </span>
+                            <span className="text-xs text-brand-night/60 dark:text-neutral-100/60">
+                              {isToday
+                                ? t("today")
+                                : isLate
+                                  ? t("late")
+                                  : t("day", { day: day.day })}
+                            </span>
+                          </div>
+                          <ReadingChecklist
+                            readings={toChecklist(day, plan.trackNames, locale)}
+                            className="flex-1"
+                          />
+                        </li>
+                      )
+                    })}
+                  </ol>
+                </details>
+              )
+            })}
+          </div>
+        }
+        calendar={
+          <PlanCalendar
+            days={plan.days.map((day) => ({
+              id: day.id,
+              date: day.date,
+              readings: toChecklist(day, plan.trackNames, locale),
+            }))}
+            today={today}
+            showLate={plan.status !== "ARCHIVED"}
+            initialMonth={
+              today >= plan.startDate && today <= plan.endDate
+                ? today.slice(0, 7)
+                : (current?.date ?? plan.startDate).slice(0, 7)
+            }
+          />
+        }
+      />
 
       {plan.isOwner && (
         <section className="rounded-3xl bg-white/85 p-5 ring-1 ring-brand-night/10 sm:p-6 dark:bg-neutral-900/85 dark:ring-white/10">
