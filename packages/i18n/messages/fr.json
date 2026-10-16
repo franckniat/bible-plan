@@ -515,7 +515,9 @@
     "verses": "{verses, plural, one {# verset} other {# versets}}",
     "saveFailed": "La lecture n’a pas pu être enregistrée. Vérifiez votre connexion et réessayez.",
     "read": "Lire {passage}",
-    "readShort": "Lire"
+    "readShort": "Lire",
+    "continue": "Continuer {passage} : {step}",
+    "continueShort": "Continuer"
   },
   "PlanDetail": {
     "back": "Mes plans",

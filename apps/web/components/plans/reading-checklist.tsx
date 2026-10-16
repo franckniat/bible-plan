@@ -5,7 +5,9 @@ import { useLocale, useTranslations } from "next-intl"
 import { startTransition, useOptimistic, useState } from "react"
 
 import {
+  chapterSteps,
   formatPassage,
+  parsePassageSlug,
   toPassageSlug,
   type Locale,
   type Passage,
@@ -13,6 +15,10 @@ import {
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import {
+  historyHref,
+  useReadingHistory,
+} from "@/components/reader/reading-history"
 import { Link } from "@/i18n/navigation"
 import { setReadingProgressAction } from "@/server/actions/plans"
 
@@ -39,6 +45,8 @@ export function ReadingChecklist({
   const t = useTranslations("Readings")
   const locale = useLocale() as Locale
   const [failed, setFailed] = useState(false)
+  // A reading left halfway opens again on the step reached on this device.
+  const history = useReadingHistory()
   const [optimistic, setOptimistic] = useOptimistic(
     readings,
     (current, { id, done }: { id: string; done: boolean }) =>
@@ -63,6 +71,21 @@ export function ReadingChecklist({
       <ul className="flex flex-col gap-2">
         {optimistic.map((reading) => {
           const label = formatPassage(reading.passage, locale)
+          const stopped = history.find(
+            (entry) => entry.reading?.id === reading.id
+          )
+          const resumeAt =
+            !reading.done &&
+            stopped &&
+            stopped.slug !== toPassageSlug(chapterSteps(reading.passage)[0]!)
+              ? parsePassageSlug(stopped.slug)
+              : null
+          const readLabel = resumeAt
+            ? t("continue", {
+                passage: label,
+                step: formatPassage(resumeAt, locale),
+              })
+            : t("read", { passage: label })
           return (
             <li key={reading.id} className="flex items-stretch gap-2">
               <label
@@ -116,16 +139,22 @@ export function ReadingChecklist({
                 </span>
               </label>
               <Link
-                href={`/read/${toPassageSlug(reading.passage)}?reading=${reading.id}`}
-                aria-label={t("read", { passage: label })}
-                title={t("read", { passage: label })}
+                href={
+                  resumeAt && stopped
+                    ? historyHref(stopped)
+                    : `/read/${toPassageSlug(reading.passage)}?reading=${reading.id}`
+                }
+                aria-label={readLabel}
+                title={readLabel}
                 className={cn(
                   buttonVariants({ variant: "outline" }),
                   "h-auto shrink-0 rounded-2xl px-3"
                 )}
               >
                 <BookOpen />
-                <span className="hidden sm:inline">{t("readShort")}</span>
+                <span className="hidden sm:inline">
+                  {t(resumeAt ? "continueShort" : "readShort")}
+                </span>
               </Link>
             </li>
           )
