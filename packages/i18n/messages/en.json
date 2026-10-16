@@ -628,7 +628,12 @@
         "2": "Large",
         "3": "Extra large"
       },
-      "verseNumbers": "Verse numbers"
+      "verseNumbers": "Verse numbers",
+      "layout": "Verse layout",
+      "layouts": {
+        "flow": "Run on",
+        "lines": "One per line"
+      }
     }
   },
   "BibleIndex": {

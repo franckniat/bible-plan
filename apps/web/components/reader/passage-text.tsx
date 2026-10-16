@@ -32,12 +32,15 @@ export function PassageText({
   passage,
   version,
   showVerseNumbers = true,
+  verseLayout = "flow",
   wholeChapter = false,
   className,
 }: {
   passage: Passage
   version: BibleVersionId
   showVerseNumbers?: boolean
+  /** Verses one after the other, or each on its own line. */
+  verseLayout?: "flow" | "lines"
   wholeChapter?: boolean
   className?: string
 }) {
@@ -110,10 +113,11 @@ export function PassageText({
                 <span
                   key={number}
                   className={cn(
+                    verseLayout === "lines" && "mb-2 block",
                     around && "text-brand-night/45 dark:text-neutral-100/45"
                   )}
                 >
-                  {paragraph && index > 0 && (
+                  {verseLayout === "flow" && paragraph && index > 0 && (
                     <span aria-hidden className="block h-3" />
                   )}
                   {showVerseNumbers && (

@@ -1,6 +1,6 @@
 "use client"
 
-import { Settings2 } from "lucide-react"
+import { AlignJustify, List, Settings2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useId, useSyncExternalStore, type ReactNode } from "react"
 
@@ -22,9 +22,14 @@ export const textSizes = [
   "text-2xl",
 ] as const
 
-export type ReaderSettings = { size: number; verseNumbers: boolean }
+export type ReaderSettings = {
+  size: number
+  verseNumbers: boolean
+  /** Verses one after the other, or each on its own line. */
+  layout: "flow" | "lines"
+}
 
-const defaults: ReaderSettings = { size: 1, verseNumbers: true }
+const defaults: ReaderSettings = { size: 1, verseNumbers: true, layout: "flow" }
 const STORAGE_KEY = "bible-plan:reader"
 const CHANGE_EVENT = "bible-plan:reader-change"
 
@@ -49,6 +54,7 @@ function parse(stored: string): ReaderSettings {
         typeof value.verseNumbers === "boolean"
           ? value.verseNumbers
           : defaults.verseNumbers,
+      layout: value.layout === "lines" ? "lines" : defaults.layout,
     }
   } catch {
     return defaults
@@ -122,7 +128,10 @@ function Choices<T extends string | number>({
   )
 }
 
-/** The reading settings, behind one button: text size and verse numbers. */
+/**
+ * The reading settings, behind one button: text size, verse numbers and
+ * verse layout.
+ */
 export function ReaderSettingsPopover() {
   const t = useTranslations("Reader.settings")
   const settings = useReaderSettings()
@@ -172,6 +181,27 @@ export function ReaderSettingsPopover() {
             }
           />
         </label>
+
+        <Choices
+          label={t("layout")}
+          value={settings.layout}
+          onChange={(layout) => save({ ...settings, layout })}
+          options={(
+            [
+              ["flow", AlignJustify],
+              ["lines", List],
+            ] as const
+          ).map(([value, Icon]) => ({
+            value,
+            label: t(`layouts.${value}`),
+            content: (
+              <span className="flex items-center gap-1.5 text-sm font-medium">
+                <Icon aria-hidden className="size-4" />
+                {t(`layouts.${value}`)}
+              </span>
+            ),
+          }))}
+        />
       </PopoverContent>
     </Popover>
   )

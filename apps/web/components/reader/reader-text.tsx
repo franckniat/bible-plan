@@ -60,6 +60,7 @@ export function ReaderText({
         passage={passage}
         version={version}
         showVerseNumbers={settings.verseNumbers}
+        verseLayout={settings.layout}
         wholeChapter={wholeChapter}
         className={textSizes[settings.size]}
       />

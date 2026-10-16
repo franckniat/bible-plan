@@ -628,7 +628,12 @@
         "2": "Grande",
         "3": "Très grande"
       },
-      "verseNumbers": "Numéros de versets"
+      "verseNumbers": "Numéros de versets",
+      "layout": "Mise en page des versets",
+      "layouts": {
+        "flow": "À la suite",
+        "lines": "Un par ligne"
+      }
     }
   },
   "BibleIndex": {
