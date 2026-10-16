@@ -11,8 +11,15 @@ import {
   type BibleVersionId,
   type PassageText as Text,
 } from "@workspace/bible-data"
-import { getBookName, type Locale, type Passage } from "@workspace/core"
+import {
+  getBookName,
+  toPassageSlug,
+  type Locale,
+  type Passage,
+} from "@workspace/core"
 import { cn } from "@workspace/ui/lib/utils"
+
+import { saveLastRead } from "@/components/reader/last-read"
 
 const fetchChapter = fetchChaptersFrom("/bible")
 
@@ -40,7 +47,10 @@ export function PassageText({
   useEffect(() => {
     let current = true
     loadPassage(passage, version, fetchChapter)
-      .then((text) => current && setResult({ key, text }))
+      .then((text) => {
+        saveLastRead(toPassageSlug(passage))
+        if (current) setResult({ key, text })
+      })
       .catch(() => current && setResult({ key, failed: true }))
     return () => {
       current = false

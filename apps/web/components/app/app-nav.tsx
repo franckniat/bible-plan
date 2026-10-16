@@ -1,6 +1,12 @@
 "use client"
 
-import { BookOpen, Settings, Sun, type LucideIcon } from "lucide-react"
+import {
+  BookOpen,
+  CalendarCheck,
+  Settings,
+  Sun,
+  type LucideIcon,
+} from "lucide-react"
 import { useTranslations } from "next-intl"
 
 import { cn } from "@workspace/ui/lib/utils"
@@ -9,14 +15,15 @@ import { Link, usePathname } from "@/i18n/navigation"
 
 type NavItem = {
   href: string
-  label: "today" | "plans" | "settings"
+  label: "today" | "plans" | "bible" | "settings"
   icon: LucideIcon
 }
 
 // Sections are added here as they are built.
 const navItems: NavItem[] = [
   { href: "/today", label: "today", icon: Sun },
-  { href: "/plans", label: "plans", icon: BookOpen },
+  { href: "/plans", label: "plans", icon: CalendarCheck },
+  { href: "/read", label: "bible", icon: BookOpen },
   { href: "/settings", label: "settings", icon: Settings },
 ]
 

@@ -165,7 +165,8 @@
       "label": "Navigation principale",
       "today": "Aujourd’hui",
       "settings": "Réglages",
-      "plans": "Plans"
+      "plans": "Plans",
+      "bible": "Bible"
     },
     "account": {
       "signOut": "Se déconnecter",
@@ -598,5 +599,16 @@
       "larger": "Texte plus grand",
       "verseNumbers": "Numéros de versets"
     }
+  },
+  "BibleIndex": {
+    "title": "La Bible",
+    "description": "Lisez librement, en dehors de vos plans : choisissez un livre, puis un chapitre.",
+    "resume": "Reprendre : {passage}",
+    "testament": {
+      "old": "Ancien Testament",
+      "new": "Nouveau Testament"
+    },
+    "chapters": "{count, plural, one {# chapitre} other {# chapitres}}",
+    "chapter": "{book}, chapitre {chapter}"
   }
 }
