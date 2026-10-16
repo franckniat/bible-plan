@@ -590,6 +590,13 @@
       "backToToday": "Back to Today",
       "failed": "The reading could not be saved. Check your connection and try again."
     },
+    "steps": {
+      "label": "Reading steps",
+      "position": "{reading} · step {step} of {total}",
+      "step": "Step {step}: {passage}",
+      "previous": "Previous step: {passage}",
+      "next": "Next: {passage}"
+    },
     "youVersion": "Read in another translation (YouVersion)",
     "newTab": "(opens in a new tab)",
     "numbering": "In the {version}, these verses are numbered {verses}.",

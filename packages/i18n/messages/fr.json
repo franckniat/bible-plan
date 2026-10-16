@@ -590,6 +590,13 @@
       "backToToday": "Retour à Aujourd’hui",
       "failed": "La lecture n’a pas pu être enregistrée. Vérifiez votre connexion et réessayez."
     },
+    "steps": {
+      "label": "Étapes de la lecture",
+      "position": "{reading} · étape {step} sur {total}",
+      "step": "Étape {step} : {passage}",
+      "previous": "Étape précédente : {passage}",
+      "next": "Suivant : {passage}"
+    },
     "youVersion": "Lire dans une autre traduction (YouVersion)",
     "newTab": "(s’ouvre dans un nouvel onglet)",
     "numbering": "Dans la {version}, ces versets portent les numéros {verses}.",

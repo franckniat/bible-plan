@@ -58,14 +58,31 @@ export default async function ReadPage({
       ? await getReadingForUser(prisma, user.id, readingId)
       : null
   const locale = (await getLocale()) as Locale
-  // One chapter per page: a passage over several chapters opens on its first.
-  if (!reading && fromSlug.start.chapter !== fromSlug.end.chapter) {
-    redirect({
-      href: `/read/${toPassageSlug(chapterSteps(fromSlug)[0]!)}`,
-      locale,
-    })
+  // One chapter per page. A plan reading is read in steps, one per chapter:
+  // the address is the step on screen.
+  const steps = chapterSteps(reading?.passage ?? fromSlug)
+  const found = reading
+    ? steps.findIndex(
+        (step) =>
+          step.book === fromSlug.book &&
+          toPassageSlug(step) === toPassageSlug(fromSlug)
+      )
+    : 0
+  const stepHref = (index: number) =>
+    `/read/${toPassageSlug(steps[index]!)}` +
+    (reading ? `?reading=${reading.id}` : "")
+  if (found === -1 || (!reading && steps.length > 1)) {
+    // A chapter of the reading opens on its step, anything else on the first.
+    const chapter = steps.findIndex(
+      (step) =>
+        step.book === fromSlug.book &&
+        step.start.chapter === fromSlug.start.chapter
+    )
+    redirect({ href: stepHref(Math.max(0, chapter)), locale })
   }
-  const passage = reading?.passage ?? fromSlug
+  const stepIndex = Math.max(0, found)
+  const passage = steps[stepIndex]!
+  const lastStep = stepIndex === steps.length - 1
   const t = await getTranslations("Reader")
   const versionId = isBibleVersionId(user.bibleVersion)
     ? user.bibleVersion
@@ -91,6 +108,7 @@ export default async function ReadPage({
 
   const previous = adjacentChapter(passage.book, passage.start.chapter, -1)
   const next = adjacentChapter(passage.book, passage.end.chapter, 1)
+  const stepLabel = (index: number) => formatPassage(steps[index]!, locale)
   const chapterLink = (
     target: NonNullable<typeof previous>,
     direction: "previous" | "next"
@@ -116,6 +134,41 @@ export default async function ReadPage({
   return (
     <article className="flex flex-col gap-6">
       <header className="flex flex-col gap-1">
+        {reading && steps.length > 1 && (
+          <div className="mb-3 flex flex-col gap-2">
+            <p className="text-sm text-brand-night/70 dark:text-neutral-100/70">
+              {t("steps.position", {
+                reading: formatPassage(reading.passage, locale),
+                step: stepIndex + 1,
+                total: steps.length,
+              })}
+            </p>
+            <ol aria-label={t("steps.label")} className="flex gap-1.5">
+              {steps.map((_, index) => (
+                <li key={index} className="flex-1">
+                  <Link
+                    href={stepHref(index)}
+                    aria-label={t("steps.step", {
+                      step: index + 1,
+                      passage: stepLabel(index),
+                    })}
+                    aria-current={index === stepIndex ? "step" : undefined}
+                    className="flex py-1.5 outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
+                  >
+                    <span
+                      className={cn(
+                        "h-1.5 w-full rounded-full transition-colors",
+                        index <= stepIndex
+                          ? "bg-brand-gold"
+                          : "bg-brand-night/15 dark:bg-white/15"
+                      )}
+                    />
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
         <h1 className="font-heading text-3xl font-semibold">
           {formatPassage(passage, locale)}
         </h1>
@@ -141,7 +194,7 @@ export default async function ReadPage({
       )}
       <ReaderText passage={passage} version={versionId} />
 
-      {reading && (
+      {reading && lastStep && (
         <ReadingDone
           readingId={reading.id}
           done={reading.completedAt !== null}
@@ -150,13 +203,48 @@ export default async function ReadPage({
         />
       )}
 
-      <nav
-        aria-label={t("chapters")}
-        className="flex items-center justify-between gap-3 border-t border-brand-night/10 pt-4 dark:border-white/10"
-      >
-        {previous ? chapterLink(previous, "previous") : <span />}
-        {next ? chapterLink(next, "next") : <span />}
-      </nav>
+      {!reading ? (
+        <nav
+          aria-label={t("chapters")}
+          className="flex items-center justify-between gap-3 border-t border-brand-night/10 pt-4 dark:border-white/10"
+        >
+          {previous ? chapterLink(previous, "previous") : <span />}
+          {next ? chapterLink(next, "next") : <span />}
+        </nav>
+      ) : (
+        steps.length > 1 && (
+          <nav
+            aria-label={t("steps.label")}
+            className="flex flex-wrap items-center justify-between gap-3 border-t border-brand-night/10 pt-4 dark:border-white/10"
+          >
+            {stepIndex > 0 ? (
+              <Link
+                href={stepHref(stepIndex - 1)}
+                aria-label={t("steps.previous", {
+                  passage: stepLabel(stepIndex - 1),
+                })}
+                className={cn(buttonVariants({ variant: "ghost" }), "h-10")}
+              >
+                <ChevronLeft />
+                <span className="max-w-36 truncate">
+                  {stepLabel(stepIndex - 1)}
+                </span>
+              </Link>
+            ) : (
+              <span />
+            )}
+            {!lastStep && (
+              <Link
+                href={stepHref(stepIndex + 1)}
+                className={cn(buttonVariants({ size: "lg" }), "h-11 sm:px-5")}
+              >
+                {t("steps.next", { passage: stepLabel(stepIndex + 1) })}
+                <ChevronRight />
+              </Link>
+            )}
+          </nav>
+        )
+      )}
     </article>
   )
 }
