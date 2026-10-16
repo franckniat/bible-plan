@@ -17,12 +17,15 @@ import {
   toPassageSlug,
   type Locale,
 } from "@workspace/core"
+import { prisma } from "@workspace/db"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { PassageText } from "@/components/reader/passage-text"
+import { ReadingDone } from "@/components/reader/reading-done"
 import { VersionSwitch } from "@/components/reader/version-switch"
 import { Link } from "@/i18n/navigation"
+import { getReadingForUser } from "@/server/services/plans"
 import { requireUser } from "@/server/session"
 
 export async function generateMetadata({
@@ -38,12 +41,20 @@ export async function generateMetadata({
 /** Reads a passage in the user's Bible version. */
 export default async function ReadPage({
   params,
+  searchParams,
 }: PageProps<"/[locale]/read/[passage]">) {
   const { passage: slug } = await params
-  const passage = parsePassageSlug(decodeURIComponent(slug))
-  if (!passage) notFound()
+  const fromSlug = parsePassageSlug(decodeURIComponent(slug))
+  if (!fromSlug) notFound()
 
   const user = await requireUser()
+  // ?reading=<id>: a reading of one of the user's plans, to mark as read.
+  const { reading: readingId } = await searchParams
+  const reading =
+    typeof readingId === "string"
+      ? await getReadingForUser(prisma, user.id, readingId)
+      : null
+  const passage = reading?.passage ?? fromSlug
   const locale = (await getLocale()) as Locale
   const t = await getTranslations("Reader")
   const versionId = isBibleVersionId(user.bibleVersion)
@@ -81,6 +92,15 @@ export default async function ReadPage({
       </header>
 
       <PassageText passage={passage} version={versionId} className="text-lg" />
+
+      {reading && (
+        <ReadingDone
+          readingId={reading.id}
+          done={reading.completedAt !== null}
+          planId={reading.planId}
+          planTitle={reading.planTitle}
+        />
+      )}
 
       <nav
         aria-label={t("chapters")}

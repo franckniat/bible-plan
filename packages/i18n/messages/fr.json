@@ -579,6 +579,13 @@
     "chapters": "Chapitres",
     "previous": "Chapitre précédent : {chapter}",
     "next": "Chapitre suivant : {chapter}",
-    "version": "Version de la Bible"
+    "version": "Version de la Bible",
+    "reading": {
+      "plan": "Lecture du plan <link>{title}</link>",
+      "markDone": "Marquer comme lu",
+      "done": "Lu",
+      "backToToday": "Retour à Aujourd’hui",
+      "failed": "La lecture n’a pas pu être enregistrée. Vérifiez votre connexion et réessayez."
+    }
   }
 }

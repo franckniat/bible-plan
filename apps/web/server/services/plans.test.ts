@@ -12,6 +12,7 @@ import {
   deletePlan,
   fromDbDate,
   getPlan,
+  getReadingForUser,
   getTodayPlans,
   listPlans,
   setCatchUpStrategy,
@@ -630,5 +631,42 @@ describe("getTodayPlans late readings", () => {
         progress: { none: { enrollment: { userId: "user-1" } } },
       },
     })
+  })
+})
+
+describe("getReadingForUser", () => {
+  const row = (enrollments: { id: string }[]) => ({
+    id: "reading-1",
+    book: "John",
+    startChapter: 3,
+    startVerse: 1,
+    endChapter: 3,
+    endVerse: 36,
+    progress: [],
+    day: { plan: { id: "plan-1", title: "Jean", enrollments } },
+  })
+
+  it("returns a reading of the user's plans", async () => {
+    const fake = fakeDb()
+    fake.planReading.findUnique.mockResolvedValue(row([{ id: "enrollment-1" }]))
+    expect(await getReadingForUser(fake.db, "user-1", "reading-1")).toEqual({
+      id: "reading-1",
+      passage: {
+        book: "John",
+        start: { chapter: 3, verse: 1 },
+        end: { chapter: 3, verse: 36 },
+      },
+      completedAt: null,
+      planId: "plan-1",
+      planTitle: "Jean",
+    })
+  })
+
+  it("refuses a reading of someone else's plan", async () => {
+    const fake = fakeDb()
+    fake.planReading.findUnique.mockResolvedValue(row([]))
+    expect(await getReadingForUser(fake.db, "intruder", "reading-1")).toBeNull()
+    fake.planReading.findUnique.mockResolvedValue(null)
+    expect(await getReadingForUser(fake.db, "user-1", "nope")).toBeNull()
   })
 })

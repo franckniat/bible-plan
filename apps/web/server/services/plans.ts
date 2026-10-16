@@ -662,3 +662,61 @@ export async function setCatchUpStrategy(
   })
   return count > 0
 }
+
+export type ReaderReading = {
+  id: string
+  passage: Passage
+  completedAt: Date | null
+  planId: string
+  planTitle: string
+}
+
+/**
+ * A reading of one of the user's plans, to read it and mark it as read
+ * from the reader; null when it is not one of theirs.
+ */
+export async function getReadingForUser(
+  db: PlansDb,
+  userId: string,
+  readingId: string
+): Promise<ReaderReading | null> {
+  const reading = await db.planReading.findUnique({
+    where: { id: readingId },
+    select: {
+      id: true,
+      book: true,
+      startChapter: true,
+      startVerse: true,
+      endChapter: true,
+      endVerse: true,
+      progress: {
+        where: { enrollment: { userId } },
+        select: { completedAt: true },
+      },
+      day: {
+        select: {
+          plan: {
+            select: {
+              id: true,
+              title: true,
+              enrollments: { where: { userId }, select: { id: true } },
+            },
+          },
+        },
+      },
+    },
+  })
+  if (!reading || reading.day.plan.enrollments.length === 0) return null
+  if (!isBookId(reading.book)) return null
+  return {
+    id: reading.id,
+    passage: {
+      book: reading.book,
+      start: { chapter: reading.startChapter, verse: reading.startVerse },
+      end: { chapter: reading.endChapter, verse: reading.endVerse },
+    },
+    completedAt: reading.progress[0]?.completedAt ?? null,
+    planId: reading.day.plan.id,
+    planTitle: reading.day.plan.title,
+  }
+}
