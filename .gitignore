@@ -46,3 +46,6 @@ next-env.d.ts
 
 # allow the example env file
 !.env.example
+
+# Bible chapters, copied from packages/bible-data by scripts/copy-bible.mjs
+apps/web/public/bible/

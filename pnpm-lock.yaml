@@ -41,6 +41,9 @@ importers:
       '@workspace/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@workspace/bible-data':
+        specifier: workspace:*
+        version: link:../../packages/bible-data
       '@workspace/core':
         specifier: workspace:*
         version: link:../../packages/core

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      // The build copies the Bible chapters of @workspace/bible-data to
+      // public/bible: a new import must rebuild, and a cached build must
+      // bring the copy back.
+      "inputs": ["$TURBO_EXTENDS$", "$TURBO_ROOT$/packages/bible-data/data/**"],
+      "outputs": ["$TURBO_EXTENDS$", "public/bible/**"]
+    }
+  }
+}

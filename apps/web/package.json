@@ -5,8 +5,8 @@
   "private": true,
   "license": "AGPL-3.0-or-later",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/copy-bible.mjs && next dev",
+    "build": "node scripts/copy-bible.mjs && next build",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@workspace/auth": "workspace:*",
+    "@workspace/bible-data": "workspace:*",
     "@workspace/core": "workspace:*",
     "@workspace/db": "workspace:*",
     "@workspace/i18n": "workspace:*",
