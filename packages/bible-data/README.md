@@ -13,6 +13,10 @@ Each chapter is a JSON file, `data/<version>/<OSIS book>/<chapter>.json`:
 { "version": "lsg1910", "book": "John", "chapter": 3, "verses": [[1, "Mais il y eut un homme…"], …] }
 ```
 
+Texts are kept as published. In the King James Version, words in `[brackets]` were added by the translators (printed in italics) and `¶` starts a paragraph; in the Louis Segond, brackets mark passages missing from some manuscripts (e.g. Acts 28:29).
+
+To import a version again (it replaces its folder): `pnpm --filter @workspace/bible-data import:ebible <lsg1910|kjv>`.
+
 The web app copies `data/` to `public/bible/` and serves the chapters as static files (CDN); the future mobile app can bundle them for offline reading.
 
 - `src/` runs everywhere (web, mobile): chapter format, version registry, loader. It stays pure (no Node.js API), like `@workspace/core`.
