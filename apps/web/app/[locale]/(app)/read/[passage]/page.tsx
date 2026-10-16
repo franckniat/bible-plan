@@ -24,6 +24,7 @@ import { prisma } from "@workspace/db"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { ReaderArrows } from "@/components/reader/reader-arrows"
 import { ReaderText } from "@/components/reader/reader-text"
 import { ReadingDone } from "@/components/reader/reading-done"
 import { RecordReading } from "@/components/reader/record-reading"
@@ -132,8 +133,40 @@ export default async function ReadPage({
     )
   }
 
+  // The same targets as the navigation at the end of the page.
+  const chapterTarget = (
+    target: { book: typeof passage.book; chapter: number } | null,
+    direction: "previous" | "next"
+  ) => {
+    if (!target) return undefined
+    const chapter = chaptersPassage(target.book, target.chapter)
+    return {
+      href: `/read/${toPassageSlug(chapter)}`,
+      label: t(direction, { chapter: formatPassage(chapter, locale) }),
+    }
+  }
+  const stepTarget = (index: number, direction: "previous" | "next") =>
+    index >= 0 && index < steps.length && steps.length > 1
+      ? {
+          href: stepHref(index),
+          label: t(`steps.${direction}`, { passage: stepLabel(index) }),
+        }
+      : undefined
+
   return (
     <article className="flex flex-col gap-6">
+      <ReaderArrows
+        previous={
+          reading
+            ? stepTarget(stepIndex - 1, "previous")
+            : chapterTarget(previous, "previous")
+        }
+        next={
+          reading
+            ? stepTarget(stepIndex + 1, "next")
+            : chapterTarget(next, "next")
+        }
+      />
       <RecordReading
         slug={toPassageSlug(passage)}
         reading={
