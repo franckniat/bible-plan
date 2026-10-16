@@ -563,5 +563,13 @@
       "not_found": "This plan cannot be found.",
       "unexpected": "The plan could not be updated. Please try again."
     }
+  },
+  "Reader": {
+    "loading": "Loading the text…",
+    "loadFailed": "The text could not be loaded. Check your connection and try again.",
+    "chapter": "Chapter {chapter}",
+    "chapters": "Chapters",
+    "previous": "Previous chapter: {chapter}",
+    "next": "Next chapter: {chapter}"
   }
 }

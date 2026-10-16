@@ -1,0 +1,95 @@
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import type { Metadata } from "next"
+import { notFound } from "next/navigation"
+import { getLocale, getTranslations } from "next-intl/server"
+
+import {
+  defaultBibleVersion,
+  getBibleVersion,
+  isBibleVersionId,
+} from "@workspace/bible-data"
+import {
+  adjacentChapter,
+  chaptersPassage,
+  formatPassage,
+  getBookName,
+  parsePassageSlug,
+  toPassageSlug,
+  type Locale,
+} from "@workspace/core"
+import { buttonVariants } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
+
+import { PassageText } from "@/components/reader/passage-text"
+import { Link } from "@/i18n/navigation"
+import { requireUser } from "@/server/session"
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/read/[passage]">): Promise<Metadata> {
+  const { passage: slug } = await params
+  const passage = parsePassageSlug(decodeURIComponent(slug))
+  if (!passage) return {}
+  const locale = (await getLocale()) as Locale
+  return { title: `${formatPassage(passage, locale)} · Bible Plan` }
+}
+
+/** Reads a passage in the user's Bible version. */
+export default async function ReadPage({
+  params,
+}: PageProps<"/[locale]/read/[passage]">) {
+  const { passage: slug } = await params
+  const passage = parsePassageSlug(decodeURIComponent(slug))
+  if (!passage) notFound()
+
+  const user = await requireUser()
+  const locale = (await getLocale()) as Locale
+  const t = await getTranslations("Reader")
+  const versionId = isBibleVersionId(user.bibleVersion)
+    ? user.bibleVersion
+    : defaultBibleVersion(locale)
+  const version = getBibleVersion(versionId)
+
+  const previous = adjacentChapter(passage.book, passage.start.chapter, -1)
+  const next = adjacentChapter(passage.book, passage.end.chapter, 1)
+  const chapterLink = (
+    target: NonNullable<typeof previous>,
+    direction: "previous" | "next"
+  ) => {
+    const label = `${getBookName(target.book, locale)} ${target.chapter}`
+    return (
+      <Link
+        href={`/read/${toPassageSlug(chaptersPassage(target.book, target.chapter))}`}
+        aria-label={t(direction, { chapter: label })}
+        className={cn(buttonVariants({ variant: "ghost" }), "h-10")}
+      >
+        {direction === "previous" && <ChevronLeft />}
+        <span className="max-w-36 truncate">{label}</span>
+        {direction === "next" && <ChevronRight />}
+      </Link>
+    )
+  }
+
+  return (
+    <article className="flex flex-col gap-6">
+      <header className="flex flex-col gap-1">
+        <h1 className="font-heading text-3xl font-semibold">
+          {formatPassage(passage, locale)}
+        </h1>
+        <p className="text-sm text-brand-night/60 dark:text-neutral-100/60">
+          {version.name}
+        </p>
+      </header>
+
+      <PassageText passage={passage} version={versionId} className="text-lg" />
+
+      <nav
+        aria-label={t("chapters")}
+        className="flex items-center justify-between gap-3 border-t border-brand-night/10 pt-4 dark:border-white/10"
+      >
+        {previous ? chapterLink(previous, "previous") : <span />}
+        {next ? chapterLink(next, "next") : <span />}
+      </nav>
+    </article>
+  )
+}

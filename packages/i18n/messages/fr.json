@@ -563,5 +563,13 @@
       "not_found": "Ce plan est introuvable.",
       "unexpected": "Le plan n’a pas pu être mis à jour. Veuillez réessayer."
     }
+  },
+  "Reader": {
+    "loading": "Chargement du texte…",
+    "loadFailed": "Le texte n’a pas pu être chargé. Vérifiez votre connexion et réessayez.",
+    "chapter": "Chapitre {chapter}",
+    "chapters": "Chapitres",
+    "previous": "Chapitre précédent : {chapter}",
+    "next": "Chapitre suivant : {chapter}"
   }
 }
