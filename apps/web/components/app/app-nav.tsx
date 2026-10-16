@@ -22,8 +22,8 @@ type NavItem = {
 // Sections are added here as they are built.
 const navItems: NavItem[] = [
   { href: "/today", label: "today", icon: Sun },
-  { href: "/plans", label: "plans", icon: CalendarCheck },
   { href: "/read", label: "bible", icon: BookOpen },
+  { href: "/plans", label: "plans", icon: CalendarCheck },
   { href: "/settings", label: "settings", icon: Settings },
 ]
 
