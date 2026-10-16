@@ -25,7 +25,9 @@ export default function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Every path except API routes, Next.js / Vercel internals and files
-  // with an extension (favicon.ico, images...).
-  matcher: "/((?!api|_next|_vercel|.*\\..*).*)",
+  // Every path except API routes, Next.js / Vercel internals and files:
+  // a file ends with an extension containing a letter (favicon.ico,
+  // font.woff2, bible/kjv/John/3.json...), unlike the reader's passages
+  // ("/read/John.3", "/read/Ps.119.1-88").
+  matcher: "/((?!api|_next|_vercel|.*\\.[a-zA-Z0-9]*[a-zA-Z][a-zA-Z0-9]*$).*)",
 }
