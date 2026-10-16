@@ -12,6 +12,7 @@ import {
 } from "@workspace/bible-data"
 import {
   adjacentChapter,
+  chapterSteps,
   chaptersPassage,
   formatPassage,
   getVerseCount,
@@ -26,7 +27,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { ReaderText } from "@/components/reader/reader-text"
 import { ReadingDone } from "@/components/reader/reading-done"
 import { VersionSwitch } from "@/components/reader/version-switch"
-import { Link } from "@/i18n/navigation"
+import { Link, redirect } from "@/i18n/navigation"
 import { getReadingForUser } from "@/server/services/plans"
 import { requireUser } from "@/server/session"
 
@@ -56,8 +57,15 @@ export default async function ReadPage({
     typeof readingId === "string"
       ? await getReadingForUser(prisma, user.id, readingId)
       : null
-  const passage = reading?.passage ?? fromSlug
   const locale = (await getLocale()) as Locale
+  // One chapter per page: a passage over several chapters opens on its first.
+  if (!reading && fromSlug.start.chapter !== fromSlug.end.chapter) {
+    redirect({
+      href: `/read/${toPassageSlug(chapterSteps(fromSlug)[0]!)}`,
+      locale,
+    })
+  }
+  const passage = reading?.passage ?? fromSlug
   const t = await getTranslations("Reader")
   const versionId = isBibleVersionId(user.bibleVersion)
     ? user.bibleVersion
