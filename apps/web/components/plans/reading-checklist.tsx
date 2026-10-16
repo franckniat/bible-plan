@@ -1,12 +1,19 @@
 "use client"
 
-import { Check } from "lucide-react"
+import { BookOpen, Check } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { startTransition, useOptimistic, useState } from "react"
 
-import { formatPassage, type Locale, type Passage } from "@workspace/core"
+import {
+  formatPassage,
+  toPassageSlug,
+  type Locale,
+  type Passage,
+} from "@workspace/core"
+import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { Link } from "@/i18n/navigation"
 import { setReadingProgressAction } from "@/server/actions/plans"
 
 export type ChecklistReading = {
@@ -57,10 +64,10 @@ export function ReadingChecklist({
         {optimistic.map((reading) => {
           const label = formatPassage(reading.passage, locale)
           return (
-            <li key={reading.id}>
+            <li key={reading.id} className="flex items-stretch gap-2">
               <label
                 className={cn(
-                  "flex cursor-pointer items-center gap-3 rounded-2xl border px-3 py-2.5 transition-colors has-focus-visible:ring-3 has-focus-visible:ring-ring/40",
+                  "flex min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-2xl border px-3 py-2.5 transition-colors has-focus-visible:ring-3 has-focus-visible:ring-ring/40",
                   reading.done
                     ? "border-brand-gold/50 bg-brand-gold/10"
                     : "border-brand-night/15 bg-white/60 hover:border-brand-night/30 dark:border-white/15 dark:bg-neutral-900/60 dark:hover:border-white/30"
@@ -108,6 +115,18 @@ export function ReadingChecklist({
                   {t("verses", { verses: reading.verses })}
                 </span>
               </label>
+              <Link
+                href={`/read/${toPassageSlug(reading.passage)}?reading=${reading.id}`}
+                aria-label={t("read", { passage: label })}
+                title={t("read", { passage: label })}
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "h-auto shrink-0 rounded-2xl px-3"
+                )}
+              >
+                <BookOpen />
+                <span className="hidden sm:inline">{t("readShort")}</span>
+              </Link>
             </li>
           )
         })}

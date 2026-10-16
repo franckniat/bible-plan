@@ -512,7 +512,9 @@
   },
   "Readings": {
     "verses": "{verses, plural, one {# verse} other {# verses}}",
-    "saveFailed": "The reading could not be saved. Check your connection and try again."
+    "saveFailed": "The reading could not be saved. Check your connection and try again.",
+    "read": "Read {passage}",
+    "readShort": "Read"
   },
   "PlanDetail": {
     "back": "My plans",
