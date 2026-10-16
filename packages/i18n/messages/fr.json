@@ -618,10 +618,16 @@
     "youVersion": "Lire dans une autre traduction (YouVersion)",
     "newTab": "(s’ouvre dans un nouvel onglet)",
     "numbering": "Dans la {version}, ces versets portent les numéros {verses}.",
-    "display": {
-      "label": "Affichage du texte",
-      "smaller": "Texte plus petit",
-      "larger": "Texte plus grand",
+    "settings": {
+      "open": "Affichage",
+      "title": "Paramètres de lecture",
+      "size": "Taille du texte",
+      "sizes": {
+        "0": "Petite",
+        "1": "Moyenne",
+        "2": "Grande",
+        "3": "Très grande"
+      },
       "verseNumbers": "Numéros de versets"
     }
   },

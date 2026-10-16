@@ -618,10 +618,16 @@
     "youVersion": "Read in another translation (YouVersion)",
     "newTab": "(opens in a new tab)",
     "numbering": "In the {version}, these verses are numbered {verses}.",
-    "display": {
-      "label": "Text display",
-      "smaller": "Smaller text",
-      "larger": "Larger text",
+    "settings": {
+      "open": "Display",
+      "title": "Reading settings",
+      "size": "Text size",
+      "sizes": {
+        "0": "Small",
+        "1": "Medium",
+        "2": "Large",
+        "3": "Extra large"
+      },
       "verseNumbers": "Verse numbers"
     }
   },
