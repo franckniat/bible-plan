@@ -9,7 +9,8 @@
     "format": "prettier --write \"**/*.{ts,mts}\"",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "import:ebible": "tsx scripts/import-ebible.ts"
   },
   "dependencies": {
     "@workspace/core": "workspace:*",
@@ -20,6 +21,7 @@
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "eslint": "^10",
+    "fflate": "^0.8.3",
     "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "catalog:"
