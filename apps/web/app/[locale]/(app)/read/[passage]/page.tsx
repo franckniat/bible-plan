@@ -7,13 +7,14 @@ import {
   defaultBibleVersion,
   getBibleVersion,
   isBibleVersionId,
+  mapPassage,
   youVersionUrl,
 } from "@workspace/bible-data"
 import {
   adjacentChapter,
   chaptersPassage,
   formatPassage,
-  getBookName,
+  getVerseCount,
   parsePassageSlug,
   toPassageSlug,
   type Locale,
@@ -22,7 +23,7 @@ import { prisma } from "@workspace/db"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { PassageText } from "@/components/reader/passage-text"
+import { ReaderText } from "@/components/reader/reader-text"
 import { ReadingDone } from "@/components/reader/reading-done"
 import { VersionSwitch } from "@/components/reader/version-switch"
 import { Link } from "@/i18n/navigation"
@@ -62,6 +63,23 @@ export default async function ReadPage({
     ? user.bibleVersion
     : defaultBibleVersion(locale)
   const version = getBibleVersion(versionId)
+  // When the version numbers the verses differently (Psalm titles...).
+  const ranges = mapPassage(passage, version)
+  const numbering = ranges.some((range, index) => {
+    const chapter = passage.start.chapter + index
+    const from = chapter === passage.start.chapter ? passage.start.verse : 1
+    const to =
+      chapter === passage.end.chapter
+        ? passage.end.verse
+        : getVerseCount(passage.book, chapter)
+    return range.from !== from || range.to !== to
+  })
+    ? ranges
+        .map(({ chapter, from, to }) =>
+          from === to ? `${chapter}:${from}` : `${chapter}:${from}–${to}`
+        )
+        .join(", ")
+    : null
 
   const previous = adjacentChapter(passage.book, passage.start.chapter, -1)
   const next = adjacentChapter(passage.book, passage.end.chapter, 1)
@@ -69,7 +87,11 @@ export default async function ReadPage({
     target: NonNullable<typeof previous>,
     direction: "previous" | "next"
   ) => {
-    const label = `${getBookName(target.book, locale)} ${target.chapter}`
+    // "Psaume 50", "Jude": the usual way to write a chapter.
+    const label = formatPassage(
+      chaptersPassage(target.book, target.chapter),
+      locale
+    )
     return (
       <Link
         href={`/read/${toPassageSlug(chaptersPassage(target.book, target.chapter))}`}
@@ -104,7 +126,12 @@ export default async function ReadPage({
         </div>
       </header>
 
-      <PassageText passage={passage} version={versionId} className="text-lg" />
+      {numbering && (
+        <p className="text-sm text-brand-night/60 dark:text-neutral-100/60">
+          {t("numbering", { version: version.name, verses: numbering })}
+        </p>
+      )}
+      <ReaderText passage={passage} version={versionId} />
 
       {reading && (
         <ReadingDone

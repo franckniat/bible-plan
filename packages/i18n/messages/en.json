@@ -588,6 +588,13 @@
       "failed": "The reading could not be saved. Check your connection and try again."
     },
     "youVersion": "Read in another translation (YouVersion)",
-    "newTab": "(opens in a new tab)"
+    "newTab": "(opens in a new tab)",
+    "numbering": "In the {version}, these verses are numbered {verses}.",
+    "display": {
+      "label": "Text display",
+      "smaller": "Smaller text",
+      "larger": "Larger text",
+      "verseNumbers": "Verse numbers"
+    }
   }
 }
