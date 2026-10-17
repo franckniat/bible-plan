@@ -3,15 +3,18 @@ import type { Metadata } from "next"
 import { hasLocale } from "next-intl"
 import { getLocale, getTranslations } from "next-intl/server"
 
+import type { Weekday } from "@workspace/core"
 import { prisma } from "@workspace/db"
 import { Badge } from "@workspace/ui/components/badge"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { SuggestReminder } from "@/components/reminders/suggest-reminder"
 import { Link } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
 import { formatIsoDate } from "@/lib/dates"
 import { listPlans, type PlanSummary } from "@/server/services/plans"
+import { listReminders } from "@/server/services/reminders"
 import { requireUser } from "@/server/session"
 
 export async function generateMetadata({
@@ -100,6 +103,28 @@ async function PlanCard({
   )
 }
 
+/** The days and time zone of a reading reminder for a plan, if one is useful. */
+async function getReminderSuggestion(
+  userId: string,
+  planId: string,
+  timeZone?: string | null
+) {
+  const [reminders, plan] = await Promise.all([
+    listReminders(prisma, userId),
+    prisma.readingPlan.findFirst({
+      where: { id: planId, ownerId: userId },
+      select: { activeWeekdays: true },
+    }),
+  ])
+  if (!plan || reminders.some((reminder) => reminder.kind === "READING")) {
+    return null
+  }
+  return {
+    weekdays: plan.activeWeekdays as Weekday[],
+    timeZone: timeZone ?? "UTC",
+  }
+}
+
 export default async function PlansPage({
   searchParams,
 }: PageProps<"/[locale]/plans">) {
@@ -109,6 +134,12 @@ export default async function PlansPage({
   const { created, view } = await searchParams
   const all = await listPlans(prisma, user.id, { includeArchived: true })
   const archivedView = view === "archived"
+  // A plan just created: offer a reading reminder, unless there is one.
+  const createdId = typeof created === "string" ? created : null
+  const suggestion =
+    createdId && all.some((plan) => plan.id === createdId)
+      ? await getReminderSuggestion(user.id, createdId, user.timezone)
+      : null
   const archived = all.filter((plan) => plan.status === "ARCHIVED")
   const current = all.filter((plan) => plan.status !== "ARCHIVED")
   const plans = archivedView ? archived : current
@@ -181,6 +212,8 @@ export default async function PlansPage({
             {t("created")}
           </p>
         )}
+
+      {suggestion && <SuggestReminder {...suggestion} />}
 
       {archivedView && plans.length === 0 ? (
         <p className="text-brand-night/70 dark:text-neutral-100/70">

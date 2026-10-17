@@ -410,6 +410,16 @@
       "limit": "You have reached the limit of {max} reminders.",
       "not_found": "This reminder no longer exists.",
       "unexpected": "Something went wrong. Please try again."
+    },
+    "suggest": {
+      "title": "A reminder to read this plan?",
+      "description": "Choose when you want to be invited to read. You can change it in the settings.",
+      "time": "Reminder time",
+      "create": "Create the reminder",
+      "saving": "Creating…",
+      "later": "Later",
+      "saved": "Reminder created for {time}.",
+      "manage": "Manage my reminders"
     }
   },
   "Theme": {

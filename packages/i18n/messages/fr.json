@@ -410,6 +410,16 @@
       "limit": "Vous avez atteint la limite de {max} rappels.",
       "not_found": "Ce rappel n’existe plus.",
       "unexpected": "Une erreur est survenue. Veuillez réessayer."
+    },
+    "suggest": {
+      "title": "Un rappel pour lire ce plan ?",
+      "description": "Choisissez l’heure à laquelle être invité à lire. Vous pourrez la changer dans les réglages.",
+      "time": "Heure du rappel",
+      "create": "Créer le rappel",
+      "saving": "Création…",
+      "later": "Plus tard",
+      "saved": "Rappel créé à {time}.",
+      "manage": "Gérer mes rappels"
     }
   },
   "Theme": {
