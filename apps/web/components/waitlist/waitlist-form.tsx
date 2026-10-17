@@ -55,9 +55,8 @@ export function WaitlistForm({ className }: { className?: string }) {
 
   return (
     <div
-      id="waitlist"
       className={cn(
-        "scroll-mt-8 rounded-3xl bg-white/85 p-6 shadow-xl ring-1 shadow-brand-night/5 ring-brand-night/10 backdrop-blur sm:p-8 dark:bg-neutral-900/85 dark:ring-white/10",
+        "rounded-3xl bg-white/85 p-6 shadow-xl ring-1 shadow-brand-night/5 ring-brand-night/10 backdrop-blur sm:p-8 dark:bg-neutral-900/85 dark:ring-white/10",
         className
       )}
     >

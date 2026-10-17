@@ -13,7 +13,10 @@
       "subtitle": "Bible Plan builds a reading plan around your schedule, reminds you to read, pray and meditate, and helps you keep going, on your own or with others.",
       "verse": "Thy word is a lamp unto my feet, and a light unto my path.",
       "verseReference": "Psalm 119:105",
-      "counter": "{count, plural, one {# person has already signed up} other {# people have already signed up}}"
+      "counter": "{count, plural, one {# person has already signed up} other {# people have already signed up}}",
+      "ctaWaitlist": "Join the waitlist",
+      "ctaPreview": "See the app",
+      "screenshotAlt": "Bible reading screen with a verse selected to share it"
     },
     "features": {
       "title": "Everything you need to read consistently",
@@ -35,10 +38,28 @@
         "description": "Follow a shared plan with your church, small group or family, share prayer requests and talk about the day’s reading."
       }
     },
-    "closing": {
+    "preview": {
+      "title": "A look at the app",
+      "subtitle": "Designed for your phone, it keeps you company every day without overwhelming you.",
+      "plans": {
+        "title": "Plans ready to follow",
+        "description": "The Bible in a year, the Gospels in 30 days, M’Cheyne’s plan… or your own, at your pace.",
+        "alt": "Reading plan templates screen"
+      },
+      "calendar": {
+        "title": "A clear calendar",
+        "description": "Today’s readings, what you have read, what is late: the plan adapts when you shift it.",
+        "alt": "Reading plan calendar screen"
+      },
+      "reader": {
+        "title": "Read and share a verse",
+        "description": "Read without an account, tap a verse and send it to someone with a simple link.",
+        "alt": "Reading screen with a verse selected and the share buttons"
+      }
+    },
+    "waitlist": {
       "title": "Be among the first readers",
-      "description": "Sign up and we will let you know as soon as Bible Plan opens.",
-      "cta": "Join the waitlist"
+      "description": "Sign up and we will let you know as soon as Bible Plan opens."
     },
     "footer": {
       "privacy": "Privacy",

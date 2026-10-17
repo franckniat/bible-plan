@@ -4,11 +4,12 @@ import { setRequestLocale } from "next-intl/server"
 
 import { prisma } from "@workspace/db"
 
-import { ClosingCall } from "@/components/landing/closing-call"
+import { AppPreview } from "@/components/landing/app-preview"
 import { Features } from "@/components/landing/features"
 import { Hero } from "@/components/landing/hero"
 import { SiteShell } from "@/components/landing/site-shell"
 import { WaitlistCounter } from "@/components/landing/waitlist-counter"
+import { WaitlistSection } from "@/components/landing/waitlist-section"
 import { WaitlistForm } from "@/components/waitlist/waitlist-form"
 import { routing } from "@/i18n/routing"
 import { countWaitlistEntries } from "@/server/services/waitlist"
@@ -35,11 +36,19 @@ export default async function LandingPage({ params }: PageProps<"/[locale]">) {
 
   return (
     <SiteShell>
-      <Hero counter={<WaitlistCounter count={waitlistCount} />}>
-        <WaitlistForm />
-      </Hero>
+      <Hero />
       <Features />
-      <ClosingCall />
+      <AppPreview />
+      <WaitlistSection
+        counter={
+          <WaitlistCounter
+            count={waitlistCount}
+            className="text-brand-cream/85"
+          />
+        }
+      >
+        <WaitlistForm className="bg-white dark:bg-neutral-800" />
+      </WaitlistSection>
     </SiteShell>
   )
 }

@@ -1,19 +1,15 @@
-import { getTranslations } from "next-intl/server"
-import type { ReactNode } from "react"
+import { getLocale, getTranslations } from "next-intl/server"
 
 import { Badge } from "@workspace/ui/components/badge"
+import { buttonVariants } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 
-/** Opening section: the promise on the left, the waitlist form on the right. */
-export async function Hero({
-  counter,
-  children,
-}: {
-  /** Social proof shown under the verse. */
-  counter?: ReactNode
-  /** The waitlist form. */
-  children?: ReactNode
-}) {
+import { PhoneFrame } from "@/components/landing/phone-frame"
+
+/** Opening section: the promise on the left, the app on the right. */
+export async function Hero() {
   const t = await getTranslations("Landing.hero")
+  const locale = await getLocale()
 
   return (
     <section className="relative mx-auto grid max-w-6xl gap-12 px-6 pt-8 pb-20 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16 lg:pt-16 lg:pb-28">
@@ -38,9 +34,39 @@ export async function Hero({
             {t("verseReference")}
           </figcaption>
         </figure>
-        {counter}
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <a
+            href="#waitlist"
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "h-11 px-6 text-base"
+            )}
+          >
+            {t("ctaWaitlist")}
+          </a>
+          <a
+            href="#apercu"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "lg" }),
+              "h-11 px-6 text-base"
+            )}
+          >
+            {t("ctaPreview")}
+          </a>
+        </div>
       </div>
-      {children}
+      <div className="relative">
+        <div
+          aria-hidden
+          className="absolute inset-x-4 top-1/2 h-3/4 -translate-y-1/2 rounded-full bg-brand-gold/25 blur-3xl dark:bg-brand-gold/15"
+        />
+        <PhoneFrame
+          src={`/landing/${locale}-reader.jpg`}
+          alt={t("screenshotAlt")}
+          priority
+          className="relative lg:rotate-2"
+        />
+      </div>
     </section>
   )
 }

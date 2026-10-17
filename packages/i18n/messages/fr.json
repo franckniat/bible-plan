@@ -13,7 +13,10 @@
       "subtitle": "Bible Plan crée un plan de lecture adapté à votre emploi du temps, vous rappelle de lire, de prier et de méditer, et vous aide à persévérer, seul ou en groupe.",
       "verse": "Ta parole est une lampe à mes pieds, et une lumière sur mon sentier.",
       "verseReference": "Psaume 119:105",
-      "counter": "{count, plural, one {# personne déjà inscrite} other {# personnes déjà inscrites}}"
+      "counter": "{count, plural, one {# personne déjà inscrite} other {# personnes déjà inscrites}}",
+      "ctaWaitlist": "Rejoindre la liste d’attente",
+      "ctaPreview": "Découvrir l’application",
+      "screenshotAlt": "Écran de lecture de la Bible avec un verset sélectionné pour le partager"
     },
     "features": {
       "title": "Tout pour lire avec régularité",
@@ -35,10 +38,28 @@
         "description": "Suivez un plan commun avec votre église, votre groupe ou votre famille, partagez vos sujets de prière et échangez sur la lecture du jour."
       }
     },
-    "closing": {
+    "preview": {
+      "title": "Un aperçu de l’application",
+      "subtitle": "Pensée pour le téléphone, elle vous accompagne chaque jour sans vous submerger.",
+      "plans": {
+        "title": "Des plans prêts à suivre",
+        "description": "La Bible en un an, les Évangiles en 30 jours, le plan de M’Cheyne… ou le vôtre, à votre rythme.",
+        "alt": "Écran des modèles de plans de lecture"
+      },
+      "calendar": {
+        "title": "Un calendrier clair",
+        "description": "Les lectures du jour, ce qui est lu, ce qui est en retard : le plan s’adapte quand vous le décalez.",
+        "alt": "Écran du calendrier d’un plan de lecture"
+      },
+      "reader": {
+        "title": "Lire et partager un verset",
+        "description": "Lisez sans compte, touchez un verset et envoyez-le à un proche par un simple lien.",
+        "alt": "Écran de lecture avec un verset sélectionné et les boutons de partage"
+      }
+    },
+    "waitlist": {
       "title": "Soyez parmi les premiers lecteurs",
-      "description": "Inscrivez-vous : nous vous préviendrons dès l’ouverture de Bible Plan.",
-      "cta": "Rejoindre la liste d’attente"
+      "description": "Inscrivez-vous : nous vous préviendrons dès l’ouverture de Bible Plan."
     },
     "footer": {
       "privacy": "Confidentialité",
