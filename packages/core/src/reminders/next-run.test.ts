@@ -51,3 +51,85 @@ describe("nextReminderRun", () => {
     expect(nextReminderRun({ ...paris, weekdays: [] })).toBeNull()
   })
 })
+
+describe("nextReminderRun across clock changes", () => {
+  const at = (localTime: ReminderSchedule["localTime"], timeZone: string) => ({
+    localTime,
+    timeZone,
+    weekdays: everyDay,
+  })
+
+  it("keeps 7:00 in Paris when summer time starts", () => {
+    // Clocks go forward on 2026-03-29 (02:00 → 03:00).
+    const schedule = at("07:00", "Europe/Paris")
+    expect(run(schedule, "2026-03-28T06:00:00Z")).toBe(
+      "2026-03-29T05:00:00.000Z"
+    )
+    expect(run(schedule, "2026-03-29T05:00:00Z")).toBe(
+      "2026-03-30T05:00:00.000Z"
+    )
+  })
+
+  it("keeps 7:00 in Paris when summer time ends", () => {
+    // Clocks go back on 2026-10-25 (03:00 → 02:00).
+    const schedule = at("07:00", "Europe/Paris")
+    expect(run(schedule, "2026-10-24T05:00:00Z")).toBe(
+      "2026-10-25T06:00:00.000Z"
+    )
+  })
+
+  it("moves a time that does not exist to just after the gap", () => {
+    // 02:30 does not exist in Paris on 2026-03-29: it fires at 03:30.
+    expect(run(at("02:30", "Europe/Paris"), "2026-03-28T01:30:00Z")).toBe(
+      "2026-03-29T01:30:00.000Z"
+    )
+  })
+
+  it("fires once, at the first occurrence, when a time happens twice", () => {
+    // 02:30 happens at 00:30 UTC (summer) and 01:30 UTC (winter) on 2026-10-25.
+    const schedule = at("02:30", "Europe/Paris")
+    expect(run(schedule, "2026-10-24T01:00:00Z")).toBe(
+      "2026-10-25T00:30:00.000Z"
+    )
+    expect(run(schedule, "2026-10-25T00:30:00Z")).toBe(
+      "2026-10-26T01:30:00.000Z"
+    )
+  })
+
+  it("follows the other hemisphere and the American dates", () => {
+    expect(run(at("07:00", "America/New_York"), "2026-03-07T12:00:00Z")).toBe(
+      "2026-03-08T11:00:00.000Z"
+    )
+    // Sydney leaves summer time on 2026-04-05.
+    expect(run(at("07:00", "Australia/Sydney"), "2026-04-03T20:00:00Z")).toBe(
+      "2026-04-04T21:00:00.000Z"
+    )
+  })
+
+  it("does not move in a time zone without summer time", () => {
+    const schedule = at("07:00", "Africa/Douala")
+    expect(run(schedule, "2026-03-29T00:00:00Z")).toBe(
+      "2026-03-29T06:00:00.000Z"
+    )
+    expect(run(schedule, "2026-10-25T00:00:00Z")).toBe(
+      "2026-10-25T06:00:00.000Z"
+    )
+  })
+
+  it("stays at 7:00 on the wall clock every day of a year", () => {
+    const schedule = at("07:00", "Europe/Paris")
+    const wall = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/Paris",
+      hourCycle: "h23",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+    let after = new Date("2026-01-01T00:00:00Z")
+    for (let day = 0; day < 400; day++) {
+      const next = nextReminderRun(schedule, after)!
+      expect(wall.format(next)).toBe("07:00")
+      expect(next.getTime()).toBeGreaterThan(after.getTime())
+      after = next
+    }
+  })
+})

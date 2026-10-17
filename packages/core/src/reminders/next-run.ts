@@ -49,12 +49,18 @@ function offsetAt(instant: number, timeZone: string): number {
  * the day clocks jump from 02:00 to 03:00 is 03:30.
  */
 function instantOfWallClock(wall: number, timeZone: string): number {
-  const first = wall - offsetAt(wall, timeZone)
-  const second = wall - offsetAt(first, timeZone)
-  const exists = [first, second].filter(
+  // The offsets in force a day before and a day after: they differ only when
+  // a clock change falls in between, and each gives one candidate instant.
+  const candidates = [
+    ...new Set([
+      wall - offsetAt(wall - day, timeZone),
+      wall - offsetAt(wall + day, timeZone),
+    ]),
+  ]
+  const exists = candidates.filter(
     (instant) => wallClock(instant, timeZone) === wall
   )
-  return exists.length > 0 ? Math.min(...exists) : Math.max(first, second)
+  return exists.length > 0 ? Math.min(...exists) : Math.max(...candidates)
 }
 
 /**
