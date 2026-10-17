@@ -65,6 +65,7 @@ model User {
   accounts      Account[]
   ownedPlans    ReadingPlan[]
   enrollments   PlanEnrollment[]
+  reminders     Reminder[]
 
   locale       String  @default("fr")
   timezone     String?
@@ -231,4 +232,63 @@ model ReadingProgress {
 
   @@unique([enrollmentId, readingId])
   @@index([readingId])
+}
+
+// ─── Reminders ──────────────────────────────────────────────────────────────
+// A reminder fires at a local time, in the person's time zone, on some days of
+// the week. nextRunAt (UTC) is computed by @workspace/core (nextReminderRun) and
+// moved forward each time the reminder is delivered. A delivery is one channel
+// of one occurrence, unique so that a retried cron run never notifies twice.
+
+enum ReminderKind {
+  READING
+  PRAYER
+  MEDITATION
+}
+
+enum ReminderChannel {
+  /// Always available: the notification centre of the app.
+  IN_APP
+  PUSH
+  /// Offered only while EMAIL_REMINDERS_ENABLED is on.
+  EMAIL
+}
+
+model Reminder {
+  id        String            @id @default(uuid(7))
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      ReminderKind
+  /// Local time "HH:mm", in 5-minute steps (the cron runs every 5 minutes).
+  localTime String            @db.VarChar(5)
+  /// IANA time zone the local time is read in, e.g. "Europe/Paris".
+  timezone  String
+  /// Days of the week the reminder is active, 0 = Sunday.
+  weekdays  Int[]
+  channels  ReminderChannel[]
+  enabled   Boolean           @default(true)
+  /// Next occurrence (UTC); null while the reminder is disabled.
+  nextRunAt DateTime?
+  lastRunAt DateTime?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  deliveries ReminderDelivery[]
+
+  @@index([enabled, nextRunAt])
+  @@index([userId])
+}
+
+model ReminderDelivery {
+  id         String          @id @default(uuid(7))
+  reminderId String
+  reminder   Reminder        @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+  /// The occurrence this delivery is for (the reminder's nextRunAt at the time).
+  dueAt      DateTime
+  channel    ReminderChannel
+  sentAt     DateTime        @default(now())
+  /// Why the channel failed, if it did.
+  error      String?
+
+  @@unique([reminderId, dueAt, channel])
 }
