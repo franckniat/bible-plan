@@ -83,7 +83,7 @@ export function VerseShare({
     <div
       role="region"
       aria-label={t("label")}
-      className="fixed inset-x-3 bottom-[calc(8rem+env(safe-area-inset-bottom))] z-20 mx-auto flex max-w-md flex-col gap-2 rounded-2xl bg-white p-3 shadow-lg ring-1 ring-brand-night/15 md:bottom-24 dark:bg-neutral-800 dark:ring-white/15"
+      className="fixed inset-x-3 bottom-[calc(8rem+env(safe-area-inset-bottom))] z-20 mx-auto flex max-w-md flex-col gap-2 rounded-2xl bg-white p-3 text-brand-night shadow-lg ring-1 ring-brand-night/15 md:bottom-24 dark:bg-neutral-800 dark:text-neutral-100 dark:ring-white/15"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 text-sm">

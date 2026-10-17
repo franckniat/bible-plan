@@ -1,4 +1,5 @@
 import { Library, Plus } from "lucide-react"
+import { cookies } from "next/headers"
 import { getLocale, getTranslations } from "next-intl/server"
 
 import { getToday, type Locale } from "@workspace/core"
@@ -9,7 +10,9 @@ import { cn } from "@workspace/ui/lib/utils"
 import { CatchUpBanner } from "@/components/plans/catch-up-banner"
 import { toChecklist } from "@/components/plans/checklist"
 import { ReadingChecklist } from "@/components/plans/reading-checklist"
+import { VerseOfTheDay } from "@/components/reader/verse-of-the-day"
 import { Link } from "@/i18n/navigation"
+import { bibleVersionCookie, pickBibleVersion } from "@/lib/bible-version"
 import { formatIsoDate } from "@/lib/dates"
 import { getTodayPlans, type TodayPlan } from "@/server/services/plans"
 import { requireUser } from "@/server/session"
@@ -91,6 +94,11 @@ export default async function TodayPage() {
   // "Today" is the user's day, not the server's.
   const today = getToday(user.timezone)
   const plans = await getTodayPlans(prisma, user.id, today)
+  // The verse is shown in the version the user reads in.
+  const version = pickBibleVersion(
+    [user.bibleVersion, (await cookies()).get(bibleVersionCookie)?.value],
+    locale as Locale
+  )
 
   return (
     <div className="flex flex-col gap-8">
@@ -107,6 +115,8 @@ export default async function TodayPage() {
           })}
         </p>
       </div>
+
+      <VerseOfTheDay version={version} timeZone={user.timezone} />
 
       {plans.length === 0 ? (
         <div className="flex flex-col items-start gap-4 rounded-3xl border border-dashed border-brand-night/20 p-6 dark:border-white/20">

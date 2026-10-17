@@ -94,7 +94,7 @@ export function PassageText({
   }
   if (!text) {
     return (
-      <p className="flex items-center gap-2 text-brand-night/60 dark:text-neutral-100/60">
+      <p className="flex items-center gap-2 opacity-60">
         <LoaderCircle className="size-4 animate-spin" />
         {t("loading")}
       </p>

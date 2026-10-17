@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react"
 import type { Metadata } from "next"
+import { cookies } from "next/headers"
 import { hasLocale } from "next-intl"
 import { getLocale, getTranslations } from "next-intl/server"
 
@@ -12,10 +13,13 @@ import {
   type Locale,
 } from "@workspace/core"
 
+import { VerseOfTheDay } from "@/components/reader/verse-of-the-day"
 import { RecentReadings } from "@/components/reader/recent-readings"
 import { ResumeReading } from "@/components/reader/resume-reading"
 import { Link } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
+import { bibleVersionCookie, pickBibleVersion } from "@/lib/bible-version"
+import { getSession } from "@/server/session"
 
 export async function generateMetadata({
   params,
@@ -33,6 +37,15 @@ const chapterHref = (book: (typeof books)[number]["id"], chapter: number) =>
 export default async function BibleIndexPage() {
   const t = await getTranslations("BibleIndex")
   const locale = (await getLocale()) as Locale
+  // The verse is shown in the version of the user, or of the visitor's device.
+  const session = await getSession()
+  const version = pickBibleVersion(
+    [
+      session?.user.bibleVersion,
+      (await cookies()).get(bibleVersionCookie)?.value,
+    ],
+    locale
+  )
 
   return (
     <div className="flex flex-col gap-8">
@@ -45,6 +58,8 @@ export default async function BibleIndexPage() {
         </div>
         <ResumeReading />
       </div>
+
+      <VerseOfTheDay version={version} timeZone={session?.user.timezone} />
 
       <RecentReadings />
 

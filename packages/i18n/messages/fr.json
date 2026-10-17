@@ -684,5 +684,9 @@
     },
     "chapters": "{count, plural, one {# chapitre} other {# chapitres}}",
     "chapter": "{book}, chapitre {chapter}"
+  },
+  "VerseOfTheDay": {
+    "title": "Verset du jour",
+    "read": "Lire le chapitre"
   }
 }
