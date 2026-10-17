@@ -1,12 +1,12 @@
 /**
  * Sections of the signed-in app, relative to the locale prefix. Visitors
  * without a session cookie are sent to the sign-in page (optimistic check in
- * proxy.ts; the (app) layout verifies the session for real).
+ * proxy.ts; the (app) layout verifies the session for real). The Bible
+ * reader ("/read") is public, so that verses can be shared.
  */
 export const protectedSections = [
   "/today",
   "/plans",
-  "/read",
   "/prayer",
   "/meditation",
   "/notes",

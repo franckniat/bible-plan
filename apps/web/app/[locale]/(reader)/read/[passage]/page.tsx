@@ -1,10 +1,10 @@
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import type { Metadata } from "next"
+import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 import { getLocale, getTranslations } from "next-intl/server"
 
 import {
-  defaultBibleVersion,
   getBibleVersion,
   isBibleVersionId,
   mapPassage,
@@ -30,8 +30,9 @@ import { ReadingDone } from "@/components/reader/reading-done"
 import { RecordReading } from "@/components/reader/record-reading"
 import { VersionSwitch } from "@/components/reader/version-switch"
 import { Link, redirect } from "@/i18n/navigation"
+import { bibleVersionCookie, pickBibleVersion } from "@/lib/bible-version"
 import { getReadingForUser } from "@/server/services/plans"
-import { requireUser } from "@/server/session"
+import { getSession } from "@/server/session"
 
 export async function generateMetadata({
   params,
@@ -43,7 +44,10 @@ export async function generateMetadata({
   return { title: `${formatPassage(passage, locale)} · Bible Plan` }
 }
 
-/** Reads a passage in the user's Bible version. */
+/**
+ * Reads a passage, open to everyone (it is what shared verse links open).
+ * The version is the one of the link (?v=), else the user's or the device's.
+ */
 export default async function ReadPage({
   params,
   searchParams,
@@ -52,11 +56,11 @@ export default async function ReadPage({
   const fromSlug = parsePassageSlug(decodeURIComponent(slug))
   if (!fromSlug) notFound()
 
-  const user = await requireUser()
+  const user = (await getSession())?.user ?? null
   // ?reading=<id>: a reading of one of the user's plans, to mark as read.
-  const { reading: readingId } = await searchParams
+  const { reading: readingId, v: linkVersion } = await searchParams
   const reading =
-    typeof readingId === "string"
+    user && typeof readingId === "string"
       ? await getReadingForUser(prisma, user.id, readingId)
       : null
   const locale = (await getLocale()) as Locale
@@ -70,9 +74,19 @@ export default async function ReadPage({
           toPassageSlug(step) === toPassageSlug(fromSlug)
       )
     : 0
+  // A version chosen by the link stays on the pages opened from this one.
+  const query = (params: Record<string, string | undefined>) => {
+    const search = new URLSearchParams(
+      Object.entries(params).filter(
+        (entry): entry is [string, string] => entry[1] !== undefined
+      )
+    ).toString()
+    return search ? `?${search}` : ""
+  }
+  const linked = isBibleVersionId(linkVersion) ? linkVersion : undefined
   const stepHref = (index: number) =>
     `/read/${toPassageSlug(steps[index]!)}` +
-    (reading ? `?reading=${reading.id}` : "")
+    query({ reading: reading?.id, v: linked })
   if (found === -1 || (!reading && steps.length > 1)) {
     // A chapter of the reading opens on its step, anything else on the first.
     const chapter = steps.findIndex(
@@ -86,9 +100,14 @@ export default async function ReadPage({
   const passage = steps[stepIndex]!
   const lastStep = stepIndex === steps.length - 1
   const t = await getTranslations("Reader")
-  const versionId = isBibleVersionId(user.bibleVersion)
-    ? user.bibleVersion
-    : defaultBibleVersion(locale)
+  const versionId = pickBibleVersion(
+    [
+      linkVersion,
+      user?.bibleVersion,
+      (await cookies()).get(bibleVersionCookie)?.value,
+    ],
+    locale
+  )
   const version = getBibleVersion(versionId)
   // When the version numbers the verses differently (Psalm titles...).
   const ranges = mapPassage(passage, version)
@@ -122,7 +141,7 @@ export default async function ReadPage({
     )
     return (
       <Link
-        href={`/read/${toPassageSlug(chaptersPassage(target.book, target.chapter))}`}
+        href={`/read/${toPassageSlug(chaptersPassage(target.book, target.chapter))}${query({ v: linked })}`}
         aria-label={t(direction, { chapter: label })}
         className={cn(buttonVariants({ variant: "ghost" }), "h-10")}
       >
@@ -141,7 +160,7 @@ export default async function ReadPage({
     if (!target) return undefined
     const chapter = chaptersPassage(target.book, target.chapter)
     return {
-      href: `/read/${toPassageSlug(chapter)}`,
+      href: `/read/${toPassageSlug(chapter)}${query({ v: linked })}`,
       label: t(direction, { chapter: formatPassage(chapter, locale) }),
     }
   }
@@ -156,6 +175,7 @@ export default async function ReadPage({
   return (
     <article className="flex flex-col gap-6">
       <ReaderArrows
+        sidebar={user !== null}
         previous={
           reading
             ? stepTarget(stepIndex - 1, "previous")
@@ -213,7 +233,7 @@ export default async function ReadPage({
           {formatPassage(passage, locale)}
         </h1>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <VersionSwitch version={version.id} />
+          <VersionSwitch version={version.id} signedIn={user !== null} />
           <a
             href={youVersionUrl(passage, version.id)}
             target="_blank"

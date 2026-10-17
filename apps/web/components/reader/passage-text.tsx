@@ -21,6 +21,9 @@ import {
 } from "@workspace/core"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { VerseShare } from "@/components/reader/verse-share"
+import { toggleVerse, type VerseSelection } from "@/lib/verse-selection"
+
 const fetchChapter = fetchChaptersFrom("/bible")
 
 /**
@@ -56,6 +59,11 @@ export function PassageText({
   const [result, setResult] = useState<
     { key: string; text: Text } | { key: string; failed: true } | null
   >(null)
+  // The tapped verses, for the passage and version on screen only.
+  const [selected, setSelected] = useState<
+    (VerseSelection & { key: string }) | null
+  >(null)
+  const selection = selected?.key === key ? selected : null
 
   useEffect(() => {
     let current = true
@@ -93,8 +101,21 @@ export function PassageText({
     )
   }
 
+  const selectedVerses = selection
+    ? text.chapters.find(({ chapter }) => chapter === selection.chapter)
+    : undefined
+
   return (
     <div className={cn("flex flex-col gap-8", className)}>
+      {selection && selectedVerses && (
+        <VerseShare
+          book={passage.book}
+          version={version}
+          selection={selection}
+          verses={selectedVerses.verses}
+          onClear={() => setSelected(null)}
+        />
+      )}
       {text.chapters.map(({ chapter, verses }) => (
         <section
           key={chapter}
@@ -109,12 +130,32 @@ export function PassageText({
             {verses.map(([number, verse], index) => {
               const { paragraph, segments } = displayVerse(version, verse)
               const around = range && (number < range.from || number > range.to)
+              const chosen =
+                selection?.chapter === chapter &&
+                number >= selection.from &&
+                number <= selection.to
+              const choose = () => {
+                const next = toggleVerse(selection, chapter, number)
+                setSelected(next && { ...next, key })
+              }
               return (
                 <span
                   key={number}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={chosen}
+                  onClick={choose}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault()
+                      choose()
+                    }
+                  }}
                   className={cn(
+                    "cursor-pointer rounded-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
                     verseLayout === "lines" && "mb-2 block",
-                    around && "text-brand-night/45 dark:text-neutral-100/45"
+                    around && "text-brand-night/45 dark:text-neutral-100/45",
+                    chosen && "bg-brand-gold/25"
                   )}
                 >
                   {verseLayout === "flow" && paragraph && index > 0 && (

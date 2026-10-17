@@ -16,7 +16,6 @@ import { RecentReadings } from "@/components/reader/recent-readings"
 import { ResumeReading } from "@/components/reader/resume-reading"
 import { Link } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
-import { requireUser } from "@/server/session"
 
 export async function generateMetadata({
   params,
@@ -30,9 +29,8 @@ export async function generateMetadata({
 const chapterHref = (book: (typeof books)[number]["id"], chapter: number) =>
   `/read/${toPassageSlug(chaptersPassage(book, chapter))}`
 
-/** The Bible to read freely, outside any plan: books, then chapters. */
+/** The Bible to read freely, outside any plan: books, then chapters. Public. */
 export default async function BibleIndexPage() {
-  await requireUser()
   const t = await getTranslations("BibleIndex")
   const locale = (await getLocale()) as Locale
 

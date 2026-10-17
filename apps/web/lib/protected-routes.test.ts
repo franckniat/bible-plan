@@ -18,6 +18,8 @@ describe("getProtectedLocale", () => {
       "/fr/terms",
       "/fr/sign-in",
       "/fr/todays-verse",
+      "/fr/read",
+      "/en/read/John.3.16",
       "/plans",
       "/de/plans",
     ]) {

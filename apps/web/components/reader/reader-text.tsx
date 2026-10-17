@@ -56,6 +56,9 @@ export function ReaderText({
         )}
         <ReaderSettingsPopover />
       </div>
+      <p className="text-sm text-brand-night/60 dark:text-neutral-100/60">
+        {t("selectHint")}
+      </p>
       <PassageText
         passage={passage}
         version={version}

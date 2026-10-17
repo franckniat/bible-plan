@@ -17,9 +17,12 @@ const arrowClassName =
 export function ReaderArrows({
   previous,
   next,
+  sidebar = true,
 }: {
   previous?: Target
   next?: Target
+  /** Whether the page has the app sidebar (not the public frame). */
+  sidebar?: boolean
 }) {
   return (
     <div aria-hidden>
@@ -31,7 +34,10 @@ export function ReaderArrows({
           // Just left of the text column, never over the sidebar.
           className={cn(
             arrowClassName,
-            "left-3 md:left-[max(17rem,calc(50vw-20rem))]"
+            "left-3",
+            sidebar
+              ? "md:left-[max(17rem,calc(50vw-20rem))]"
+              : "md:left-[max(1rem,calc(50vw-28rem))]"
           )}
         >
           <ChevronLeft className="size-6" />
@@ -44,7 +50,10 @@ export function ReaderArrows({
           title={next.label}
           className={cn(
             arrowClassName,
-            "right-3 md:right-[max(1rem,calc(50vw-36rem))]"
+            "right-3",
+            sidebar
+              ? "md:right-[max(1rem,calc(50vw-36rem))]"
+              : "md:right-[max(1rem,calc(50vw-28rem))]"
           )}
         >
           <ChevronRight className="size-6" />
