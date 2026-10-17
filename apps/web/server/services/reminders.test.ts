@@ -6,6 +6,7 @@ import {
   createReminder,
   deleteReminder,
   listReminders,
+  setReminderEnabled,
   updateReminder,
   type RemindersDb,
 } from "./reminders"
@@ -149,5 +150,59 @@ describe("listReminders", () => {
       where: { userId: "user-1" },
       orderBy: [{ localTime: "asc" }, { createdAt: "asc" }],
     })
+  })
+})
+
+describe("setReminderEnabled", () => {
+  const stored = {
+    localTime: "07:00",
+    timezone: "Europe/Paris",
+    weekdays: [0, 1, 2, 3, 4, 5, 6],
+  }
+
+  it("schedules the next run when turned on", async () => {
+    const reminder = {
+      findFirst: vi.fn().mockResolvedValue(stored),
+      update: vi.fn(),
+    }
+    const result = await setReminderEnabled(
+      db(reminder),
+      "user-1",
+      "r1",
+      true,
+      { now }
+    )
+    expect(result).toEqual({ ok: true, value: undefined })
+    expect(reminder.findFirst.mock.calls[0]![0].where).toEqual({
+      id: "r1",
+      userId: "user-1",
+    })
+    expect(reminder.update).toHaveBeenCalledWith({
+      where: { id: "r1" },
+      data: { enabled: true, nextRunAt: new Date("2026-01-15T06:00:00Z") },
+    })
+  })
+
+  it("clears the next run when turned off", async () => {
+    const reminder = {
+      findFirst: vi.fn().mockResolvedValue(stored),
+      update: vi.fn(),
+    }
+    await setReminderEnabled(db(reminder), "user-1", "r1", false)
+    expect(reminder.update.mock.calls[0]![0].data).toEqual({
+      enabled: false,
+      nextRunAt: null,
+    })
+  })
+
+  it("does not touch the reminder of someone else", async () => {
+    const reminder = {
+      findFirst: vi.fn().mockResolvedValue(null),
+      update: vi.fn(),
+    }
+    expect(
+      await setReminderEnabled(db(reminder), "user-2", "r1", true)
+    ).toEqual({ ok: false, error: "not_found" })
+    expect(reminder.update).not.toHaveBeenCalled()
   })
 })

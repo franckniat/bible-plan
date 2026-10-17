@@ -363,6 +363,53 @@
       "saving": "Enregistrement…",
       "saved": "Version enregistrée.",
       "failed": "La version n’a pas pu être enregistrée. Veuillez réessayer."
+    },
+    "reminders": {
+      "title": "Rappels",
+      "description": "Une invitation à l’heure de votre choix pour lire, prier ou méditer.",
+      "manage": "Gérer mes rappels"
+    }
+  },
+  "Reminders": {
+    "title": "Rappels",
+    "description": "Choisissez quand être invité à lire, à prier ou à méditer.",
+    "back": "Réglages",
+    "add": "Ajouter un rappel",
+    "edit": "Modifier le rappel",
+    "delete": "Supprimer le rappel",
+    "confirmDelete": "Supprimer ce rappel ?",
+    "empty": {
+      "title": "Aucun rappel pour l’instant",
+      "description": "Un rappel à heure fixe aide à lire chaque jour, même les jours chargés."
+    },
+    "kinds": {
+      "READING": "Lecture",
+      "PRAYER": "Prière",
+      "MEDITATION": "Méditation"
+    },
+    "channels": {
+      "IN_APP": "Dans l’application",
+      "PUSH": "Notification sur l’appareil",
+      "EMAIL": "Email"
+    },
+    "soon": "bientôt disponible",
+    "fields": {
+      "kind": "Pour",
+      "time": "Heure",
+      "days": "Jours",
+      "channels": "Comment être prévenu"
+    },
+    "everyDay": "Tous les jours",
+    "timeZoneNote": "Les heures suivent votre fuseau horaire ({timeZone}), modifiable dans les réglages du profil.",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "cancel": "Annuler",
+    "errors": {
+      "invalid": "Ce rappel n’est pas valide. Vérifiez l’heure et les jours.",
+      "noDays": "Choisissez au moins un jour.",
+      "limit": "Vous avez atteint la limite de {max} rappels.",
+      "not_found": "Ce rappel n’existe plus.",
+      "unexpected": "Une erreur est survenue. Veuillez réessayer."
     }
   },
   "Theme": {

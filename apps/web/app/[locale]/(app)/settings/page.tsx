@@ -1,3 +1,4 @@
+import { Bell } from "lucide-react"
 import type { Metadata } from "next"
 import { hasLocale } from "next-intl"
 import { getLocale, getTranslations } from "next-intl/server"
@@ -6,9 +7,13 @@ import type { ReactNode } from "react"
 import { defaultBibleVersion, isBibleVersionId } from "@workspace/bible-data"
 import { localeSchema, defaultLocale, type Locale } from "@workspace/core"
 
+import { buttonVariants } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
+
 import { BibleVersionSetting } from "@/components/settings/bible-version-setting"
 import { ProfileForm } from "@/components/settings/profile-form"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { Link } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
 import { requireUser } from "@/server/session"
 
@@ -92,6 +97,23 @@ export default async function SettingsPage() {
               : defaultBibleVersion(locale)
           }
         />
+      </SettingsSection>
+
+      <SettingsSection
+        id="reminders"
+        title={t("reminders.title")}
+        description={t("reminders.description")}
+      >
+        <Link
+          href="/settings/reminders"
+          className={cn(
+            buttonVariants({ variant: "outline", size: "lg" }),
+            "h-11 sm:px-5"
+          )}
+        >
+          <Bell />
+          {t("reminders.manage")}
+        </Link>
       </SettingsSection>
 
       <SettingsSection

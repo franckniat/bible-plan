@@ -4,6 +4,7 @@ import {
   maxRemindersPerUser,
   nextReminderRun,
   type ReminderInput,
+  type Weekday,
 } from "@workspace/core"
 import type { PrismaClient } from "@workspace/db"
 
@@ -95,4 +96,37 @@ export async function deleteReminder(
   return count === 0
     ? { ok: false, error: "not_found" }
     : { ok: true, value: undefined }
+}
+
+/** Turns a reminder on (scheduling its next run) or off. */
+export async function setReminderEnabled(
+  db: RemindersDb,
+  userId: string,
+  reminderId: string,
+  enabled: boolean,
+  { now = new Date() }: Pick<WriteOptions, "now"> = {}
+): Promise<ReminderResult> {
+  const reminder = await db.reminder.findFirst({
+    where: { id: reminderId, userId },
+    select: { localTime: true, timezone: true, weekdays: true },
+  })
+  if (!reminder) return { ok: false, error: "not_found" }
+
+  await db.reminder.update({
+    where: { id: reminderId },
+    data: {
+      enabled,
+      nextRunAt: enabled
+        ? nextReminderRun(
+            {
+              localTime: reminder.localTime,
+              timeZone: reminder.timezone,
+              weekdays: reminder.weekdays as Weekday[],
+            },
+            now
+          )
+        : null,
+    },
+  })
+  return { ok: true, value: undefined }
 }

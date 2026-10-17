@@ -363,6 +363,53 @@
       "saving": "Saving…",
       "saved": "Version saved.",
       "failed": "The version could not be saved. Please try again."
+    },
+    "reminders": {
+      "title": "Reminders",
+      "description": "An invitation at the time you choose to read, pray or meditate.",
+      "manage": "Manage my reminders"
+    }
+  },
+  "Reminders": {
+    "title": "Reminders",
+    "description": "Choose when to be invited to read, pray or meditate.",
+    "back": "Settings",
+    "add": "Add a reminder",
+    "edit": "Edit reminder",
+    "delete": "Delete reminder",
+    "confirmDelete": "Delete this reminder?",
+    "empty": {
+      "title": "No reminders yet",
+      "description": "A reminder at a set time helps you read every day, even the busy ones."
+    },
+    "kinds": {
+      "READING": "Reading",
+      "PRAYER": "Prayer",
+      "MEDITATION": "Meditation"
+    },
+    "channels": {
+      "IN_APP": "In the app",
+      "PUSH": "Notification on your device",
+      "EMAIL": "Email"
+    },
+    "soon": "coming soon",
+    "fields": {
+      "kind": "For",
+      "time": "Time",
+      "days": "Days",
+      "channels": "How to be notified"
+    },
+    "everyDay": "Every day",
+    "timeZoneNote": "Times follow your time zone ({timeZone}), which you can change in the profile settings.",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "errors": {
+      "invalid": "This reminder is not valid. Check the time and the days.",
+      "noDays": "Choose at least one day.",
+      "limit": "You have reached the limit of {max} reminders.",
+      "not_found": "This reminder no longer exists.",
+      "unexpected": "Something went wrong. Please try again."
     }
   },
   "Theme": {
