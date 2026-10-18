@@ -67,6 +67,7 @@ model User {
   enrollments   PlanEnrollment[]
   reminders     Reminder[]
   notifications Notification[]
+  highlights    Highlight[]
 
   locale       String  @default("fr")
   timezone     String?
@@ -318,4 +319,35 @@ model Notification {
   @@index([userId, readAt])
   @@index([userId, createdAt])
   @@index([createdAt])
+}
+
+// ─── Highlights ─────────────────────────────────────────────────────────────
+// A verse colored by a person in the reader. Verses are numbered like the
+// canon (King James, as in plans), whatever version was on screen, so a
+// highlight shows in every version.
+
+enum HighlightColor {
+  YELLOW
+  ORANGE
+  GREEN
+  BLUE
+  PURPLE
+  PINK
+}
+
+model Highlight {
+  id        String         @id @default(uuid(7))
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// OSIS book code, e.g. "John".
+  book      String
+  chapter   Int
+  /// Verse number in the numbering of the canon.
+  verse     Int
+  color     HighlightColor
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@unique([userId, book, chapter, verse])
+  @@index([userId, book, chapter])
 }
