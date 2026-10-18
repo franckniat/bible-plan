@@ -66,6 +66,7 @@ model User {
   ownedPlans    ReadingPlan[]
   enrollments   PlanEnrollment[]
   reminders     Reminder[]
+  notifications Notification[]
 
   locale       String  @default("fr")
   timezone     String?
@@ -291,4 +292,30 @@ model ReminderDelivery {
   error      String?
 
   @@unique([reminderId, dueAt, channel])
+}
+
+// ─── Notifications ──────────────────────────────────────────────────────────
+// What the bell and the notifications page show. Created by the server (a due
+// reminder, later group events), text already in the language of the person.
+
+enum NotificationType {
+  REMINDER
+}
+
+model Notification {
+  id        String           @id @default(uuid(7))
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String?
+  /// Where the notification leads, a path of the app without the language.
+  href      String?
+  /// Null while unread.
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+  @@index([createdAt])
 }
