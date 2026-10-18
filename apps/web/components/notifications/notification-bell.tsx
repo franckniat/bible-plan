@@ -2,6 +2,7 @@
 
 import { Bell } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { useEffect, useState } from "react"
 
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -10,12 +11,17 @@ import { Link, usePathname } from "@/i18n/navigation"
 /** The most the badge shows before "99+". */
 const maxBadge = 99
 
+/** How often the count is asked again while the tab is visible. */
+const refreshEvery = 60_000
+
 /**
  * Link to the notifications page, with the number of unread notifications on
- * a badge.
+ * a badge. The count comes from the server with the page, then is asked again
+ * every minute and when the tab becomes visible or focused again, so a
+ * reminder shows without reloading the app.
  */
 export function NotificationBell({
-  count,
+  count: initial,
   className,
 }: {
   count: number
@@ -23,6 +29,38 @@ export function NotificationBell({
 }) {
   const t = useTranslations("Notifications")
   const active = usePathname().startsWith("/notifications")
+  // The last count fetched, valid until the server sends a new one with the page.
+  const [fetched, setFetched] = useState<{
+    from: number
+    count: number
+  } | null>(null)
+  const count = fetched?.from === initial ? fetched.count : initial
+
+  useEffect(() => {
+    let stopped = false
+    async function refresh() {
+      if (document.visibilityState !== "visible") return
+      try {
+        const response = await fetch("/api/notifications/unread", {
+          cache: "no-store",
+        })
+        if (!response.ok) return
+        const data = (await response.json()) as { count: number }
+        if (!stopped) setFetched({ from: initial, count: data.count })
+      } catch {
+        // Offline: the next try will do.
+      }
+    }
+    const timer = setInterval(refresh, refreshEvery)
+    document.addEventListener("visibilitychange", refresh)
+    window.addEventListener("focus", refresh)
+    return () => {
+      stopped = true
+      clearInterval(timer)
+      document.removeEventListener("visibilitychange", refresh)
+      window.removeEventListener("focus", refresh)
+    }
+  }, [initial])
 
   return (
     <Link
