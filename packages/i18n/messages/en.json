@@ -461,6 +461,11 @@
       "description": "Your reading, prayer and meditation reminders will show up here."
     }
   },
+  "Unsubscribed": {
+    "title": "Reminder turned off",
+    "description": "You will not receive this reminder anymore. You can turn it back on or create another one at any time in your settings.",
+    "manage": "Manage my reminders"
+  },
   "Theme": {
     "label": "Theme",
     "light": "Light",

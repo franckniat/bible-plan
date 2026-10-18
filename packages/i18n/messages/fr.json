@@ -461,6 +461,11 @@
       "description": "Vos rappels de lecture, de prière et de méditation apparaîtront ici."
     }
   },
+  "Unsubscribed": {
+    "title": "Rappel désactivé",
+    "description": "Vous ne recevrez plus ce rappel. Vous pouvez le réactiver ou en créer un autre à tout moment dans vos réglages.",
+    "manage": "Gérer mes rappels"
+  },
   "Theme": {
     "label": "Thème",
     "light": "Clair",

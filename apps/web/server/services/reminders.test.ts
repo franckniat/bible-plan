@@ -5,6 +5,7 @@ import { maxRemindersPerUser, type ReminderInput } from "@workspace/core"
 import {
   createReminder,
   deleteReminder,
+  disableReminderFromLink,
   listReminders,
   setReminderEnabled,
   updateReminder,
@@ -203,6 +204,31 @@ describe("setReminderEnabled", () => {
     expect(
       await setReminderEnabled(db(reminder), "user-2", "r1", true)
     ).toEqual({ ok: false, error: "not_found" })
+    expect(reminder.update).not.toHaveBeenCalled()
+  })
+})
+
+describe("disableReminderFromLink", () => {
+  it("switches the reminder off and gives the language of its owner", async () => {
+    const reminder = {
+      findUnique: vi.fn().mockResolvedValue({ user: { locale: "en" } }),
+      update: vi.fn(),
+    }
+    expect(await disableReminderFromLink(db(reminder), "r1")).toEqual({
+      locale: "en",
+    })
+    expect(reminder.update).toHaveBeenCalledWith({
+      where: { id: "r1" },
+      data: { enabled: false, nextRunAt: null },
+    })
+  })
+
+  it("does nothing for a reminder that no longer exists", async () => {
+    const reminder = {
+      findUnique: vi.fn().mockResolvedValue(null),
+      update: vi.fn(),
+    }
+    expect(await disableReminderFromLink(db(reminder), "gone")).toBeNull()
     expect(reminder.update).not.toHaveBeenCalled()
   })
 })

@@ -130,3 +130,25 @@ export async function setReminderEnabled(
   })
   return { ok: true, value: undefined }
 }
+
+/**
+ * Switches a reminder off from the unsubscribe link of an email (no session:
+ * the signed link is the proof). Gives the language of its owner, for the
+ * confirmation page; null when the reminder no longer exists.
+ */
+export async function disableReminderFromLink(
+  db: RemindersDb,
+  reminderId: string
+): Promise<{ locale: string } | null> {
+  const reminder = await db.reminder.findUnique({
+    where: { id: reminderId },
+    select: { user: { select: { locale: true } } },
+  })
+  if (!reminder) return null
+
+  await db.reminder.update({
+    where: { id: reminderId },
+    data: { enabled: false, nextRunAt: null },
+  })
+  return { locale: reminder.user.locale }
+}
