@@ -8,6 +8,7 @@
     "lint": "eslint --max-warnings 0",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
+    "push:keys": "tsx scripts/generate-vapid-keys.ts",
     "email:test": "tsx --env-file-if-exists=../../apps/web/.env.local scripts/send-test-email.ts",
     "test": "vitest run",
     "test:watch": "vitest"
