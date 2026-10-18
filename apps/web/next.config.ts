@@ -5,6 +5,25 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // The service worker is never cached, so a new version reaches every
+        // device, and it may only load scripts of this site.
+        source: "/sw.js",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "application/javascript; charset=utf-8",
+          },
+          {
+            key: "Cache-Control",
+            value: "no-cache, no-store, must-revalidate",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: "default-src 'self'; script-src 'self'",
+          },
+        ],
+      },
+      {
         // Bible chapters (public/bible): rarely change, cached for a day,
         // then refreshed in the background.
         source: "/bible/:path*",
