@@ -1,5 +1,8 @@
 import { getTranslations } from "next-intl/server"
 
+import { buttonVariants } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
+
 import { BrandMark } from "@/components/brand/brand-mark"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { Link } from "@/i18n/navigation"
@@ -12,14 +15,23 @@ export async function LandingHeader() {
       <Link
         href="/"
         aria-label={t("home")}
-        className="flex items-center gap-2.5 rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
+        className="flex shrink-0 items-center gap-2.5 rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
       >
         <BrandMark className="h-8" />
-        <span className="font-heading text-xl font-semibold tracking-tight">
+        <span className="font-heading text-xl font-semibold tracking-tight whitespace-nowrap">
           Bible Plan
         </span>
       </Link>
-      <LanguageSwitcher className="text-sm" />
+      <div className="flex items-center gap-4">
+        {/* On a phone the language is chosen in the footer. */}
+        <LanguageSwitcher className="hidden text-sm sm:flex" />
+        <Link
+          href="/sign-in"
+          className={cn(buttonVariants({ variant: "outline" }), "h-9")}
+        >
+          {t("signIn")}
+        </Link>
+      </div>
     </header>
   )
 }

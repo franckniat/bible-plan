@@ -1,65 +1,84 @@
 {
   "Metadata": {
     "title": "Bible Plan",
-    "description": "Créez un plan de lecture biblique adapté à votre rythme, avec des rappels de lecture, de prière et de méditation."
+    "description": "Lisez la Bible à votre rythme : plans de lecture, rappels, surbrillance et comparaison de traductions. La version web est disponible, la liste d’attente reste ouverte."
   },
   "Landing": {
     "header": {
-      "home": "Bible Plan, accueil"
+      "home": "Bible Plan, accueil",
+      "signIn": "Se connecter"
     },
     "hero": {
-      "eyebrow": "Bientôt disponible",
+      "eyebrow": "La version web est disponible",
       "title": "Lisez la Bible à votre rythme, jour après jour.",
-      "subtitle": "Bible Plan crée un plan de lecture adapté à votre emploi du temps, vous rappelle de lire, de prier et de méditer, et vous aide à persévérer, seul ou en groupe.",
+      "subtitle": "Bible Plan crée un plan de lecture adapté à votre emploi du temps, vous rappelle de lire, et vous laisse surligner, comparer et partager les versets. La version web est déjà prête, gratuite, sans compte pour lire.",
       "verse": "Ta parole est une lampe à mes pieds, et une lumière sur mon sentier.",
       "verseReference": "Psaume 119:105",
       "counter": "{count, plural, one {# personne déjà inscrite} other {# personnes déjà inscrites}}",
-      "ctaWaitlist": "Rejoindre la liste d’attente",
-      "ctaPreview": "Découvrir l’application",
-      "screenshotAlt": "Écran de lecture de la Bible avec un verset sélectionné pour le partager"
+      "ctaRead": "Lire la Bible maintenant",
+      "ctaSignUp": "Créer un compte gratuit",
+      "waitlistLink": "Ou rejoignez la liste d’attente pour suivre la suite",
+      "screenshotAlt": "Écran de lecture de la Bible avec des versets en surbrillance et le panneau de sélection"
     },
     "features": {
-      "title": "Tout pour lire avec régularité",
-      "subtitle": "Une seule application pour avancer dans la Parole, à votre rythme.",
+      "title": "Déjà là, dès aujourd’hui",
+      "subtitle": "Tout ce qu’il faut pour lire avec régularité est ouvert sur la version web.",
       "plans": {
         "title": "Un plan qui vous ressemble",
-        "description": "Toute la Bible en un an, le Nouveau Testament en 90 jours ou 15 minutes par jour : les lectures sont réparties selon vos jours disponibles, et le plan s’adapte si vous prenez du retard."
+        "description": "Toute la Bible en un an, les Évangiles en 30 jours ou 15 minutes par jour : les lectures sont réparties selon vos jours disponibles, et le plan s’adapte si vous prenez du retard."
+      },
+      "bible": {
+        "title": "Une Bible qui se lit, se surligne, se partage",
+        "description": "Louis Segond 1910 et King James : six couleurs de surbrillance enregistrées dans votre compte, deux traductions côte à côte, un verset copié ou envoyé par simple lien."
       },
       "reminders": {
         "title": "Des rappels au bon moment",
-        "description": "Une notification à l’heure que vous choisissez pour lire, prier ou méditer, sur votre téléphone comme sur votre ordinateur."
+        "description": "Une notification à l’heure que vous choisissez, sur votre téléphone comme sur votre ordinateur, qui vous dit ce qu’il reste à lire."
       },
+      "verse": {
+        "title": "Un verset chaque jour",
+        "description": "Le verset du jour, illustré selon le moment de la journée, dans la traduction que vous lisez."
+      }
+    },
+    "soon": {
+      "title": "Ce qui arrive ensuite",
+      "badge": "Bientôt",
       "prayer": {
         "title": "Prière et méditation",
-        "description": "Un journal pour vos sujets de prière et les prières exaucées, un minuteur de méditation et des notes sur ce que vous lisez."
+        "description": "Un journal de prière, un minuteur de méditation et des notes sur ce que vous lisez."
       },
       "groups": {
         "title": "Lire ensemble",
-        "description": "Suivez un plan commun avec votre église, votre groupe ou votre famille, partagez vos sujets de prière et échangez sur la lecture du jour."
+        "description": "Un plan commun avec votre église, votre groupe ou votre famille, et des sujets de prière partagés."
+      },
+      "mobile": {
+        "title": "Application mobile",
+        "description": "Bible Plan sur iPhone et Android, pour lire et prier où que vous soyez."
       }
     },
     "preview": {
-      "title": "Un aperçu de l’application",
-      "subtitle": "Pensée pour le téléphone, elle vous accompagne chaque jour sans vous submerger.",
-      "plans": {
-        "title": "Des plans prêts à suivre",
-        "description": "La Bible en un an, les Évangiles en 30 jours, le plan de M’Cheyne… ou le vôtre, à votre rythme.",
-        "alt": "Écran des modèles de plans de lecture"
+      "title": "Un aperçu de la version web",
+      "subtitle": "Pensée pour le téléphone, elle s’adapte aussi à l’ordinateur.",
+      "today": {
+        "title": "Le verset du jour et vos lectures",
+        "description": "Chaque jour, le verset du jour puis les lectures de vos plans, avec un rattrapage sans culpabilité.",
+        "alt": "Écran Aujourd’hui avec le verset du jour et un plan de lecture"
+      },
+      "compare": {
+        "title": "Comparer deux traductions",
+        "description": "La lecture parallèle montre deux versions verset par verset, alignées même quand la numérotation diffère.",
+        "alt": "Écran de lecture parallèle de Jean 3 en Louis Segond et en King James"
       },
       "calendar": {
         "title": "Un calendrier clair",
-        "description": "Les lectures du jour, ce qui est lu, ce qui est en retard : le plan s’adapte quand vous le décalez.",
+        "description": "Ce qui est lu, ce qui est en retard : le plan s’adapte quand vous le décalez.",
         "alt": "Écran du calendrier d’un plan de lecture"
-      },
-      "reader": {
-        "title": "Lire et partager un verset",
-        "description": "Lisez sans compte, touchez un verset et envoyez-le à un proche par un simple lien.",
-        "alt": "Écran de lecture avec un verset sélectionné et les boutons de partage"
       }
     },
     "waitlist": {
-      "title": "Soyez parmi les premiers lecteurs",
-      "description": "Inscrivez-vous : nous vous préviendrons dès l’ouverture de Bible Plan."
+      "title": "La liste d’attente reste ouverte",
+      "description": "La version web est déjà prête. Laissez votre email pour être prévenu du lancement et des prochaines nouveautés.",
+      "tryWeb": "Essayer la version web"
     },
     "footer": {
       "privacy": "Confidentialité",
@@ -70,7 +89,7 @@
   },
   "WaitlistForm": {
     "title": "Soyez prévenu du lancement",
-    "description": "Inscrivez-vous pour découvrir Bible Plan parmi les premiers. Seul l’email est obligatoire.",
+    "description": "Inscrivez-vous pour être prévenu du lancement et des nouveautés. Seul l’email est obligatoire.",
     "email": "Email",
     "emailPlaceholder": "vous@exemple.com",
     "firstName": "Prénom",
@@ -88,11 +107,11 @@
     "submit": "Rejoindre la liste d’attente",
     "submitting": "Inscription…",
     "successTitle": "Merci, vous êtes sur la liste !",
-    "successDescription": "Nous vous préviendrons par email dès que Bible Plan sera prêt. En attendant, partagez-le avec ceux qui aimeraient lire la Bible avec régularité.",
+    "successDescription": "Nous vous préviendrons par email du lancement. En attendant, la version web est déjà ouverte : bonne lecture !",
     "shareWhatsApp": "Partager sur WhatsApp",
     "copyLink": "Copier le lien",
     "linkCopied": "Lien copié",
-    "shareMessage": "Je viens de m’inscrire à Bible Plan, une application pour lire la Bible à son rythme. Rejoins la liste d’attente : {url}",
+    "shareMessage": "Je lis la Bible avec Bible Plan, une application pour lire à son rythme. La version web est ouverte, essaie : {url}",
     "errors": {
       "invalid_email": "Saisissez une adresse email valide.",
       "too_long": "Ce texte est trop long.",

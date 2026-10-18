@@ -1,7 +1,11 @@
 import { getTranslations } from "next-intl/server"
 import type { ReactNode } from "react"
 
+import { buttonVariants } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
+
 import { BrandMark } from "@/components/brand/brand-mark"
+import { Link } from "@/i18n/navigation"
 
 /** The waitlist, in a section of its own: the invitation, then the form. */
 export async function WaitlistSection({
@@ -34,6 +38,15 @@ export async function WaitlistSection({
             {t("description")}
           </p>
           {counter}
+          <Link
+            href="/read"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "lg" }),
+              "h-11 border-white/30 bg-transparent px-6 text-base text-brand-cream hover:bg-white/10 hover:text-brand-cream"
+            )}
+          >
+            {t("tryWeb")}
+          </Link>
         </div>
         {/* The form is a light card: it sets its own text colour. */}
         <div className="text-brand-night dark:text-neutral-100">{children}</div>

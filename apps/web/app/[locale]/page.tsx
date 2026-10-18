@@ -5,6 +5,7 @@ import { setRequestLocale } from "next-intl/server"
 import { prisma } from "@workspace/db"
 
 import { AppPreview } from "@/components/landing/app-preview"
+import { ComingSoon } from "@/components/landing/coming-soon"
 import { Features } from "@/components/landing/features"
 import { Hero } from "@/components/landing/hero"
 import { SiteShell } from "@/components/landing/site-shell"
@@ -39,6 +40,7 @@ export default async function LandingPage({ params }: PageProps<"/[locale]">) {
       <Hero />
       <Features />
       <AppPreview />
+      <ComingSoon />
       <WaitlistSection
         counter={
           <WaitlistCounter

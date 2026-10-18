@@ -5,8 +5,13 @@ import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { PhoneFrame } from "@/components/landing/phone-frame"
+import { landingImage } from "@/lib/landing-images"
+import { Link } from "@/i18n/navigation"
 
-/** Opening section: the promise on the left, the app on the right. */
+/**
+ * Opening section: the web app is open, so the first actions are to read and
+ * to create an account; the waitlist stays one link away.
+ */
 export async function Hero() {
   const t = await getTranslations("Landing.hero")
   const locale = await getLocale()
@@ -16,8 +21,10 @@ export async function Hero() {
       <div className="flex flex-col gap-6">
         <Badge
           variant="outline"
-          className="w-fit border-brand-gold/50 bg-brand-gold/10 text-brand-night dark:text-brand-gold-soft"
+          className="w-fit gap-2 border-brand-gold/50 bg-brand-gold/10 text-brand-night dark:text-brand-gold-soft"
         >
+          {/* A live dot: the web app can be used now. */}
+          <span aria-hidden className="size-1.5 rounded-full bg-green-500" />
           {t("eyebrow")}
         </Badge>
         <h1 className="font-heading text-4xl leading-[1.1] font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
@@ -34,24 +41,32 @@ export async function Hero() {
             {t("verseReference")}
           </figcaption>
         </figure>
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/read"
+              className={cn(
+                buttonVariants({ size: "lg" }),
+                "h-11 px-6 text-base"
+              )}
+            >
+              {t("ctaRead")}
+            </Link>
+            <Link
+              href="/sign-up"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "h-11 px-6 text-base"
+              )}
+            >
+              {t("ctaSignUp")}
+            </Link>
+          </div>
           <a
             href="#waitlist"
-            className={cn(
-              buttonVariants({ size: "lg" }),
-              "h-11 px-6 text-base"
-            )}
+            className="w-fit text-sm text-brand-night/70 underline underline-offset-4 hover:text-brand-night dark:text-neutral-100/70 dark:hover:text-neutral-100"
           >
-            {t("ctaWaitlist")}
-          </a>
-          <a
-            href="#apercu"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "lg" }),
-              "h-11 px-6 text-base"
-            )}
-          >
-            {t("ctaPreview")}
+            {t("waitlistLink")}
           </a>
         </div>
       </div>
@@ -61,7 +76,7 @@ export async function Hero() {
           className="absolute inset-x-4 top-1/2 h-3/4 -translate-y-1/2 rounded-full bg-brand-gold/25 blur-3xl dark:bg-brand-gold/15"
         />
         <PhoneFrame
-          src={`/landing/${locale}-reader.jpg`}
+          src={landingImage(locale, "reader")}
           alt={t("screenshotAlt")}
           priority
           className="relative lg:rotate-2"

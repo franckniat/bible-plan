@@ -1,10 +1,12 @@
 import { getLocale, getTranslations } from "next-intl/server"
 
 import { PhoneFrame } from "@/components/landing/phone-frame"
+import { landingImage } from "@/lib/landing-images"
 
-const screens = ["plans", "calendar", "reader"] as const
+// The reading screen with highlights is the one of the opening section.
+const screens = ["today", "compare", "calendar"] as const
 
-/** Screenshots of the app, one phone per feature. */
+/** Screenshots of the web app, one phone per feature. */
 export async function AppPreview() {
   const t = await getTranslations("Landing.preview")
   const locale = await getLocale()
@@ -30,11 +32,12 @@ export async function AppPreview() {
         {screens.map((screen) => (
           <li key={screen} className="flex flex-col items-center gap-6">
             <PhoneFrame
-              src={`/landing/${locale}-${screen}.jpg`}
+              src={landingImage(locale, screen)}
               alt={t(`${screen}.alt`)}
+              className="max-w-[16rem]"
             />
             <div className="max-w-xs text-center">
-              <h3 className="font-heading text-xl font-semibold">
+              <h3 className="font-heading text-lg font-semibold">
                 {t(`${screen}.title`)}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-brand-night/70 dark:text-neutral-100/70">

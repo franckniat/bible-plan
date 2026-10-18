@@ -1,13 +1,14 @@
-import { BellRing, CalendarRange, HandHeart, Users } from "lucide-react"
+import { BellRing, BookOpenText, CalendarRange, Sun } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 
 const features = [
   { key: "plans", Icon: CalendarRange },
+  { key: "bible", Icon: BookOpenText },
   { key: "reminders", Icon: BellRing },
-  { key: "prayer", Icon: HandHeart },
-  { key: "groups", Icon: Users },
+  { key: "verse", Icon: Sun },
 ] as const
 
+/** What the web app already does. */
 export async function Features() {
   const t = await getTranslations("Landing.features")
 

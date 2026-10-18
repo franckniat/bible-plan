@@ -1,65 +1,84 @@
 {
   "Metadata": {
     "title": "Bible Plan",
-    "description": "Create a Bible reading plan that fits your pace, with reading, prayer and meditation reminders."
+    "description": "Read the Bible at your own pace: reading plans, reminders, highlights and translation comparison. The web app is open, the waitlist is still open."
   },
   "Landing": {
     "header": {
-      "home": "Bible Plan, home"
+      "home": "Bible Plan, home",
+      "signIn": "Sign in"
     },
     "hero": {
-      "eyebrow": "Coming soon",
+      "eyebrow": "The web app is open",
       "title": "Read the Bible at your own pace, day after day.",
-      "subtitle": "Bible Plan builds a reading plan around your schedule, reminds you to read, pray and meditate, and helps you keep going, on your own or with others.",
+      "subtitle": "Bible Plan builds a reading plan around your schedule, reminds you to read, and lets you highlight, compare and share verses. The web app is ready now, free, and you can read without an account.",
       "verse": "Thy word is a lamp unto my feet, and a light unto my path.",
       "verseReference": "Psalm 119:105",
       "counter": "{count, plural, one {# person has already signed up} other {# people have already signed up}}",
-      "ctaWaitlist": "Join the waitlist",
-      "ctaPreview": "See the app",
-      "screenshotAlt": "Bible reading screen with a verse selected to share it"
+      "ctaRead": "Read the Bible now",
+      "ctaSignUp": "Create a free account",
+      "waitlistLink": "Or join the waitlist to follow what comes next",
+      "screenshotAlt": "Bible reading screen with highlighted verses and the selection panel"
     },
     "features": {
-      "title": "Everything you need to read consistently",
-      "subtitle": "One app to grow in the Word, at your own pace.",
+      "title": "Already here, today",
+      "subtitle": "Everything you need to read consistently is open on the web app.",
       "plans": {
         "title": "A plan that fits you",
-        "description": "The whole Bible in a year, the New Testament in 90 days or 15 minutes a day: readings are spread over the days you choose, and the plan adapts if you fall behind."
+        "description": "The whole Bible in a year, the Gospels in 30 days or 15 minutes a day: readings are spread over the days you have, and the plan adapts if you fall behind."
+      },
+      "bible": {
+        "title": "A Bible to read, highlight and share",
+        "description": "Louis Segond 1910 and King James: six highlight colors saved to your account, two translations side by side, a verse copied or sent with a simple link."
       },
       "reminders": {
         "title": "Reminders at the right time",
-        "description": "A notification at the time you choose to read, pray or meditate, on your phone as well as on your computer."
+        "description": "A notification at the time you choose, on your phone as on your computer, telling you what is left to read."
       },
+      "verse": {
+        "title": "A verse every day",
+        "description": "The verse of the day, illustrated for the time of day, in the translation you read."
+      }
+    },
+    "soon": {
+      "title": "What comes next",
+      "badge": "Soon",
       "prayer": {
         "title": "Prayer and meditation",
-        "description": "A journal for your prayer requests and answered prayers, a meditation timer and notes on what you read."
+        "description": "A prayer journal, a meditation timer and notes on what you read."
       },
       "groups": {
         "title": "Read together",
-        "description": "Follow a shared plan with your church, small group or family, share prayer requests and talk about the day’s reading."
+        "description": "A shared plan with your church, group or family, and shared prayer requests."
+      },
+      "mobile": {
+        "title": "Mobile app",
+        "description": "Bible Plan on iPhone and Android, to read and pray wherever you are."
       }
     },
     "preview": {
-      "title": "A look at the app",
-      "subtitle": "Designed for your phone, it keeps you company every day without overwhelming you.",
-      "plans": {
-        "title": "Plans ready to follow",
-        "description": "The Bible in a year, the Gospels in 30 days, M’Cheyne’s plan… or your own, at your pace.",
-        "alt": "Reading plan templates screen"
+      "title": "A look at the web app",
+      "subtitle": "Designed for your phone, it fits your computer too.",
+      "today": {
+        "title": "The verse of the day and your readings",
+        "description": "Every day, the verse of the day then the readings of your plans, with a catch-up that does not guilt you.",
+        "alt": "Today screen with the verse of the day and a reading plan"
+      },
+      "compare": {
+        "title": "Compare two translations",
+        "description": "Parallel reading shows two versions verse by verse, aligned even when the numbering differs.",
+        "alt": "Parallel reading screen of John 3 in King James and Louis Segond"
       },
       "calendar": {
         "title": "A clear calendar",
-        "description": "Today’s readings, what you have read, what is late: the plan adapts when you shift it.",
+        "description": "What is read, what is late: the plan adapts when you shift it.",
         "alt": "Reading plan calendar screen"
-      },
-      "reader": {
-        "title": "Read and share a verse",
-        "description": "Read without an account, tap a verse and send it to someone with a simple link.",
-        "alt": "Reading screen with a verse selected and the share buttons"
       }
     },
     "waitlist": {
-      "title": "Be among the first readers",
-      "description": "Sign up and we will let you know as soon as Bible Plan opens."
+      "title": "The waitlist is still open",
+      "description": "The web app is already ready. Leave your email to be told about the launch and what comes next.",
+      "tryWeb": "Try the web app"
     },
     "footer": {
       "privacy": "Privacy",
@@ -70,7 +89,7 @@
   },
   "WaitlistForm": {
     "title": "Be the first to know",
-    "description": "Sign up to discover Bible Plan among the first. Only the email is required.",
+    "description": "Sign up to be told about the launch and what comes next. Only the email is required.",
     "email": "Email",
     "emailPlaceholder": "you@example.com",
     "firstName": "First name",
@@ -88,11 +107,11 @@
     "submit": "Join the waitlist",
     "submitting": "Signing up…",
     "successTitle": "Thank you, you’re on the list!",
-    "successDescription": "We’ll let you know by email as soon as Bible Plan is ready. Meanwhile, share it with those who would love to read the Bible consistently.",
+    "successDescription": "We will let you know by email about the launch. Meanwhile the web app is already open: happy reading!",
     "shareWhatsApp": "Share on WhatsApp",
     "copyLink": "Copy link",
     "linkCopied": "Link copied",
-    "shareMessage": "I just signed up for Bible Plan, an app to read the Bible at your own pace. Join the waitlist: {url}",
+    "shareMessage": "I read the Bible with Bible Plan, an app to read at your own pace. The web app is open, try it: {url}",
     "errors": {
       "invalid_email": "Enter a valid email address.",
       "too_long": "This text is too long.",
