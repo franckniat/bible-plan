@@ -449,7 +449,9 @@
     "notification": {
       "READING": {
         "title": "C’est l’heure de lire",
-        "body": "Votre lecture du jour vous attend."
+        "body": "Votre lecture du jour vous attend.",
+        "bodyWith": "Au programme : {passages}.",
+        "action": "Voir Aujourd’hui"
       },
       "PRAYER": {
         "title": "C’est l’heure de prier",
@@ -457,7 +459,8 @@
       },
       "MEDITATION": {
         "title": "C’est l’heure de méditer",
-        "body": "Prenez un moment pour méditer la Parole."
+        "body": "Prenez un moment pour méditer la Parole.",
+        "bodyWith": "Verset du jour : {reference}."
       }
     },
     "push": {

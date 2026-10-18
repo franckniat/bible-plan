@@ -449,7 +449,9 @@
     "notification": {
       "READING": {
         "title": "Time to read",
-        "body": "Today’s reading is waiting for you."
+        "body": "Today’s reading is waiting for you.",
+        "bodyWith": "On the plan: {passages}.",
+        "action": "See Today"
       },
       "PRAYER": {
         "title": "Time to pray",
@@ -457,7 +459,8 @@
       },
       "MEDITATION": {
         "title": "Time to meditate",
-        "body": "Take a moment to meditate on the Word."
+        "body": "Take a moment to meditate on the Word.",
+        "bodyWith": "Verse of the day: {reference}."
       }
     },
     "push": {

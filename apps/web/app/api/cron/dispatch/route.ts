@@ -3,7 +3,7 @@ import { prisma } from "@workspace/db"
 import { isAuthorizedCron } from "@/lib/cron-auth"
 import { getReminderEmailSender } from "@/server/reminder-email"
 import { getReminderPushSender } from "@/server/reminder-push"
-import { describeReminder } from "@/server/reminder-text"
+import { getReminderContent } from "@/server/reminder-message"
 import {
   defaultBatchSize,
   dispatchDueReminders,
@@ -27,12 +27,18 @@ export async function POST(request: Request) {
     return Response.json({ error: "unauthorized" }, { status: 401 })
   }
 
-  const total: DispatchResult = { due: 0, claimed: 0, delivered: 0, failed: 0 }
+  const total: DispatchResult = {
+    due: 0,
+    claimed: 0,
+    skipped: 0,
+    delivered: 0,
+    failed: 0,
+  }
   const now = new Date()
   for (let batch = 0; batch < maxBatches; batch++) {
     const result = await dispatchDueReminders(prisma, {
       now,
-      describe: describeReminder,
+      content: getReminderContent,
       // Undefined (email left alone) until EMAIL_REMINDERS_ENABLED is on.
       sendEmail: getReminderEmailSender(),
       // Undefined (push channel left alone) until the VAPID keys are set.

@@ -27,6 +27,7 @@ const reminder = (overrides: Record<string, unknown> = {}) => ({
 
 const describeKind = vi.fn(async () => ({
   title: "Time to read",
+  body: "Your reading",
   href: "/today",
 }))
 
@@ -59,7 +60,7 @@ describe("dispatchDueReminders", () => {
     await dispatchDueReminders(typed, {
       now,
       batchSize: 50,
-      describe: describeKind,
+      content: describeKind,
     })
     expect(db.reminder.findMany.mock.calls[0]![0]).toMatchObject({
       where: { enabled: true, nextRunAt: { lte: now } },
@@ -72,7 +73,7 @@ describe("dispatchDueReminders", () => {
     const { db, typed } = setup([reminder()])
     const result = await dispatchDueReminders(typed, {
       now,
-      describe: describeKind,
+      content: describeKind,
     })
 
     expect(db.reminder.updateMany).toHaveBeenCalledWith({
@@ -90,23 +91,35 @@ describe("dispatchDueReminders", () => {
         userId: "user-1",
         type: "REMINDER",
         title: "Time to read",
-        body: undefined,
+        body: "Your reading",
         href: "/today",
       },
       select: { id: true },
     })
-    expect(result).toEqual({ due: 1, claimed: 1, delivered: 1, failed: 0 })
+    expect(result).toEqual({
+      due: 1,
+      claimed: 1,
+      skipped: 0,
+      delivered: 1,
+      failed: 0,
+    })
   })
 
   it("does not deliver a reminder another run has already taken", async () => {
     const { db, typed } = setup([reminder()], { claimed: 0 })
     const result = await dispatchDueReminders(typed, {
       now,
-      describe: describeKind,
+      content: describeKind,
     })
     expect(db.reminderDelivery.create).not.toHaveBeenCalled()
     expect(db.notification.create).not.toHaveBeenCalled()
-    expect(result).toEqual({ due: 1, claimed: 0, delivered: 0, failed: 0 })
+    expect(result).toEqual({
+      due: 1,
+      claimed: 0,
+      skipped: 0,
+      delivered: 0,
+      failed: 0,
+    })
   })
 
   it("never notifies twice for the same occurrence and channel", async () => {
@@ -115,7 +128,7 @@ describe("dispatchDueReminders", () => {
     })
     const result = await dispatchDueReminders(typed, {
       now,
-      describe: describeKind,
+      content: describeKind,
     })
     expect(db.notification.create).not.toHaveBeenCalled()
     expect(result.delivered).toBe(0)
@@ -125,7 +138,7 @@ describe("dispatchDueReminders", () => {
   it("delivers a very late reminder once, and schedules the next one after now", async () => {
     const weekAgo = new Date("2026-01-08T06:00:00Z")
     const { db, typed } = setup([reminder({ nextRunAt: weekAgo })])
-    await dispatchDueReminders(typed, { now, describe: describeKind })
+    await dispatchDueReminders(typed, { now, content: describeKind })
     expect(db.reminder.updateMany.mock.calls[0]![0].data.nextRunAt).toEqual(
       new Date("2026-01-15T06:00:00Z")
     )
@@ -136,7 +149,7 @@ describe("dispatchDueReminders", () => {
     const { db, typed } = setup([reminder({ channels: ["IN_APP", "EMAIL"] })])
     const result = await dispatchDueReminders(typed, {
       now,
-      describe: describeKind,
+      content: describeKind,
     })
     expect(db.reminderDelivery.create).toHaveBeenCalledTimes(1)
     expect(result.delivered).toBe(1)
@@ -147,7 +160,7 @@ describe("dispatchDueReminders", () => {
     const { typed } = setup([reminder({ channels: ["IN_APP", "EMAIL"] })])
     const result = await dispatchDueReminders(typed, {
       now,
-      describe: describeKind,
+      content: describeKind,
       sendEmail,
     })
     expect(sendEmail).toHaveBeenCalledTimes(1)
@@ -165,7 +178,7 @@ describe("dispatchDueReminders", () => {
     ])
     await dispatchDueReminders(typed, {
       now,
-      describe: describeKind,
+      content: describeKind,
       sendEmail,
     })
     expect(sendEmail).not.toHaveBeenCalled()
@@ -180,14 +193,20 @@ describe("dispatchDueReminders", () => {
 
     const result = await dispatchDueReminders(typed, {
       now,
-      describe: describeKind,
+      content: describeKind,
     })
 
     expect(db.reminderDelivery.update).toHaveBeenCalledWith({
       where: { id: "d1" },
       data: { error: "database down" },
     })
-    expect(result).toEqual({ due: 2, claimed: 2, delivered: 1, failed: 1 })
+    expect(result).toEqual({
+      due: 2,
+      claimed: 2,
+      skipped: 0,
+      delivered: 1,
+      failed: 1,
+    })
   })
 
   it("pushes on the push channel when push is set up", async () => {
@@ -195,7 +214,7 @@ describe("dispatchDueReminders", () => {
     const { db, typed } = setup([reminder({ channels: ["IN_APP", "PUSH"] })])
     const result = await dispatchDueReminders(typed, {
       now,
-      describe: describeKind,
+      content: describeKind,
       sendPush,
     })
     expect(sendPush).toHaveBeenCalledTimes(1)
@@ -211,9 +230,48 @@ describe("dispatchDueReminders", () => {
     const { db, typed } = setup([reminder({ channels: ["IN_APP", "PUSH"] })])
     const result = await dispatchDueReminders(typed, {
       now,
-      describe: describeKind,
+      content: describeKind,
     })
     expect(db.reminderDelivery.create).toHaveBeenCalledTimes(1)
     expect(result.delivered).toBe(1)
+  })
+
+  it("takes a reminder with nothing to say and sends nothing for it", async () => {
+    const { db, typed } = setup([reminder({ channels: ["IN_APP", "PUSH"] })])
+    const sendPush = vi.fn()
+    const result = await dispatchDueReminders(typed, {
+      now,
+      content: async () => null,
+      sendPush,
+    })
+    // Taken, so its next run moves on; but no delivery and no message.
+    expect(db.reminder.updateMany).toHaveBeenCalledTimes(1)
+    expect(db.reminderDelivery.create).not.toHaveBeenCalled()
+    expect(db.notification.create).not.toHaveBeenCalled()
+    expect(sendPush).not.toHaveBeenCalled()
+    expect(result).toEqual({
+      due: 1,
+      claimed: 1,
+      skipped: 1,
+      delivered: 0,
+      failed: 0,
+    })
+  })
+
+  it("gives the push sender the content, buttons included", async () => {
+    const sendPush = vi.fn()
+    const content = {
+      title: "Time to read",
+      body: "Mt 6",
+      href: "/read/Matt.6",
+      actions: [{ action: "today", title: "Today", href: "/today" }],
+    }
+    const { typed } = setup([reminder({ channels: ["PUSH"] })])
+    await dispatchDueReminders(typed, {
+      now,
+      content: async () => content,
+      sendPush,
+    })
+    expect(sendPush.mock.calls[0]![2]).toEqual(content)
   })
 })

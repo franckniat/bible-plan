@@ -9,6 +9,7 @@ import {
 import type { PrismaClient } from "@workspace/db"
 
 import { createNotification } from "@/server/services/notifications"
+import type { ReminderContent } from "@/server/services/reminder-content"
 
 export type DispatchDb = Pick<
   PrismaClient,
@@ -19,6 +20,8 @@ export type DispatchDb = Pick<
 export type DueReminder = {
   id: string
   kind: ReminderKind
+  /** IANA time zone the reminder is read in. */
+  timezone: string
   channels: ReminderChannel[]
   user: {
     id: string
@@ -29,15 +32,12 @@ export type DueReminder = {
   }
 }
 
-/** What the notification of a reminder says. */
-export type ReminderText = { title: string; body?: string; href?: string }
-
 export type DispatchOptions = {
   now?: Date
   /** Reminders taken in one run. */
   batchSize?: number
   /** The text of the in-app notification, in the language of the person. */
-  describe: (kind: ReminderKind, locale: string) => Promise<ReminderText>
+  content: (reminder: DueReminder, now: Date) => Promise<ReminderContent | null>
   /**
    * Sends the reminder by email. Absent while reminders by email are off:
    * the email channel is then left alone.
@@ -47,7 +47,11 @@ export type DispatchOptions = {
    * Pushes the reminder to the devices of the user. Absent while push is not
    * set up (no VAPID keys): the push channel is then left alone.
    */
-  sendPush?: (reminder: DueReminder, dueAt: Date) => Promise<void>
+  sendPush?: (
+    reminder: DueReminder,
+    dueAt: Date,
+    content: ReminderContent
+  ) => Promise<void>
 }
 
 export type DispatchResult = {
@@ -55,6 +59,8 @@ export type DispatchResult = {
   due: number
   /** Taken by this run (another one may have taken the others). */
   claimed: number
+  /** Taken, but with nothing to say (a reading reminder once all is read). */
+  skipped: number
   delivered: number
   failed: number
 }
@@ -119,7 +125,7 @@ export async function dispatchDueReminders(
   {
     now = new Date(),
     batchSize = defaultBatchSize,
-    describe,
+    content: getContent,
     sendEmail,
     sendPush,
   }: DispatchOptions
@@ -151,6 +157,7 @@ export async function dispatchDueReminders(
   const result: DispatchResult = {
     due: due.length,
     claimed: 0,
+    skipped: 0,
     delivered: 0,
     failed: 0,
   }
@@ -174,15 +181,23 @@ export async function dispatchDueReminders(
     if (count === 0) continue
     result.claimed++
 
+    // What to say, or nothing: the occurrence is then over, without a message.
+    const content = await getContent(reminder, now)
+    if (content === null) {
+      result.skipped++
+      continue
+    }
+
     for (const channel of reminder.channels) {
       let send: (() => Promise<void>) | null = null
       if (channel === "IN_APP") {
         send = async () => {
-          const text = await describe(reminder.kind, reminder.user.locale)
           await createNotification(db, {
             userId: reminder.user.id,
             type: "REMINDER",
-            ...text,
+            title: content.title,
+            body: content.body,
+            href: content.href,
           })
         }
       } else if (
@@ -192,7 +207,7 @@ export async function dispatchDueReminders(
       ) {
         send = () => sendEmail(reminder, dueAt)
       } else if (channel === "PUSH" && sendPush) {
-        send = () => sendPush(reminder, dueAt)
+        send = () => sendPush(reminder, dueAt, content)
       }
       // EMAIL waits for reminders by email to be on, PUSH for the VAPID keys.
       if (!send) continue

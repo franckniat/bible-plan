@@ -12,6 +12,7 @@ const baseUrl = "https://bibleplan.example"
 const reminder = {
   id: "r1",
   kind: "PRAYER" as const,
+  timezone: "Europe/Paris",
   channels: ["IN_APP" as const, "EMAIL" as const],
   user: {
     id: "u1",
