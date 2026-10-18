@@ -2,7 +2,7 @@
 
 import { LoaderCircle } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import {
   displayVerse,
@@ -37,6 +37,7 @@ export function PassageText({
   showVerseNumbers = true,
   verseLayout = "flow",
   wholeChapter = false,
+  sharedVerses = [],
   className,
 }: {
   passage: Passage
@@ -45,6 +46,8 @@ export function PassageText({
   /** Verses one after the other, or each on its own line. */
   verseLayout?: "flow" | "lines"
   wholeChapter?: boolean
+  /** Verses a shared link points to, in the numbering of the version. */
+  sharedVerses?: readonly number[]
   className?: string
 }) {
   const t = useTranslations("Reader")
@@ -81,6 +84,19 @@ export function PassageText({
     // The key covers the passage and the version.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key])
+
+  // The first verse a link points to is brought into view, once per page.
+  const scrolledFor = useRef<string | null>(null)
+  const firstShared = sharedVerses[0]
+  const loaded = result?.key === key && "text" in result
+  useEffect(() => {
+    if (!loaded || firstShared === undefined) return
+    if (scrolledFor.current === key) return
+    scrolledFor.current = key
+    document
+      .querySelector(`[data-verse="${firstShared}"]`)
+      ?.scrollIntoView({ block: "center" })
+  }, [loaded, firstShared, key])
 
   // A stable function: the panel listens to Escape with it.
   const clearSelection = useCallback(() => setSelected(null), [])
@@ -136,6 +152,7 @@ export function PassageText({
               const chosen =
                 selection?.chapter === chapter &&
                 selection.verses.includes(number)
+              const shared = sharedVerses.includes(number)
               // From the latest selection, so taps in a row all count.
               const choose = () =>
                 setSelected((current) => {
@@ -149,6 +166,7 @@ export function PassageText({
               return (
                 <span
                   key={number}
+                  data-verse={number}
                   role="button"
                   tabIndex={0}
                   aria-pressed={chosen}
@@ -163,7 +181,9 @@ export function PassageText({
                     "cursor-pointer rounded-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
                     verseLayout === "lines" && "mb-2 block",
                     around && "text-brand-night/45 dark:text-neutral-100/45",
-                    chosen && "bg-brand-gold/25"
+                    shared &&
+                      "underline decoration-brand-gold decoration-2 underline-offset-4",
+                    (chosen || shared) && "bg-brand-gold/25"
                   )}
                 >
                   {verseLayout === "flow" && paragraph && index > 0 && (

@@ -26,9 +26,12 @@ import {
 export function ReaderText({
   passage,
   version,
+  sharedVerses,
 }: {
   passage: Passage
   version: BibleVersionId
+  /** Verses a shared link points to (the page's `sel`). */
+  sharedVerses?: readonly number[]
 }) {
   const t = useTranslations("Reader")
   const settings = useReaderSettings()
@@ -65,6 +68,7 @@ export function ReaderText({
         showVerseNumbers={settings.verseNumbers}
         verseLayout={settings.layout}
         wholeChapter={wholeChapter}
+        sharedVerses={sharedVerses}
         className={textSizes[settings.size]}
       />
     </div>

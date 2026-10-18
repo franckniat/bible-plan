@@ -31,6 +31,7 @@ import { RecordReading } from "@/components/reader/record-reading"
 import { VersionSwitch } from "@/components/reader/version-switch"
 import { Link, redirect } from "@/i18n/navigation"
 import { bibleVersionCookie, pickBibleVersion } from "@/lib/bible-version"
+import { parseSelectionParam } from "@/lib/verse-selection"
 import { getReadingForUser } from "@/server/services/plans"
 import { getSession } from "@/server/session"
 
@@ -58,7 +59,7 @@ export default async function ReadPage({
 
   const user = (await getSession())?.user ?? null
   // ?reading=<id>: a reading of one of the user's plans, to mark as read.
-  const { reading: readingId, v: linkVersion } = await searchParams
+  const { reading: readingId, v: linkVersion, sel } = await searchParams
   const reading =
     user && typeof readingId === "string"
       ? await getReadingForUser(prisma, user.id, readingId)
@@ -252,7 +253,11 @@ export default async function ReadPage({
           {t("numbering", { version: version.name, verses: numbering })}
         </p>
       )}
-      <ReaderText passage={passage} version={versionId} />
+      <ReaderText
+        passage={passage}
+        version={versionId}
+        sharedVerses={parseSelectionParam(sel)}
+      />
 
       {reading && lastStep && (
         <ReadingDone
