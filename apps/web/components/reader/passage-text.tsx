@@ -21,6 +21,7 @@ import {
 } from "@workspace/core"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { ComparePanel } from "@/components/reader/compare-panel"
 import {
   HighlightRow,
   highlightStyles,
@@ -113,6 +114,12 @@ export function PassageText({
 
   // A stable function: the panel listens to Escape with it.
   const clearSelection = useCallback(() => setSelected(null), [])
+  // The verses being compared, numbered like the canon.
+  const [comparing, setComparing] = useState<{
+    chapter: number
+    canonVerses: number[]
+  } | null>(null)
+  const closeComparison = useCallback(() => setComparing(null), [])
 
   const { colors, apply } = useHighlights({
     signedIn: highlighting?.signedIn ?? false,
@@ -162,6 +169,18 @@ export function PassageText({
           selection={selection}
           verses={selectedVerses.verses}
           onClear={clearSelection}
+          onCompare={() => {
+            setComparing({
+              chapter: selection.chapter,
+              canonVerses: canonVersesOf(
+                passage.book,
+                selection.chapter,
+                selection.verses,
+                bibleVersion
+              ),
+            })
+            clearSelection()
+          }}
           actions={
             highlighting && (
               <HighlightRow
@@ -199,6 +218,15 @@ export function PassageText({
               />
             )
           }
+        />
+      )}
+      {comparing && (
+        <ComparePanel
+          book={passage.book}
+          chapter={comparing.chapter}
+          canonVerses={comparing.canonVerses}
+          current={version}
+          onClose={closeComparison}
         />
       )}
       {text.chapters.map(({ chapter, verses }) => {

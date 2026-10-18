@@ -784,7 +784,8 @@
       "copy": "Copy",
       "share": "Share",
       "copied": "Copied",
-      "copyFailed": "Could not copy"
+      "copyFailed": "Could not copy",
+      "compare": "Compare"
     },
     "highlight": {
       "label": "Highlight",
@@ -798,6 +799,14 @@
         "PURPLE": "Purple",
         "PINK": "Pink"
       }
+    },
+    "compare": {
+      "title": "Compare",
+      "close": "Close the comparison",
+      "versions": "Versions to compare, {max} at most",
+      "limit": "Up to {max, plural, one {# version} other {# versions}} side by side.",
+      "loading": "Loading…",
+      "loadFailed": "The text could not be loaded."
     }
   },
   "BibleIndex": {

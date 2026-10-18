@@ -1,6 +1,6 @@
 "use client"
 
-import { Check, Copy, Share2, X, type LucideIcon } from "lucide-react"
+import { Check, Columns2, Copy, Share2, X, type LucideIcon } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useState, type ReactNode } from "react"
 
@@ -77,6 +77,7 @@ export function SelectionPanel({
   selection,
   verses,
   actions,
+  onCompare,
   onClear,
 }: {
   book: BookId
@@ -86,6 +87,8 @@ export function SelectionPanel({
   verses: [number, string][]
   /** Other actions (highlight, compare), above copy and share. */
   actions?: ReactNode
+  /** Opens the comparison of these verses in other versions. */
+  onCompare?: () => void
   onClear: () => void
 }) {
   const t = useTranslations("Reader.selection")
@@ -184,6 +187,11 @@ export function SelectionPanel({
         >
           {t("copy")}
         </PanelAction>
+        {onCompare && (
+          <PanelAction icon={Columns2} onClick={onCompare}>
+            {t("compare")}
+          </PanelAction>
+        )}
         <PanelAction
           icon={Share2}
           onClick={() =>
