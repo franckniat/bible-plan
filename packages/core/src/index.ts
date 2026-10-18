@@ -2,6 +2,7 @@
 // Modules can also be imported by subpath, e.g. "@workspace/core/schemas/common".
 export * from "./bible/books"
 export * from "./bible/format"
+export * from "./bible/highlight"
 export * from "./bible/parse"
 export * from "./bible/passage"
 export * from "./bible/slug"

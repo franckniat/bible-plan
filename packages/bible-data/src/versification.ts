@@ -48,3 +48,51 @@ export function mapPassage(
   }
   return ranges
 }
+
+/**
+ * The verses of a version that a verse of the canon is shown as. One verse
+ * in most cases; a few where the version numbers the chapter differently
+ * (the title of a psalm counted as verses is part of the first verse).
+ */
+export function versionVersesOf(
+  book: Passage["book"],
+  chapter: number,
+  canonVerse: number,
+  version: Pick<BibleVersion, "verseCounts">
+): { from: number; to: number } {
+  const [range] = mapPassage(
+    {
+      book,
+      start: { chapter, verse: canonVerse },
+      end: { chapter, verse: canonVerse },
+    },
+    version
+  )
+  return { from: range!.from, to: range!.to }
+}
+
+/**
+ * The verse of the canon a verse of a version belongs to: the first one that
+ * is shown there, or the nearest when none is (a version with more verses
+ * than the canon). The reverse of versionVersesOf.
+ */
+export function canonVerseOf(
+  book: Passage["book"],
+  chapter: number,
+  verse: number,
+  version: Pick<BibleVersion, "verseCounts">
+): number {
+  const count = getVerseCount(book, chapter)
+  let nearest = 1
+  let distance = Infinity
+  for (let canon = 1; canon <= count; canon++) {
+    const { from, to } = versionVersesOf(book, chapter, canon, version)
+    if (verse >= from && verse <= to) return canon
+    const gap = verse < from ? from - verse : verse - to
+    if (gap < distance) {
+      distance = gap
+      nearest = canon
+    }
+  }
+  return nearest
+}
