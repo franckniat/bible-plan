@@ -1,0 +1,40 @@
+name: Inactivity alert
+
+# GitHub turns off the scheduled workflows of a public repository after 60 days
+# without activity, which would silently stop the reminders. This opens an issue
+# once the last commit is 45 days old, while there is still time to act.
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: Warn before scheduled workflows are disabled
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Open an issue when the repository is quiet
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LIMIT_DAYS: "45"
+          TITLE: "Scheduled workflows will be disabled soon (reminders would stop)"
+        run: |
+          last=$(git log -1 --format=%ct)
+          age=$(( ($(date +%s) - last) / 86400 ))
+          echo "Last commit is $age days old."
+          [ "$age" -ge "$LIMIT_DAYS" ] || exit 0
+
+          # One open issue is enough.
+          existing=$(gh issue list --state open --search "$TITLE in:title" --json number --jq 'length')
+          [ "$existing" -eq 0 ] || exit 0
+
+          gh issue create --title "$TITLE" --body "The last commit is $age days old. GitHub disables the scheduled workflows of a public repository after 60 days without activity, and the reminders are sent by one of them (\`reminders.yml\`).
+
+          Push any commit to the default branch, or re-enable the workflows in the Actions tab, before the 60th day. See docs/REMINDERS.md."

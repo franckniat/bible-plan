@@ -1,0 +1,42 @@
+name: Reminders
+
+# Delivers the reminders that are due. GitHub's scheduler is free but not exact:
+# a run can start 5 to 30 minutes late, and a reminder that is late is still
+# delivered. See docs/REMINDERS.md.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+# A run that is still going is never cut short by the next one.
+concurrency:
+  group: reminder-dispatch
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    name: Dispatch due reminders
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call the dispatch route
+        env:
+          # Repository variable: public URL of the deployed app, e.g. https://bibleplan.example
+          APP_URL: ${{ vars.APP_URL }}
+          # Repository secret: same value as CRON_SECRET in the app's environment.
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          # Until the app is deployed and configured there is nothing to call:
+          # stay green rather than fail every 5 minutes.
+          if [ -z "$APP_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::notice::APP_URL or CRON_SECRET is not set, reminders are not dispatched."
+            exit 0
+          fi
+          curl --fail-with-body --silent --show-error \
+            --max-time 60 --retry 2 --retry-delay 5 \
+            --request POST \
+            --header "Authorization: Bearer $CRON_SECRET" \
+            "${APP_URL%/}/api/cron/dispatch"
+          echo
