@@ -445,6 +445,20 @@
       "later": "Later",
       "saved": "Reminder created for {time}.",
       "manage": "Manage my reminders"
+    },
+    "notification": {
+      "READING": {
+        "title": "Time to read",
+        "body": "Today’s reading is waiting for you."
+      },
+      "PRAYER": {
+        "title": "Time to pray",
+        "body": "Take a moment to pray."
+      },
+      "MEDITATION": {
+        "title": "Time to meditate",
+        "body": "Take a moment to meditate on the Word."
+      }
     }
   },
   "Notifications": {

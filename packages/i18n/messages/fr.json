@@ -445,6 +445,20 @@
       "later": "Plus tard",
       "saved": "Rappel créé à {time}.",
       "manage": "Gérer mes rappels"
+    },
+    "notification": {
+      "READING": {
+        "title": "C’est l’heure de lire",
+        "body": "Votre lecture du jour vous attend."
+      },
+      "PRAYER": {
+        "title": "C’est l’heure de prier",
+        "body": "Prenez un moment pour prier."
+      },
+      "MEDITATION": {
+        "title": "C’est l’heure de méditer",
+        "body": "Prenez un moment pour méditer la Parole."
+      }
     }
   },
   "Notifications": {
