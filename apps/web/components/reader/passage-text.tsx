@@ -28,6 +28,7 @@ import {
 } from "@/components/reader/highlight-row"
 import { SelectionPanel } from "@/components/reader/selection-panel"
 import { useHighlights } from "@/components/reader/use-highlights"
+import { useRememberedComparison } from "@/components/reader/use-remembered-comparison"
 import { canonVersesOf, colorsInVersion, sharedColor } from "@/lib/highlights"
 import { toggleVerse, type VerseSelection } from "@/lib/verse-selection"
 import type { SavedHighlight } from "@/server/services/highlights"
@@ -126,6 +127,7 @@ export function PassageText({
     saved: highlighting?.saved ?? [],
   })
   const bibleVersion = getBibleVersion(version)
+  const { remembered, remember } = useRememberedComparison()
 
   const text = result?.key === key && "text" in result ? result.text : null
   const failed = result?.key === key && "failed" in result
@@ -226,6 +228,8 @@ export function PassageText({
           chapter={comparing.chapter}
           canonVerses={comparing.canonVerses}
           current={version}
+          remembered={remembered}
+          onChange={remember}
           onClose={closeComparison}
         />
       )}

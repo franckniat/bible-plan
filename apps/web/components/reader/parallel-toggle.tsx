@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl"
 import { bibleVersions, type BibleVersionId } from "@workspace/bible-data"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { useRememberedComparison } from "@/components/reader/use-remembered-comparison"
 import { usePathname, useRouter } from "@/i18n/navigation"
 import {
   defaultComparison,
@@ -22,14 +23,12 @@ import {
 export function ParallelToggle({
   main,
   others,
-  remembered,
 }: {
   main: BibleVersionId
   /** The versions read next to the main one now (none: not in parallel). */
   others: BibleVersionId[]
-  /** The versions compared last time, to start from. */
-  remembered?: readonly unknown[]
 }) {
+  const { remembered, remember } = useRememberedComparison()
   const t = useTranslations("Reader.parallel")
   const router = useRouter()
   const pathname = usePathname()
@@ -42,6 +41,8 @@ export function ParallelToggle({
     else params.set("compare", formatCompareParam(next))
     const search = params.toString()
     router.replace(search ? `${pathname}?${search}` : pathname)
+    // What was compared is where the next comparison starts.
+    if (next.length > 0) remember([main, ...next])
   }
 
   return (
