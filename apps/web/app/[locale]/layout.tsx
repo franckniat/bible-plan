@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono, Lora } from "next/font/google"
 import { notFound } from "next/navigation"
 import { hasLocale, NextIntlClientProvider } from "next-intl"
@@ -30,8 +30,20 @@ export async function generateMetadata({
   if (!hasLocale(routing.locales, locale)) return {}
 
   const t = await getTranslations({ locale, namespace: "Metadata" })
-  return { title: t("title"), description: t("description") }
+  return {
+    title: t("title"),
+    description: t("description"),
+    // Installed on an iPhone home screen, the app opens without browser bars.
+    appleWebApp: {
+      capable: true,
+      title: "Bible Plan",
+      statusBarStyle: "default",
+    },
+  }
 }
+
+// The color of the browser bar and the status bar of the installed app.
+export const viewport: Viewport = { themeColor: "#10284a" }
 
 export default async function LocaleLayout({
   children,
