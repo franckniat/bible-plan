@@ -422,6 +422,12 @@
       "manage": "Gérer mes rappels"
     }
   },
+  "Notifications": {
+    "bell": {
+      "label": "Notifications",
+      "unread": "Notifications, {count, plural, one {# non lue} other {# non lues}}"
+    }
+  },
   "Theme": {
     "label": "Thème",
     "light": "Clair",

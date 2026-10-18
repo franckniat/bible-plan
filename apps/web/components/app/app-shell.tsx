@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import type { ReactNode } from "react"
 
+import { prisma } from "@workspace/db"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { AppFooter } from "@/components/app/app-footer"
@@ -9,8 +10,10 @@ import { SignOutButton } from "@/components/app/sign-out-button"
 import { TimeZoneDetector } from "@/components/app/time-zone-detector"
 import { BrandMark } from "@/components/brand/brand-mark"
 import { brandThemeClassName } from "@/components/brand/brand-theme"
+import { NotificationBell } from "@/components/notifications/notification-bell"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Link } from "@/i18n/navigation"
+import { countUnread } from "@/server/services/notifications"
 import type { SessionUser } from "@/server/session"
 
 async function HomeLink() {
@@ -52,19 +55,21 @@ function UserSummary({ user }: { user: SessionUser }) {
  * Signed-in area frame: sidebar on desktop; top bar and bottom navigation bar
  * on mobile.
  */
-export function AppShell({
+export async function AppShell({
   user,
   children,
 }: {
   user: SessionUser
   children: ReactNode
 }) {
+  const unread = await countUnread(prisma, user.id)
   return (
     <div className={cn("flex min-h-svh", brandThemeClassName)}>
       {!user.timezone && <TimeZoneDetector />}
       <aside className="sticky top-0 hidden h-svh w-64 shrink-0 flex-col gap-8 border-r border-brand-night/10 px-3 py-6 md:flex dark:border-white/10 dark:bg-neutral-900/40">
-        <div className="px-3">
+        <div className="flex items-center justify-between gap-2 px-3">
           <HomeLink />
+          <NotificationBell count={unread} />
         </div>
         <AppNav variant="sidebar" />
         <div className="mt-auto flex flex-col gap-3">
@@ -78,6 +83,7 @@ export function AppShell({
         <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-brand-night/10 bg-brand-cream/90 px-4 py-2 backdrop-blur md:hidden dark:border-white/10 dark:bg-neutral-950/90">
           <HomeLink />
           <div className="flex items-center gap-2">
+            <NotificationBell count={unread} />
             <ThemeToggle />
             <SignOutButton iconOnly />
           </div>
