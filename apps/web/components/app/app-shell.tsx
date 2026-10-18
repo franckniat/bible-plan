@@ -11,6 +11,7 @@ import { TimeZoneDetector } from "@/components/app/time-zone-detector"
 import { BrandMark } from "@/components/brand/brand-mark"
 import { brandThemeClassName } from "@/components/brand/brand-theme"
 import { NotificationBell } from "@/components/notifications/notification-bell"
+import { LocalHighlightsSync } from "@/components/reader/local-highlights-sync"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Link } from "@/i18n/navigation"
 import { countUnread } from "@/server/services/notifications"
@@ -66,6 +67,7 @@ export async function AppShell({
   return (
     <div className={cn("flex min-h-svh", brandThemeClassName)}>
       {!user.timezone && <TimeZoneDetector />}
+      <LocalHighlightsSync />
       <aside className="sticky top-0 hidden h-svh w-64 shrink-0 flex-col gap-8 border-r border-brand-night/10 px-3 py-6 md:flex dark:border-white/10 dark:bg-neutral-900/40">
         <div className="flex items-center justify-between gap-2 px-3">
           <HomeLink />

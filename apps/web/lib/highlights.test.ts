@@ -8,6 +8,7 @@ import {
   highlightKey,
   isHighlightColor,
   sharedColor,
+  toSavedHighlights,
 } from "./highlights"
 
 const lsg = getBibleVersion("lsg1910")
@@ -59,5 +60,21 @@ describe("isHighlightColor", () => {
     expect(isHighlightColor("PINK")).toBe(true)
     expect(isHighlightColor("RED")).toBe(false)
     expect(isHighlightColor(undefined)).toBe(false)
+  })
+})
+
+describe("toSavedHighlights", () => {
+  it("turns the keys of a device into rows", () => {
+    expect(
+      toSavedHighlights({
+        "Rom.8.1": "YELLOW",
+        "1John.4.8": "PINK",
+        broken: "BLUE",
+        "John.3": "GREEN",
+      })
+    ).toEqual([
+      { book: "Rom", chapter: 8, verse: 1, color: "YELLOW" },
+      { book: "1John", chapter: 4, verse: 8, color: "PINK" },
+    ])
   })
 })

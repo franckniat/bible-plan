@@ -68,3 +68,28 @@ export function sharedColor(
 export function isHighlightColor(value: unknown): value is HighlightColor {
   return highlightColors.some((color) => color === value)
 }
+
+/**
+ * The highlights of a device as rows to send to the account: "Rom.8.1" is
+ * book Rom, chapter 8, verse 1. Keys that are not of that form are skipped.
+ */
+export function toSavedHighlights(colors: HighlightColors): {
+  book: string
+  chapter: number
+  verse: number
+  color: HighlightColor
+}[] {
+  return Object.entries(colors).flatMap(([key, color]) => {
+    const match = /^([0-9A-Za-z]+)\.(\d+)\.(\d+)$/.exec(key)
+    return match
+      ? [
+          {
+            book: match[1]!,
+            chapter: Number(match[2]),
+            verse: Number(match[3]),
+            color,
+          },
+        ]
+      : []
+  })
+}
