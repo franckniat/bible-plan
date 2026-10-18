@@ -749,16 +749,7 @@
       "previous": "Étape précédente : {passage}",
       "next": "Suivant : {passage}"
     },
-    "selectHint": "Touchez un verset pour le partager avec un proche.",
-    "share": {
-      "label": "Partager les versets choisis",
-      "share": "Partager",
-      "copyLink": "Copier le lien",
-      "copyText": "Copier le texte",
-      "copied": "Copié",
-      "copyFailed": "Copie impossible",
-      "clear": "Annuler la sélection"
-    },
+    "selectHint": "Touchez des versets pour les copier ou les partager.",
     "public": {
       "invitation": "Bible Plan est gratuit : créez un compte pour suivre des plans de lecture et garder vos préférences.",
       "signUp": "Créer un compte",
@@ -785,6 +776,15 @@
         "flow": "À la suite",
         "lines": "Un par ligne"
       }
+    },
+    "selection": {
+      "label": "Actions sur la sélection",
+      "current": "Sélection en cours :",
+      "close": "Fermer la sélection",
+      "copy": "Copier",
+      "share": "Partager",
+      "copied": "Copié",
+      "copyFailed": "Copie impossible"
     }
   },
   "BibleIndex": {

@@ -749,16 +749,7 @@
       "previous": "Previous step: {passage}",
       "next": "Next: {passage}"
     },
-    "selectHint": "Tap a verse to share it with someone.",
-    "share": {
-      "label": "Share the chosen verses",
-      "share": "Share",
-      "copyLink": "Copy link",
-      "copyText": "Copy text",
-      "copied": "Copied",
-      "copyFailed": "Could not copy",
-      "clear": "Clear selection"
-    },
+    "selectHint": "Tap verses to copy or share them.",
     "public": {
       "invitation": "Bible Plan is free: create an account to follow reading plans and keep your preferences.",
       "signUp": "Create an account",
@@ -785,6 +776,15 @@
         "flow": "Run on",
         "lines": "One per line"
       }
+    },
+    "selection": {
+      "label": "Actions on the selection",
+      "current": "Current selection:",
+      "close": "Close the selection",
+      "copy": "Copy",
+      "share": "Share",
+      "copied": "Copied",
+      "copyFailed": "Could not copy"
     }
   },
   "BibleIndex": {

@@ -2,7 +2,7 @@
 
 import { LoaderCircle } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import {
   displayVerse,
@@ -21,7 +21,7 @@ import {
 } from "@workspace/core"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { VerseShare } from "@/components/reader/verse-share"
+import { SelectionPanel } from "@/components/reader/selection-panel"
 import { toggleVerse, type VerseSelection } from "@/lib/verse-selection"
 
 const fetchChapter = fetchChaptersFrom("/bible")
@@ -82,6 +82,9 @@ export function PassageText({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key])
 
+  // A stable function: the panel listens to Escape with it.
+  const clearSelection = useCallback(() => setSelected(null), [])
+
   const text = result?.key === key && "text" in result ? result.text : null
   const failed = result?.key === key && "failed" in result
 
@@ -108,12 +111,12 @@ export function PassageText({
   return (
     <div className={cn("flex flex-col gap-8", className)}>
       {selection && selectedVerses && (
-        <VerseShare
+        <SelectionPanel
           book={passage.book}
           version={version}
           selection={selection}
           verses={selectedVerses.verses}
-          onClear={() => setSelected(null)}
+          onClear={clearSelection}
         />
       )}
       {text.chapters.map(({ chapter, verses }) => (
@@ -132,12 +135,17 @@ export function PassageText({
               const around = range && (number < range.from || number > range.to)
               const chosen =
                 selection?.chapter === chapter &&
-                number >= selection.from &&
-                number <= selection.to
-              const choose = () => {
-                const next = toggleVerse(selection, chapter, number)
-                setSelected(next && { ...next, key })
-              }
+                selection.verses.includes(number)
+              // From the latest selection, so taps in a row all count.
+              const choose = () =>
+                setSelected((current) => {
+                  const next = toggleVerse(
+                    current?.key === key ? current : null,
+                    chapter,
+                    number
+                  )
+                  return next && { ...next, key }
+                })
               return (
                 <span
                   key={number}
