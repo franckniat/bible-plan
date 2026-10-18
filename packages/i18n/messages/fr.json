@@ -459,6 +459,24 @@
         "title": "C’est l’heure de méditer",
         "body": "Prenez un moment pour méditer la Parole."
       }
+    },
+    "push": {
+      "title": "Notifications sur cet appareil",
+      "description": "Recevez vos rappels même quand Bible Plan est fermée, sur ce téléphone ou cet ordinateur.",
+      "checking": "Vérification…",
+      "unsupported": "Ce navigateur ne permet pas les notifications. Essayez avec Chrome, Edge, Firefox ou Safari récent.",
+      "ios": {
+        "title": "Sur iPhone et iPad, installez d’abord l’application",
+        "share": "Touchez le bouton Partager <icon></icon> de Safari.",
+        "add": "Choisissez « Sur l’écran d’accueil », puis Ajouter.",
+        "open": "Ouvrez Bible Plan depuis l’écran d’accueil et revenez ici pour activer les notifications."
+      },
+      "denied": "Les notifications sont bloquées pour ce site dans votre navigateur. Autorisez-les dans les réglages du site (le cadenas près de l’adresse), puis rechargez la page.",
+      "enable": "Activer les notifications",
+      "disable": "Désactiver sur cet appareil",
+      "enabled": "Les notifications sont activées sur cet appareil.",
+      "failed": "L’opération a échoué. Vérifiez votre connexion et réessayez.",
+      "devices": "{count, plural, one {# appareil reçoit} other {# appareils reçoivent}} vos notifications."
     }
   },
   "Notifications": {

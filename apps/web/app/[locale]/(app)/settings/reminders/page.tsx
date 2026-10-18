@@ -7,9 +7,12 @@ import { type Weekday } from "@workspace/core"
 import { prisma } from "@workspace/db"
 import { areEmailRemindersEnabled } from "@workspace/notifications"
 
+import { PushSettings } from "@/components/reminders/push-settings"
 import { RemindersManager } from "@/components/reminders/reminders-manager"
 import { Link } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
+import { getVapidPublicKey } from "@/server/push-config"
+import { listPushDevices } from "@/server/services/push-devices"
 import { listReminders } from "@/server/services/reminders"
 import { requireUser } from "@/server/session"
 
@@ -27,6 +30,8 @@ export default async function RemindersPage() {
   const user = await requireUser()
   const t = await getTranslations("Reminders")
   const reminders = await listReminders(prisma, user.id)
+  const publicKey = getVapidPublicKey()
+  const devices = publicKey ? await listPushDevices(prisma, user.id) : []
 
   return (
     <div className="flex flex-col gap-8">
@@ -46,6 +51,10 @@ export default async function RemindersPage() {
         </div>
       </div>
 
+      {publicKey && (
+        <PushSettings publicKey={publicKey} devices={devices.length} />
+      )}
+
       <RemindersManager
         reminders={reminders.map((reminder) => ({
           id: reminder.id,
@@ -57,6 +66,7 @@ export default async function RemindersPage() {
         }))}
         timeZone={user.timezone ?? "UTC"}
         emailEnabled={areEmailRemindersEnabled()}
+        pushEnabled={publicKey !== null}
       />
     </div>
   )

@@ -20,19 +20,25 @@ type WriteOptions = {
   now?: Date
   /** Reminders by email are off unless EMAIL_REMINDERS_ENABLED is on. */
   emailEnabled?: boolean
+  /** Push is off until the VAPID keys are set. */
+  pushEnabled?: boolean
 }
 
 /** The stored fields of a reminder: the channels the app offers, the next run. */
 function toData(
   { kind, localTime, timeZone, weekdays, channels, enabled }: ReminderInput,
-  { now = new Date(), emailEnabled = false }: WriteOptions
+  { now = new Date(), emailEnabled = false, pushEnabled = false }: WriteOptions
 ) {
   return {
     kind,
     localTime,
     timezone: timeZone,
     weekdays,
-    channels: channels.filter((channel) => emailEnabled || channel !== "EMAIL"),
+    channels: channels.filter(
+      (channel) =>
+        (emailEnabled || channel !== "EMAIL") &&
+        (pushEnabled || channel !== "PUSH")
+    ),
     enabled,
     // A disabled reminder has no next run, so the cron never picks it up.
     nextRunAt: enabled

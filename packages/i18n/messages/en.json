@@ -459,6 +459,24 @@
         "title": "Time to meditate",
         "body": "Take a moment to meditate on the Word."
       }
+    },
+    "push": {
+      "title": "Notifications on this device",
+      "description": "Get your reminders even when Bible Plan is closed, on this phone or computer.",
+      "checking": "Checking…",
+      "unsupported": "This browser does not support notifications. Try a recent Chrome, Edge, Firefox or Safari.",
+      "ios": {
+        "title": "On iPhone and iPad, install the app first",
+        "share": "Tap the Share button <icon></icon> in Safari.",
+        "add": "Choose “Add to Home Screen”, then Add.",
+        "open": "Open Bible Plan from the home screen and come back here to turn notifications on."
+      },
+      "denied": "Notifications are blocked for this site in your browser. Allow them in the site settings (the padlock next to the address), then reload the page.",
+      "enable": "Turn on notifications",
+      "disable": "Turn off on this device",
+      "enabled": "Notifications are on for this device.",
+      "failed": "That did not work. Check your connection and try again.",
+      "devices": "{count, plural, one {# device receives} other {# devices receive}} your notifications."
     }
   },
   "Notifications": {

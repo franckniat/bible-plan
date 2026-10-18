@@ -66,11 +66,14 @@ export function RemindersManager({
   reminders,
   timeZone,
   emailEnabled,
+  pushEnabled,
 }: {
   reminders: ReminderView[]
   /** The time zone the times are read in (the profile's). */
   timeZone: string
   emailEnabled: boolean
+  /** Whether push notifications are set up on the server. */
+  pushEnabled: boolean
 }) {
   const t = useTranslations("Reminders")
   const [editing, setEditing] = useState<"new" | string | null>(null)
@@ -126,6 +129,7 @@ export function RemindersManager({
               <ReminderForm
                 initial={reminder}
                 emailEnabled={emailEnabled}
+                pushEnabled={pushEnabled}
                 timeZone={timeZone}
                 pending={pending}
                 onCancel={() => setEditing(null)}
@@ -163,6 +167,7 @@ export function RemindersManager({
           <ReminderForm
             initial={emptyDraft}
             emailEnabled={emailEnabled}
+            pushEnabled={pushEnabled}
             timeZone={timeZone}
             pending={pending}
             onCancel={() => setEditing(null)}
@@ -280,6 +285,7 @@ function ReminderRow({
 function ReminderForm({
   initial,
   emailEnabled,
+  pushEnabled,
   timeZone,
   pending,
   onSave,
@@ -287,6 +293,7 @@ function ReminderForm({
 }: {
   initial: Draft
   emailEnabled: boolean
+  pushEnabled: boolean
   timeZone: string
   pending: boolean
   onSave: (draft: Draft) => void
@@ -384,8 +391,7 @@ function ReminderForm({
         {reminderChannels.map((channel) => {
           const always = channel === "IN_APP"
           // Push needs the PWA; email only when reminders by email are on.
-          const unavailable =
-            channel === "PUSH" || (channel === "EMAIL" && !emailEnabled)
+          const unavailable = channel === "PUSH" && !pushEnabled
           if (channel === "EMAIL" && !emailEnabled) return null
           return (
             <label key={channel} className="flex items-center gap-3 text-sm">
@@ -403,7 +409,7 @@ function ReminderForm({
               />
               <span>
                 {t(`channels.${channel}`)}
-                {channel === "PUSH" && (
+                {channel === "PUSH" && !pushEnabled && (
                   <span className="text-brand-night/60 dark:text-neutral-100/60">
                     {" "}
                     ({t("soon")})

@@ -33,7 +33,10 @@ describe("createReminder", () => {
       count: vi.fn().mockResolvedValue(0),
       create: vi.fn().mockResolvedValue({ id: "r1" }),
     }
-    const result = await createReminder(db(reminder), "user-1", input, { now })
+    const result = await createReminder(db(reminder), "user-1", input, {
+      now,
+      pushEnabled: true,
+    })
 
     expect(result).toEqual({ ok: true, value: { id: "r1" } })
     expect(reminder.create).toHaveBeenCalledWith({
@@ -59,12 +62,22 @@ describe("createReminder", () => {
     await createReminder(db(reminder), "user-1", input, {
       now,
       emailEnabled: true,
+      pushEnabled: true,
     })
     expect(reminder.create.mock.calls[0]![0].data.channels).toEqual([
       "IN_APP",
       "PUSH",
       "EMAIL",
     ])
+  })
+
+  it("drops the push channel until push is set up", async () => {
+    const reminder = {
+      count: vi.fn().mockResolvedValue(0),
+      create: vi.fn().mockResolvedValue({ id: "r1" }),
+    }
+    await createReminder(db(reminder), "user-1", input, { now })
+    expect(reminder.create.mock.calls[0]![0].data.channels).toEqual(["IN_APP"])
   })
 
   it("gives a disabled reminder no next run", async () => {

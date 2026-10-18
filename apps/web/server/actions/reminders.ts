@@ -13,6 +13,7 @@ import {
   updateReminder,
   type ReminderError,
 } from "@/server/services/reminders"
+import { getVapidPublicKey } from "@/server/push-config"
 import { requireUser } from "@/server/session"
 
 /** Translated by the reminders page ("Reminders.errors.<code>"). */
@@ -44,7 +45,10 @@ export async function saveReminderAction(
 ): Promise<ReminderActionResult> {
   const parsed = reminderInputSchema.safeParse(request)
   if (!parsed.success) return { error: "invalid" }
-  const options = { emailEnabled: areEmailRemindersEnabled() }
+  const options = {
+    emailEnabled: areEmailRemindersEnabled(),
+    pushEnabled: getVapidPublicKey() !== null,
+  }
 
   return run((userId) =>
     id === null
