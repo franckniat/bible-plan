@@ -13,6 +13,7 @@ import {
 import {
   adjacentChapter,
   chapterSteps,
+  coversWholeChapters,
   chaptersPassage,
   formatPassage,
   getVerseCount,
@@ -25,12 +26,15 @@ import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { ReaderArrows } from "@/components/reader/reader-arrows"
+import { ParallelChapter } from "@/components/reader/parallel-chapter"
+import { ParallelToggle } from "@/components/reader/parallel-toggle"
 import { ReaderText } from "@/components/reader/reader-text"
 import { ReadingDone } from "@/components/reader/reading-done"
 import { RecordReading } from "@/components/reader/record-reading"
 import { VersionSwitch } from "@/components/reader/version-switch"
 import { Link, redirect } from "@/i18n/navigation"
 import { bibleVersionCookie, pickBibleVersion } from "@/lib/bible-version"
+import { formatCompareParam, parseCompareParam } from "@/lib/compare"
 import { parseSelectionParam } from "@/lib/verse-selection"
 import { listHighlights } from "@/server/services/highlights"
 import { getReadingForUser } from "@/server/services/plans"
@@ -60,7 +64,12 @@ export default async function ReadPage({
 
   const user = (await getSession())?.user ?? null
   // ?reading=<id>: a reading of one of the user's plans, to mark as read.
-  const { reading: readingId, v: linkVersion, sel } = await searchParams
+  const {
+    reading: readingId,
+    v: linkVersion,
+    sel,
+    compare,
+  } = await searchParams
   const reading =
     user && typeof readingId === "string"
       ? await getReadingForUser(prisma, user.id, readingId)
@@ -111,6 +120,14 @@ export default async function ReadPage({
     locale
   )
   const version = getBibleVersion(versionId)
+  // Other versions read next to this one, a whole chapter at a time.
+  const others = parseCompareParam(compare, versionId)
+  const parallel =
+    others.length > 0 &&
+    passage.start.chapter === passage.end.chapter &&
+    coversWholeChapters(passage)
+  const compareParam =
+    others.length > 0 ? formatCompareParam(others) : undefined
   // When the version numbers the verses differently (Psalm titles...).
   const ranges = mapPassage(passage, version)
   const numbering = ranges.some((range, index) => {
@@ -156,7 +173,7 @@ export default async function ReadPage({
     )
     return (
       <Link
-        href={`/read/${toPassageSlug(chaptersPassage(target.book, target.chapter))}${query({ v: linked })}`}
+        href={`/read/${toPassageSlug(chaptersPassage(target.book, target.chapter))}${query({ v: linked, compare: compareParam })}`}
         aria-label={t(direction, { chapter: label })}
         className={cn(buttonVariants({ variant: "ghost" }), "h-10")}
       >
@@ -175,7 +192,7 @@ export default async function ReadPage({
     if (!target) return undefined
     const chapter = chaptersPassage(target.book, target.chapter)
     return {
-      href: `/read/${toPassageSlug(chapter)}${query({ v: linked })}`,
+      href: `/read/${toPassageSlug(chapter)}${query({ v: linked, compare: compareParam })}`,
       label: t(direction, { chapter: formatPassage(chapter, locale) }),
     }
   }
@@ -249,6 +266,11 @@ export default async function ReadPage({
         </h1>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <VersionSwitch version={version.id} signedIn={user !== null} />
+          {/* Parallel reading is for whole chapters. */}
+          {coversWholeChapters(passage) &&
+            passage.start.chapter === passage.end.chapter && (
+              <ParallelToggle main={versionId} others={others} />
+            )}
           <a
             href={youVersionUrl(passage, version.id)}
             target="_blank"
@@ -267,12 +289,20 @@ export default async function ReadPage({
           {t("numbering", { version: version.name, verses: numbering })}
         </p>
       )}
-      <ReaderText
-        passage={passage}
-        version={versionId}
-        sharedVerses={parseSelectionParam(sel)}
-        highlighting={{ signedIn: user !== null, saved: savedHighlights }}
-      />
+      {parallel ? (
+        <ParallelChapter
+          book={passage.book}
+          chapter={passage.start.chapter}
+          versions={[versionId, ...others]}
+        />
+      ) : (
+        <ReaderText
+          passage={passage}
+          version={versionId}
+          sharedVerses={parseSelectionParam(sel)}
+          highlighting={{ signedIn: user !== null, saved: savedHighlights }}
+        />
+      )}
 
       {reading && lastStep && (
         <ReadingDone

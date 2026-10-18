@@ -807,6 +807,12 @@
       "limit": "{max, plural, one {# version} other {# versions}} au maximum côte à côte.",
       "loading": "Chargement…",
       "loadFailed": "Le texte n’a pas pu être chargé."
+    },
+    "parallel": {
+      "label": "Lecture parallèle",
+      "limit": "{max, plural, one {# version} other {# versions}} au maximum.",
+      "loading": "Chargement…",
+      "loadFailed": "Le texte n’a pas pu être chargé. Vérifiez votre connexion et réessayez."
     }
   },
   "BibleIndex": {

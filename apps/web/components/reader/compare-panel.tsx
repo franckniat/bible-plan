@@ -7,15 +7,14 @@ import { useEffect, useId, useRef, useState } from "react"
 import {
   bibleVersions,
   displayVerse,
-  fetchChaptersFrom,
   getBibleVersion,
-  type BibleChapter,
   type BibleVersionId,
 } from "@workspace/bible-data"
 import type { BookId, Locale } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { loadChapter } from "@/components/reader/chapter-cache"
 import {
   defaultComparison,
   maxComparedVersions,
@@ -23,22 +22,6 @@ import {
   versesInVersion,
 } from "@/lib/compare"
 import { selectionReference } from "@/lib/verse-selection"
-
-const fetchChapter = fetchChaptersFrom("/bible")
-
-// Chapters already asked for, so choosing versions again does not fetch again.
-const chapters = new Map<string, Promise<BibleChapter>>()
-function loadChapter(version: BibleVersionId, book: BookId, chapter: number) {
-  const key = `${version}/${book}/${chapter}`
-  let loading = chapters.get(key)
-  if (!loading) {
-    loading = fetchChapter(version, book, chapter)
-    // A failure is not kept: the next try asks again.
-    loading.catch(() => chapters.delete(key))
-    chapters.set(key, loading)
-  }
-  return loading
-}
 
 type Column =
   | { version: BibleVersionId; verses: [number, string][] }

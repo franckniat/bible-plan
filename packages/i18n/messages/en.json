@@ -807,6 +807,12 @@
       "limit": "Up to {max, plural, one {# version} other {# versions}} side by side.",
       "loading": "Loading…",
       "loadFailed": "The text could not be loaded."
+    },
+    "parallel": {
+      "label": "Parallel reading",
+      "limit": "Up to {max, plural, one {# version} other {# versions}}.",
+      "loading": "Loading…",
+      "loadFailed": "The text could not be loaded. Check your connection and try again."
     }
   },
   "BibleIndex": {
