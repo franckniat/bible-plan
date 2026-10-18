@@ -2,7 +2,7 @@
 
 import { BookOpenText } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
+import { useState, type ComponentProps } from "react"
 
 import type { BibleVersionId } from "@workspace/bible-data"
 import {
@@ -27,11 +27,14 @@ export function ReaderText({
   passage,
   version,
   sharedVerses,
+  highlighting,
 }: {
   passage: Passage
   version: BibleVersionId
   /** Verses a shared link points to (the page's `sel`). */
   sharedVerses?: readonly number[]
+  /** The highlights of the account, when the page can highlight. */
+  highlighting?: ComponentProps<typeof PassageText>["highlighting"]
 }) {
   const t = useTranslations("Reader")
   const settings = useReaderSettings()
@@ -69,6 +72,7 @@ export function ReaderText({
         verseLayout={settings.layout}
         wholeChapter={wholeChapter}
         sharedVerses={sharedVerses}
+        highlighting={highlighting}
         className={textSizes[settings.size]}
       />
     </div>

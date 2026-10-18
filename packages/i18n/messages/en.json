@@ -749,7 +749,7 @@
       "previous": "Previous step: {passage}",
       "next": "Next: {passage}"
     },
-    "selectHint": "Tap verses to copy or share them.",
+    "selectHint": "Tap verses to highlight, copy or share them.",
     "public": {
       "invitation": "Bible Plan is free: create an account to follow reading plans and keep your preferences.",
       "signUp": "Create an account",
@@ -785,6 +785,19 @@
       "share": "Share",
       "copied": "Copied",
       "copyFailed": "Could not copy"
+    },
+    "highlight": {
+      "label": "Highlight",
+      "remove": "Remove the highlight",
+      "device": "Saved on this device. <link>Sign in</link> to find it everywhere.",
+      "colors": {
+        "YELLOW": "Yellow",
+        "ORANGE": "Orange",
+        "GREEN": "Green",
+        "BLUE": "Blue",
+        "PURPLE": "Purple",
+        "PINK": "Pink"
+      }
     }
   },
   "BibleIndex": {

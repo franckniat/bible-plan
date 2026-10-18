@@ -749,7 +749,7 @@
       "previous": "Étape précédente : {passage}",
       "next": "Suivant : {passage}"
     },
-    "selectHint": "Touchez des versets pour les copier ou les partager.",
+    "selectHint": "Touchez des versets pour les surligner, les copier ou les partager.",
     "public": {
       "invitation": "Bible Plan est gratuit : créez un compte pour suivre des plans de lecture et garder vos préférences.",
       "signUp": "Créer un compte",
@@ -785,6 +785,19 @@
       "share": "Partager",
       "copied": "Copié",
       "copyFailed": "Copie impossible"
+    },
+    "highlight": {
+      "label": "Surbrillance",
+      "remove": "Retirer la surbrillance",
+      "device": "Enregistrée sur cet appareil. <link>Connectez-vous</link> pour la retrouver partout.",
+      "colors": {
+        "YELLOW": "Jaune",
+        "ORANGE": "Orange",
+        "GREEN": "Vert",
+        "BLUE": "Bleu",
+        "PURPLE": "Violet",
+        "PINK": "Rose"
+      }
     }
   },
   "BibleIndex": {

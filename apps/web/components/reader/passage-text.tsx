@@ -21,8 +21,15 @@ import {
 } from "@workspace/core"
 import { cn } from "@workspace/ui/lib/utils"
 
+import {
+  HighlightRow,
+  highlightStyles,
+} from "@/components/reader/highlight-row"
 import { SelectionPanel } from "@/components/reader/selection-panel"
+import { useHighlights } from "@/components/reader/use-highlights"
+import { canonVersesOf, colorsInVersion, sharedColor } from "@/lib/highlights"
 import { toggleVerse, type VerseSelection } from "@/lib/verse-selection"
+import type { SavedHighlight } from "@/server/services/highlights"
 
 const fetchChapter = fetchChaptersFrom("/bible")
 
@@ -38,6 +45,7 @@ export function PassageText({
   verseLayout = "flow",
   wholeChapter = false,
   sharedVerses = [],
+  highlighting,
   className,
 }: {
   passage: Passage
@@ -48,6 +56,11 @@ export function PassageText({
   wholeChapter?: boolean
   /** Verses a shared link points to, in the numbering of the version. */
   sharedVerses?: readonly number[]
+  /**
+   * Turns highlighting on: the highlights of the account (empty for a
+   * visitor, whose are on the device) and whether someone is signed in.
+   */
+  highlighting?: { signedIn: boolean; saved: readonly SavedHighlight[] }
   className?: string
 }) {
   const t = useTranslations("Reader")
@@ -101,6 +114,12 @@ export function PassageText({
   // A stable function: the panel listens to Escape with it.
   const clearSelection = useCallback(() => setSelected(null), [])
 
+  const { colors, apply } = useHighlights({
+    signedIn: highlighting?.signedIn ?? false,
+    saved: highlighting?.saved ?? [],
+  })
+  const bibleVersion = getBibleVersion(version)
+
   const text = result?.key === key && "text" in result ? result.text : null
   const failed = result?.key === key && "failed" in result
 
@@ -123,6 +142,16 @@ export function PassageText({
   const selectedVerses = selection
     ? text.chapters.find(({ chapter }) => chapter === selection.chapter)
     : undefined
+  // The colors of the selected verses, for the highlight picker.
+  const selectionColors = selection
+    ? colorsInVersion(
+        colors,
+        passage.book,
+        selection.chapter,
+        selection.verses,
+        bibleVersion
+      )
+    : {}
 
   return (
     <div className={cn("flex flex-col gap-8", className)}>
@@ -133,80 +162,138 @@ export function PassageText({
           selection={selection}
           verses={selectedVerses.verses}
           onClear={clearSelection}
+          actions={
+            highlighting && (
+              <HighlightRow
+                signedIn={highlighting.signedIn}
+                current={sharedColor(selectionColors, selection.verses)}
+                removable={Object.keys(selectionColors).length > 0}
+                onPick={(color) => {
+                  apply(
+                    passage.book,
+                    selection.chapter,
+                    canonVersesOf(
+                      passage.book,
+                      selection.chapter,
+                      selection.verses,
+                      bibleVersion
+                    ),
+                    color
+                  )
+                  clearSelection()
+                }}
+                onRemove={() => {
+                  apply(
+                    passage.book,
+                    selection.chapter,
+                    canonVersesOf(
+                      passage.book,
+                      selection.chapter,
+                      selection.verses,
+                      bibleVersion
+                    ),
+                    null
+                  )
+                  clearSelection()
+                }}
+              />
+            )
+          }
         />
       )}
-      {text.chapters.map(({ chapter, verses }) => (
-        <section
-          key={chapter}
-          aria-label={`${getBookName(passage.book, locale)} ${chapter}`}
-        >
-          {text.chapters.length > 1 && (
-            <h2 className="mb-3 font-heading text-xl font-semibold">
-              {t("chapter", { chapter })}
-            </h2>
-          )}
-          <p className="font-heading leading-[1.85]">
-            {verses.map(([number, verse], index) => {
-              const { paragraph, segments } = displayVerse(version, verse)
-              const around = range && (number < range.from || number > range.to)
-              const chosen =
-                selection?.chapter === chapter &&
-                selection.verses.includes(number)
-              const shared = sharedVerses.includes(number)
-              // From the latest selection, so taps in a row all count.
-              const choose = () =>
-                setSelected((current) => {
-                  const next = toggleVerse(
-                    current?.key === key ? current : null,
-                    chapter,
-                    number
-                  )
-                  return next && { ...next, key }
-                })
-              return (
-                <span
-                  key={number}
-                  data-verse={number}
-                  role="button"
-                  tabIndex={0}
-                  aria-pressed={chosen}
-                  onClick={choose}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault()
-                      choose()
-                    }
-                  }}
-                  className={cn(
-                    "cursor-pointer rounded-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
-                    verseLayout === "lines" && "mb-2 block",
-                    around && "text-brand-night/45 dark:text-neutral-100/45",
-                    shared &&
-                      "underline decoration-brand-gold decoration-2 underline-offset-4",
-                    (chosen || shared) && "bg-brand-gold/25"
-                  )}
-                >
-                  {verseLayout === "flow" && paragraph && index > 0 && (
-                    <span aria-hidden className="block h-3" />
-                  )}
-                  {showVerseNumbers && (
-                    <sup className="mr-1 font-sans text-[0.65em] font-semibold text-brand-gold">
-                      {number}
-                    </sup>
-                  )}
-                  {segments.map((segment, part) =>
-                    segment.italic ? (
-                      <em key={part}>{segment.text}</em>
-                    ) : (
-                      <span key={part}>{segment.text}</span>
+      {text.chapters.map(({ chapter, verses }) => {
+        const chapterColors = highlighting
+          ? colorsInVersion(
+              colors,
+              passage.book,
+              chapter,
+              verses.map(([number]) => number),
+              bibleVersion
+            )
+          : {}
+        return (
+          <section
+            key={chapter}
+            aria-label={`${getBookName(passage.book, locale)} ${chapter}`}
+          >
+            {text.chapters.length > 1 && (
+              <h2 className="mb-3 font-heading text-xl font-semibold">
+                {t("chapter", { chapter })}
+              </h2>
+            )}
+            <p className="font-heading leading-[1.85]">
+              {verses.map(([number, verse], index) => {
+                const color = chapterColors[number]
+                const { paragraph, segments } = displayVerse(version, verse)
+                const around =
+                  range && (number < range.from || number > range.to)
+                const chosen =
+                  selection?.chapter === chapter &&
+                  selection.verses.includes(number)
+                const shared = sharedVerses.includes(number)
+                // From the latest selection, so taps in a row all count.
+                const choose = () =>
+                  setSelected((current) => {
+                    const next = toggleVerse(
+                      current?.key === key ? current : null,
+                      chapter,
+                      number
                     )
-                  )}{" "}
-                </span>
-              )
-            })}
-          </p>
-        </section>
-      ))}
+                    return next && { ...next, key }
+                  })
+                return (
+                  <span
+                    key={number}
+                    data-verse={number}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={chosen}
+                    onClick={choose}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault()
+                        choose()
+                      }
+                    }}
+                    className={cn(
+                      "cursor-pointer rounded-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
+                      verseLayout === "lines" && "mb-2 block",
+                      around && "text-brand-night/45 dark:text-neutral-100/45",
+                      // A highlight is a color behind the text; a selection (or a
+                      // verse a link points to) is a dotted line under it.
+                      color &&
+                        cn(highlightStyles[color], "box-decoration-clone"),
+                      (chosen || shared) &&
+                        "underline decoration-dotted decoration-2 underline-offset-4"
+                    )}
+                  >
+                    {verseLayout === "flow" && paragraph && index > 0 && (
+                      <span aria-hidden className="block h-3" />
+                    )}
+                    {showVerseNumbers && (
+                      <sup
+                        className={cn(
+                          "mr-1 font-sans text-[0.65em] font-semibold",
+                          color ? "text-neutral-950/60" : "text-brand-gold"
+                        )}
+                      >
+                        {number}
+                      </sup>
+                    )}
+                    {segments.map((segment, part) =>
+                      segment.italic ? (
+                        <em key={part}>{segment.text}</em>
+                      ) : (
+                        <span key={part}>{segment.text}</span>
+                      )
+                    )}{" "}
+                  </span>
+                )
+              })}
+            </p>
+          </section>
+        )
+      })}
     </div>
   )
 }

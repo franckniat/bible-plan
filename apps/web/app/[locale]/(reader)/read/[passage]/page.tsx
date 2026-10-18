@@ -32,6 +32,7 @@ import { VersionSwitch } from "@/components/reader/version-switch"
 import { Link, redirect } from "@/i18n/navigation"
 import { bibleVersionCookie, pickBibleVersion } from "@/lib/bible-version"
 import { parseSelectionParam } from "@/lib/verse-selection"
+import { listHighlights } from "@/server/services/highlights"
 import { getReadingForUser } from "@/server/services/plans"
 import { getSession } from "@/server/session"
 
@@ -127,6 +128,19 @@ export default async function ReadPage({
         )
         .join(", ")
     : null
+
+  // The highlights of the account in the chapters on screen.
+  const savedHighlights = user
+    ? await listHighlights(
+        prisma,
+        user.id,
+        passage.book,
+        Array.from(
+          { length: passage.end.chapter - passage.start.chapter + 1 },
+          (_, index) => passage.start.chapter + index
+        )
+      )
+    : []
 
   const previous = adjacentChapter(passage.book, passage.start.chapter, -1)
   const next = adjacentChapter(passage.book, passage.end.chapter, 1)
@@ -257,6 +271,7 @@ export default async function ReadPage({
         passage={passage}
         version={versionId}
         sharedVerses={parseSelectionParam(sel)}
+        highlighting={{ signedIn: user !== null, saved: savedHighlights }}
       />
 
       {reading && lastStep && (
