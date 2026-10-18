@@ -426,6 +426,14 @@
     "bell": {
       "label": "Notifications",
       "unread": "Notifications, {count, plural, one {# unread} other {# unread}}"
+    },
+    "title": "Notifications",
+    "description": "Your reminders and news, kept for {days} days.",
+    "markAllRead": "Mark all as read",
+    "unreadItem": "Unread.",
+    "empty": {
+      "title": "No notifications",
+      "description": "Your reading, prayer and meditation reminders will show up here."
     }
   },
   "Theme": {
