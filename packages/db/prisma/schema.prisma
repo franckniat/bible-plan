@@ -68,6 +68,7 @@ model User {
   reminders     Reminder[]
   notifications Notification[]
   highlights    Highlight[]
+  pushDevices   PushDevice[]
 
   locale       String  @default("fr")
   timezone     String?
@@ -350,4 +351,33 @@ model Highlight {
 
   @@unique([userId, book, chapter, verse])
   @@index([userId, book, chapter])
+}
+
+// ─── Push devices ───────────────────────────────────────────────────────────
+// Where a push notification can be sent for a user: a browser subscribed with
+// the Web Push API, or (later) a phone with the Expo app.
+
+enum PushDeviceKind {
+  WEB_PUSH
+  EXPO
+}
+
+model PushDevice {
+  id         String         @id @default(uuid(7))
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind       PushDeviceKind
+  /// The address to push to: the subscription endpoint of a browser, or the
+  /// Expo push token. Unique, so subscribing again from a device is a no-op.
+  token      String         @unique
+  /// Web Push only: the keys of the subscription (p256dh and auth).
+  p256dh     String?
+  auth       String?
+  /// Browser and system, to tell devices apart in the settings.
+  userAgent  String?
+  createdAt  DateTime       @default(now())
+  /// The last push accepted by the push service.
+  lastUsedAt DateTime?
+
+  @@index([userId])
 }
