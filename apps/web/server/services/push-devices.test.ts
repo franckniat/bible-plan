@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from "vitest"
 
 import type { WebPushSubscription } from "@workspace/core"
+import type { PushResult, PushSender } from "@workspace/notifications"
 
 import {
   listPushDevices,
+  pushToUser,
   maxPushDevicesPerUser,
   removePushDevices,
   subscribeWebPush,
@@ -125,5 +127,71 @@ describe("removePushDevices", () => {
     const pushDevice = { deleteMany: vi.fn() }
     expect(await removePushDevices(db(pushDevice), [])).toBe(0)
     expect(pushDevice.deleteMany).not.toHaveBeenCalled()
+  })
+})
+
+describe("pushToUser", () => {
+  const payload = { title: "Time to read", body: "Now", href: "/fr/today" }
+  const devices = [
+    { token: "https://fcm.googleapis.com/ok", p256dh: "p1", auth: "a1" },
+    { token: "https://fcm.googleapis.com/gone", p256dh: "p2", auth: "a2" },
+    { token: "https://fcm.googleapis.com/down", p256dh: "p3", auth: "a3" },
+    { token: "expo-token", p256dh: null, auth: null },
+  ]
+  const answers: Record<string, PushResult> = {
+    "https://fcm.googleapis.com/ok": { status: "sent" },
+    "https://fcm.googleapis.com/gone": { status: "gone" },
+    "https://fcm.googleapis.com/down": { status: "failed", error: "503" },
+  }
+  const sender = (): PushSender => ({
+    send: vi.fn(async (target) => answers[target.endpoint]!),
+  })
+
+  it("pushes to each browser, forgets the ones that are gone and marks the others", async () => {
+    const pushDevice = {
+      findMany: vi.fn().mockResolvedValue(devices),
+      updateMany: vi.fn(),
+      deleteMany: vi.fn().mockResolvedValue({ count: 1 }),
+    }
+    const push = sender()
+    const now = new Date("2026-10-19T10:00:00Z")
+    const outcome = await pushToUser(
+      db(pushDevice),
+      push,
+      "user-1",
+      payload,
+      now
+    )
+
+    expect(outcome).toEqual({ sent: 1, removed: 1, failed: 1 })
+    expect(pushDevice.findMany.mock.calls[0]![0].where).toEqual({
+      userId: "user-1",
+      kind: "WEB_PUSH",
+    })
+    // The Expo token has no keys: it is not a browser, nothing is sent to it.
+    expect(push.send).toHaveBeenCalledTimes(3)
+    expect(pushDevice.updateMany).toHaveBeenCalledWith({
+      where: { token: { in: ["https://fcm.googleapis.com/ok"] } },
+      data: { lastUsedAt: now },
+    })
+    expect(pushDevice.deleteMany).toHaveBeenCalledWith({
+      where: { token: { in: ["https://fcm.googleapis.com/gone"] } },
+    })
+  })
+
+  it("does nothing for a user without a device", async () => {
+    const pushDevice = {
+      findMany: vi.fn().mockResolvedValue([]),
+      updateMany: vi.fn(),
+      deleteMany: vi.fn(),
+    }
+    const push = sender()
+    expect(await pushToUser(db(pushDevice), push, "user-1", payload)).toEqual({
+      sent: 0,
+      removed: 0,
+      failed: 0,
+    })
+    expect(push.send).not.toHaveBeenCalled()
+    expect(pushDevice.updateMany).not.toHaveBeenCalled()
   })
 })

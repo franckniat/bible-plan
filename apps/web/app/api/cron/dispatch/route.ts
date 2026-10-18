@@ -2,6 +2,7 @@ import { prisma } from "@workspace/db"
 
 import { isAuthorizedCron } from "@/lib/cron-auth"
 import { getReminderEmailSender } from "@/server/reminder-email"
+import { getReminderPushSender } from "@/server/reminder-push"
 import { describeReminder } from "@/server/reminder-text"
 import {
   defaultBatchSize,
@@ -34,6 +35,8 @@ export async function POST(request: Request) {
       describe: describeReminder,
       // Undefined (email left alone) until EMAIL_REMINDERS_ENABLED is on.
       sendEmail: getReminderEmailSender(),
+      // Undefined (push channel left alone) until the VAPID keys are set.
+      sendPush: getReminderPushSender(),
     })
     for (const key of Object.keys(total) as (keyof DispatchResult)[]) {
       total[key] += result[key]

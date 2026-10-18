@@ -2,6 +2,7 @@ import "server-only"
 
 import type { WebPushSubscription } from "@workspace/core"
 import type { PrismaClient } from "@workspace/db"
+import type { PushPayload, PushSender } from "@workspace/notifications"
 
 export type PushDevicesDb = Pick<PrismaClient, "pushDevice">
 
@@ -84,4 +85,69 @@ export async function removePushDevices(
     where: { token: { in: tokens } },
   })
   return count
+}
+
+export type PushOutcome = {
+  /** Devices that accepted the message. */
+  sent: number
+  /** Devices the push service said are gone: forgotten. */
+  removed: number
+  /** Devices where it failed for another reason (kept for next time). */
+  failed: number
+}
+
+/**
+ * Pushes a message to every browser of a user. A device the push service says
+ * is gone (404 or 410) is deleted, one that accepts it is marked as used.
+ */
+export async function pushToUser(
+  db: PushDevicesDb,
+  sender: PushSender,
+  userId: string,
+  payload: PushPayload,
+  now = new Date()
+): Promise<PushOutcome> {
+  const devices = (
+    await db.pushDevice.findMany({
+      where: { userId, kind: "WEB_PUSH" },
+      select: { token: true, p256dh: true, auth: true },
+    })
+  ).filter(
+    (device): device is { token: string; p256dh: string; auth: string } =>
+      device.p256dh !== null && device.auth !== null
+  )
+
+  const results = await Promise.all(
+    devices.map(async (device) => ({
+      token: device.token,
+      result: await sender.send(
+        {
+          endpoint: device.token,
+          keys: { p256dh: device.p256dh, auth: device.auth },
+        },
+        payload
+      ),
+    }))
+  )
+
+  const sentTokens = results
+    .filter(({ result }) => result.status === "sent")
+    .map(({ token }) => token)
+  const goneTokens = results
+    .filter(({ result }) => result.status === "gone")
+    .map(({ token }) => token)
+
+  if (sentTokens.length > 0) {
+    await db.pushDevice.updateMany({
+      where: { token: { in: sentTokens } },
+      data: { lastUsedAt: now },
+    })
+  }
+  const removed = await removePushDevices(db, goneTokens)
+
+  return {
+    sent: sentTokens.length,
+    removed,
+    failed: results.length - sentTokens.length - goneTokens.length,
+  }
 }

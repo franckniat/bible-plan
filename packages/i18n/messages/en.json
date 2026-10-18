@@ -476,7 +476,14 @@
       "disable": "Turn off on this device",
       "enabled": "Notifications are on for this device.",
       "failed": "That did not work. Check your connection and try again.",
-      "devices": "{count, plural, one {# device receives} other {# devices receive}} your notifications."
+      "devices": "{count, plural, one {# device receives} other {# devices receive}} your notifications.",
+      "test": "Send a test notification",
+      "testResult": {
+        "sent": "Notification sent. It should arrive in a few seconds.",
+        "no_device": "No device is registered for this account.",
+        "unavailable": "Notifications are not set up on the server.",
+        "failed": "Sending failed. Try again in a moment."
+      }
     }
   },
   "Notifications": {

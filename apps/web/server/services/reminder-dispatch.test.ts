@@ -189,4 +189,31 @@ describe("dispatchDueReminders", () => {
     })
     expect(result).toEqual({ due: 2, claimed: 2, delivered: 1, failed: 1 })
   })
+
+  it("pushes on the push channel when push is set up", async () => {
+    const sendPush = vi.fn()
+    const { db, typed } = setup([reminder({ channels: ["IN_APP", "PUSH"] })])
+    const result = await dispatchDueReminders(typed, {
+      now,
+      describe: describeKind,
+      sendPush,
+    })
+    expect(sendPush).toHaveBeenCalledTimes(1)
+    expect(sendPush.mock.calls[0]![1]).toEqual(dueAt)
+    expect(db.reminderDelivery.create).toHaveBeenCalledWith({
+      data: { reminderId: "r1", dueAt, channel: "PUSH" },
+      select: { id: true },
+    })
+    expect(result.delivered).toBe(2)
+  })
+
+  it("leaves the push channel alone while push is not set up", async () => {
+    const { db, typed } = setup([reminder({ channels: ["IN_APP", "PUSH"] })])
+    const result = await dispatchDueReminders(typed, {
+      now,
+      describe: describeKind,
+    })
+    expect(db.reminderDelivery.create).toHaveBeenCalledTimes(1)
+    expect(result.delivered).toBe(1)
+  })
 })

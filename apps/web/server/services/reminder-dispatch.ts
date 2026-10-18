@@ -43,6 +43,11 @@ export type DispatchOptions = {
    * the email channel is then left alone.
    */
   sendEmail?: (reminder: DueReminder, dueAt: Date) => Promise<void>
+  /**
+   * Pushes the reminder to the devices of the user. Absent while push is not
+   * set up (no VAPID keys): the push channel is then left alone.
+   */
+  sendPush?: (reminder: DueReminder, dueAt: Date) => Promise<void>
 }
 
 export type DispatchResult = {
@@ -116,6 +121,7 @@ export async function dispatchDueReminders(
     batchSize = defaultBatchSize,
     describe,
     sendEmail,
+    sendPush,
   }: DispatchOptions
 ): Promise<DispatchResult> {
   const due = await db.reminder.findMany({
@@ -185,8 +191,10 @@ export async function dispatchDueReminders(
         reminder.user.emailVerified
       ) {
         send = () => sendEmail(reminder, dueAt)
+      } else if (channel === "PUSH" && sendPush) {
+        send = () => sendPush(reminder, dueAt)
       }
-      // PUSH has its own issue; EMAIL waits for reminders by email to be on.
+      // EMAIL waits for reminders by email to be on, PUSH for the VAPID keys.
       if (!send) continue
 
       const outcome = await deliverOnce(db, reminder, dueAt, channel, send)

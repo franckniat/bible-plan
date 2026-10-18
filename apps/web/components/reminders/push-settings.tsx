@@ -6,6 +6,8 @@ import { useEffect, useState } from "react"
 
 import { Button } from "@workspace/ui/components/button"
 
+import { sendTestPushAction, type TestPushResult } from "@/server/actions/push"
+
 import { pushEnvironment, urlBase64ToUint8Array } from "@/lib/push-support"
 
 type State =
@@ -50,6 +52,7 @@ export function PushSettings({
   const [state, setState] = useState<State>("checking")
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [test, setTest] = useState<TestPushResult["status"] | null>(null)
 
   useEffect(() => {
     let live = true
@@ -98,6 +101,18 @@ export function PushSettings({
       setState("on")
     } catch {
       setFailed(true)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function sendTest() {
+    setBusy(true)
+    setTest(null)
+    try {
+      setTest((await sendTestPushAction()).status)
+    } catch {
+      setTest("failed")
     } finally {
       setBusy(false)
     }
@@ -195,16 +210,31 @@ export function PushSettings({
           <p role="status" className="text-sm font-medium">
             {t("enabled")}
           </p>
-          <Button
-            size="lg"
-            variant="outline"
-            className="h-11 sm:px-5"
-            disabled={busy}
-            onClick={disable}
-          >
-            {busy && <LoaderCircle className="animate-spin" />}
-            {t("disable")}
-          </Button>
+          <div className="flex flex-wrap gap-3">
+            <Button
+              size="lg"
+              className="h-11 sm:px-5"
+              disabled={busy}
+              onClick={sendTest}
+            >
+              {t("test")}
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="h-11 sm:px-5"
+              disabled={busy}
+              onClick={disable}
+            >
+              {busy && <LoaderCircle className="animate-spin" />}
+              {t("disable")}
+            </Button>
+          </div>
+          {test && (
+            <p role="status" className="text-sm">
+              {t(`testResult.${test}`)}
+            </p>
+          )}
         </div>
       )}
 

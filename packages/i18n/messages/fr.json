@@ -476,7 +476,14 @@
       "disable": "Désactiver sur cet appareil",
       "enabled": "Les notifications sont activées sur cet appareil.",
       "failed": "L’opération a échoué. Vérifiez votre connexion et réessayez.",
-      "devices": "{count, plural, one {# appareil reçoit} other {# appareils reçoivent}} vos notifications."
+      "devices": "{count, plural, one {# appareil reçoit} other {# appareils reçoivent}} vos notifications.",
+      "test": "Envoyer une notification d’essai",
+      "testResult": {
+        "sent": "Notification envoyée. Elle doit arriver dans quelques secondes.",
+        "no_device": "Aucun appareil n’est enregistré pour ce compte.",
+        "unavailable": "Les notifications ne sont pas configurées sur le serveur.",
+        "failed": "L’envoi a échoué. Réessayez dans un moment."
+      }
     }
   },
   "Notifications": {
