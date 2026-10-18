@@ -1,6 +1,7 @@
 import { prisma } from "@workspace/db"
 
 import { isAuthorizedCron } from "@/lib/cron-auth"
+import { getReminderEmailSender } from "@/server/reminder-email"
 import { describeReminder } from "@/server/reminder-text"
 import {
   defaultBatchSize,
@@ -31,6 +32,8 @@ export async function POST(request: Request) {
     const result = await dispatchDueReminders(prisma, {
       now,
       describe: describeReminder,
+      // Undefined (email left alone) until EMAIL_REMINDERS_ENABLED is on.
+      sendEmail: getReminderEmailSender(),
     })
     for (const key of Object.keys(total) as (keyof DispatchResult)[]) {
       total[key] += result[key]
