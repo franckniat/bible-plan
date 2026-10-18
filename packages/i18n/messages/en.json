@@ -165,6 +165,31 @@
       "button": "Sign me in",
       "expiry": "This link is valid for 5 minutes and works only once. If you did not ask for it, ignore this email.",
       "fallback": "If the button does not work, copy this link into your browser:"
+    },
+    "reminder": {
+      "unsubscribeText": "Do not want this reminder anymore?",
+      "unsubscribe": "Turn it off in one click",
+      "READING": {
+        "subject": "Time for your reading",
+        "preview": "Today’s reading is waiting for you.",
+        "heading": "Hello {name}, shall we read?",
+        "body": "A few minutes are enough to move forward in your reading plan today.",
+        "button": "Read now"
+      },
+      "PRAYER": {
+        "subject": "Time to pray",
+        "preview": "A moment of prayer is waiting for you.",
+        "heading": "Hello {name}, let us take time to pray",
+        "body": "Take a few minutes to bring your prayer topics before God.",
+        "button": "Open Bible Plan"
+      },
+      "MEDITATION": {
+        "subject": "Time to meditate",
+        "preview": "A moment of meditation is waiting for you.",
+        "heading": "Hello {name}, a time to meditate",
+        "body": "Sit down for a few minutes and meditate on the Word you have read.",
+        "button": "Open Bible Plan"
+      }
     }
   },
   "App": {

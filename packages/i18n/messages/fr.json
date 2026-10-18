@@ -165,6 +165,31 @@
       "button": "Me connecter",
       "expiry": "Ce lien est valable 5 minutes et ne fonctionne qu’une fois. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.",
       "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :"
+    },
+    "reminder": {
+      "unsubscribeText": "Vous ne souhaitez plus ce rappel ?",
+      "unsubscribe": "Le désactiver en un clic",
+      "READING": {
+        "subject": "C’est l’heure de votre lecture",
+        "preview": "Votre lecture du jour vous attend.",
+        "heading": "Bonjour {name}, on lit ?",
+        "body": "Quelques minutes suffisent pour avancer dans votre plan de lecture aujourd’hui.",
+        "button": "Lire maintenant"
+      },
+      "PRAYER": {
+        "subject": "C’est l’heure de prier",
+        "preview": "Un moment de prière vous attend.",
+        "heading": "Bonjour {name}, prenons un temps de prière",
+        "body": "Prenez quelques minutes pour déposer vos sujets de prière devant Dieu.",
+        "button": "Ouvrir Bible Plan"
+      },
+      "MEDITATION": {
+        "subject": "C’est l’heure de méditer",
+        "preview": "Un moment de méditation vous attend.",
+        "heading": "Bonjour {name}, un temps de méditation",
+        "body": "Posez-vous quelques minutes et méditez la Parole que vous avez lue.",
+        "button": "Ouvrir Bible Plan"
+      }
     }
   },
   "App": {
