@@ -60,3 +60,12 @@ Si plusieurs versions ont la même `language`, la première de la liste est cell
 ## Numérotation différente
 
 Beaucoup de versions ne numérotent pas tous les chapitres comme le canon des plans (la King James). Les titres de psaumes comptés comme versets de la Louis Segond en sont l'exemple. Rien à faire de plus que d'avoir des `verseCounts` exacts : les surbrillances, la comparaison et la lecture parallèle rangent les versets selon le canon (`versionVersesOf` et `canonVerseOf`, dans `src/versification.ts`) et affichent chaque version dans sa propre numérotation. Pour un chapitre dont le découpage est très différent, la correspondance est approximative, comme pour les passages d'un plan.
+
+## Traductions sous droits (non hébergées)
+
+Les traductions modernes (NIV, NLT, NKJV, Parole de Vie, Bible du Semeur, Segond 21, Nouvelle Français courant…) appartiennent à leurs éditeurs : leur texte ne doit pas être copié dans ce dépôt public ni servi sans licence. Elles sont donc déclarées à part, dans `packages/bible-data/src/external-versions.ts` : l'application les propose dans le sélecteur de version du lecteur (groupe « Sur YouVersion ») et ouvre le même passage sur bible.com dans un nouvel onglet.
+
+Pour en ajouter une, ajouter une entrée à la liste avec l'identifiant et l'abréviation de YouVersion (visibles dans l'adresse de la version, par exemple `bible.com/versions/111-niv-…` : identifiant 111, abréviation `NIV`). Ces traductions ne se lisent pas dans l'application et ne se comparent pas ; les surbrillances et la comparaison ne concernent que les versions hébergées. Un psalme s'ouvre en chapitre entier, parce que leur numérotation n'est pas connue.
+
+Pour proposer une de ces traductions dans l'application, il faut une licence de son éditeur (ou un accès comme API.Bible), puis suivre les étapes ci-dessus avec le texte fourni.
+

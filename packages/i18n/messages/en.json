@@ -860,6 +860,10 @@
       "limit": "Up to {max, plural, one {# version} other {# versions}}.",
       "loading": "Loading…",
       "loadFailed": "The text could not be loaded. Check your connection and try again."
+    },
+    "versionGroups": {
+      "app": "In the app",
+      "external": "On YouVersion (new tab)"
     }
   },
   "BibleIndex": {

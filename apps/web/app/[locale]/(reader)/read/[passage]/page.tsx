@@ -8,6 +8,8 @@ import {
   getBibleVersion,
   isBibleVersionId,
   mapPassage,
+  externalVersions,
+  externalVersionUrl,
   youVersionUrl,
 } from "@workspace/bible-data"
 import {
@@ -265,7 +267,16 @@ export default async function ReadPage({
           {formatPassage(passage, locale)}
         </h1>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <VersionSwitch version={version.id} signedIn={user !== null} />
+          <VersionSwitch
+            version={version.id}
+            signedIn={user !== null}
+            externalLinks={externalVersions.map((external) => ({
+              id: external.id,
+              label: `${external.name} (${external.abbreviation})`,
+              language: external.language,
+              href: externalVersionUrl(passage, external.id),
+            }))}
+          />
           {/* Parallel reading is for whole chapters. */}
           {coversWholeChapters(passage) &&
             passage.start.chapter === passage.end.chapter && (
