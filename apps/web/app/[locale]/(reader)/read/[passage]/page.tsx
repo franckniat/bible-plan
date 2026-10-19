@@ -9,6 +9,7 @@ import {
   isBibleVersionId,
   mapPassage,
   externalVersions,
+  isPublicDomainNotice,
   externalVersionUrl,
   youVersionUrl,
 } from "@workspace/bible-data"
@@ -270,12 +271,15 @@ export default async function ReadPage({
           <VersionSwitch
             version={version.id}
             signedIn={user !== null}
-            externalLinks={externalVersions.map((external) => ({
-              id: external.id,
-              label: `${external.name} (${external.abbreviation})`,
-              language: external.language,
-              href: externalVersionUrl(passage, external.id),
-            }))}
+            externalLinks={externalVersions
+              // A translation that joined the app is read in the app.
+              .filter((external) => !isBibleVersionId(external.id))
+              .map((external) => ({
+                id: external.id,
+                label: `${external.name} (${external.abbreviation})`,
+                language: external.language,
+                href: externalVersionUrl(passage, external.id),
+              }))}
           />
           {/* Parallel reading is for whole chapters. */}
           {coversWholeChapters(passage) &&
@@ -294,6 +298,19 @@ export default async function ReadPage({
           </a>
         </div>
       </header>
+
+      {version.kind === "youversion" && (
+        <p className="text-sm text-brand-night/60 dark:text-neutral-100/60">
+          {t("credit", {
+            name: version.name,
+            notice:
+              version.publicDomain &&
+              (!version.copyright || isPublicDomainNotice(version.copyright))
+                ? t("publicDomain")
+                : (version.copyright ?? ""),
+          })}
+        </p>
+      )}
 
       {numbering && (
         <p className="text-sm text-brand-night/60 dark:text-neutral-100/60">

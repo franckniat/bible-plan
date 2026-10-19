@@ -21,7 +21,12 @@ describe("bible versions registry", () => {
     expect(new Set(ids).size).toBe(ids.length)
   })
 
-  it.each(bibleVersions.map((version) => [version.id, version] as const))(
+  // Remote versions (YouVersion API) have no files, only verse counts.
+  it.each(
+    bibleVersions
+      .filter((version) => version.kind === "hosted")
+      .map((version) => [version.id, version] as const)
+  )(
     "%s has its chapter files, and as many chapters as the canon",
     (id, version) => {
       for (const book of bookIds) {
@@ -45,5 +50,17 @@ describe("bible versions registry", () => {
   it("recognises its ids", () => {
     expect(isBibleVersionId("kjv")).toBe(true)
     expect(isBibleVersionId("nope")).toBe(false)
+  })
+
+  it.each(
+    bibleVersions
+      .filter((version) => version.kind === "youversion")
+      .map((version) => [version.id, version] as const)
+  )("%s (remote) has the verse counts of the whole canon", (id, version) => {
+    for (const book of bookIds) {
+      expect(version.verseCounts[book], `${id} ${book}`).toHaveLength(
+        getChapterCount(book)
+      )
+    }
   })
 })

@@ -13,12 +13,21 @@ export type ChapterFetcher = (
 
 /**
  * Fetches chapters from where the data folder is served, e.g. "/bible" on
- * the web site. The files are validated before use.
+ * the web site. The files are validated before use. A version served by the
+ * YouVersion API (`remoteBaseUrl`, e.g. "/api/bible") is asked from there as
+ * `<remote>/<version>/<book>/<chapter>`: the site's server holds the API key.
  */
-export function fetchChaptersFrom(baseUrl: string): ChapterFetcher {
+export function fetchChaptersFrom(
+  baseUrl: string,
+  { remoteBaseUrl }: { remoteBaseUrl?: string } = {}
+): ChapterFetcher {
   const base = baseUrl.replace(/\/$/, "")
+  const remote = remoteBaseUrl?.replace(/\/$/, "")
   return async (version, book, chapter) => {
-    const url = `${base}/${chapterPath(version, book, chapter)}`
+    const url =
+      remote && getBibleVersion(version).kind === "youversion"
+        ? `${remote}/${version}/${book}/${chapter}`
+        : `${base}/${chapterPath(version, book, chapter)}`
     const response = await fetch(url)
     if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`)
     return chapterSchema.parse(await response.json())

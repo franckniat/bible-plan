@@ -5,7 +5,9 @@ import {
 } from "@workspace/bible-data"
 import type { BookId } from "@workspace/core"
 
-const fetchChapter = fetchChaptersFrom("/bible")
+const fetchChapter = fetchChaptersFrom("/bible", {
+  remoteBaseUrl: "/api/bible",
+})
 
 // Chapters already asked for, so choosing versions again does not fetch again.
 const chapters = new Map<string, Promise<BibleChapter>>()

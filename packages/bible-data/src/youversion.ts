@@ -82,6 +82,11 @@ export function usfmCode(book: BookId): string {
   return usfmCodes[bookIds.indexOf(book)]!
 }
 
+/** The book of a USFM code ("JHN" is "John"), or undefined for an unknown code. */
+export function bookOfUsfm(code: string): BookId | undefined {
+  return bookIds[usfmCodes.findIndex((usfm) => usfm === code)]
+}
+
 /**
  * The same passage on YouVersion (bible.com), in the same translation; from
  * there the reader can switch to any other translation. A passage over

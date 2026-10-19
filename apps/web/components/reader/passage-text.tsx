@@ -33,7 +33,9 @@ import { canonVersesOf, colorsInVersion, sharedColor } from "@/lib/highlights"
 import { toggleVerse, type VerseSelection } from "@/lib/verse-selection"
 import type { SavedHighlight } from "@/server/services/highlights"
 
-const fetchChapter = fetchChaptersFrom("/bible")
+const fetchChapter = fetchChaptersFrom("/bible", {
+  remoteBaseUrl: "/api/bible",
+})
 
 /**
  * The text of a passage, loaded from the static chapter files. With

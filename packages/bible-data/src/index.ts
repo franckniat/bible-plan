@@ -2,6 +2,7 @@
 // the code to load them on the web and in the future mobile app.
 export * from "./chapter"
 export * from "./external-versions"
+export * from "./remote-versions"
 export * from "./loader"
 export * from "./versification"
 export * from "./versions"

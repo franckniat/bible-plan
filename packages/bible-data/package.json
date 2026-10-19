@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "import:ebible": "tsx scripts/import-ebible.ts"
+    "import:ebible": "tsx scripts/import-ebible.ts",
+    "import:youversion": "tsx --env-file-if-exists=../../apps/web/.env.local scripts/import-youversion.ts"
   },
   "dependencies": {
     "@workspace/core": "workspace:*",

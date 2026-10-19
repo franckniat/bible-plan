@@ -52,10 +52,12 @@ export function BibleVersionSetting({ version }: { version: BibleVersionId }) {
           <span className="flex flex-col gap-0.5">
             <span className="font-medium">{option.name}</span>
             <span className="text-brand-night/65 dark:text-neutral-100/65">
-              {t("details", {
-                language: tLocale("locale", { locale: option.language }),
-                year: option.year,
-              })}
+              {option.year
+                ? t("details", {
+                    language: tLocale("locale", { locale: option.language }),
+                    year: option.year,
+                  })
+                : tLocale("locale", { locale: option.language })}
             </span>
           </span>
         </label>

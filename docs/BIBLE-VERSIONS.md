@@ -61,7 +61,18 @@ Si plusieurs versions ont la même `language`, la première de la liste est cell
 
 Beaucoup de versions ne numérotent pas tous les chapitres comme le canon des plans (la King James). Les titres de psaumes comptés comme versets de la Louis Segond en sont l'exemple. Rien à faire de plus que d'avoir des `verseCounts` exacts : les surbrillances, la comparaison et la lecture parallèle rangent les versets selon le canon (`versionVersesOf` et `canonVerseOf`, dans `src/versification.ts`) et affichent chaque version dans sa propre numérotation. Pour un chapitre dont le découpage est très différent, la correspondance est approximative, comme pour les passages d'un plan.
 
-## Traductions sous droits (non hébergées)
+## Traductions servies par YouVersion (non hébergées)
+
+Une traduction peut aussi être lue dans l'application sans que son texte soit stocké ici : il est demandé à l'API YouVersion Platform, selon la licence accordée à la clé de l'application.
+
+- `packages/bible-data/src/remote-versions.ts` liste les traductions (`remoteVersionConfigs`) avec leur identifiant YouVersion.
+- `YOUVERSION_API_KEY` (voir `apps/web/.env.example`) est la clé, lue par la route `apps/web/app/api/bible/[version]/[book]/[chapter]/route.ts`. Elle ne quitte jamais le serveur ; les réponses sont mises en cache 24 h.
+- `pnpm --filter @workspace/bible-data import:youversion` interroge l'API et écrit `data/youversion.json` : la notice de droits, le caractère « domaine public » et le nombre de versets de chaque chapitre. Une traduction n'entre dans le registre que si elle y figure ; celles dont la licence n'est pas acceptée pour la clé sont ignorées avec un message. Relancer la commande après avoir accepté une licence, puis redémarrer le serveur de développement.
+- Une traduction du domaine public se lit partout ; les autres ne sont servies qu'à l'application elle-même (`Sec-Fetch-Site: same-origin`) et la page affiche leur notice de droits.
+
+Disponibles aujourd'hui : BSB, WEB et Ostervald. NIV et la Bible du Semeur demandent d'accepter la « Biblica Fast-track Bible License » pour la clé, dans le portail YouVersion Platform. NLT, NKJV, Parole de Vie, Segond 21 et Nouvelle Français courant ne sont pas proposées par l'API YouVersion. Darby et Martin 1744 sont exclues : leur découpage de Joël et de Malachie diffère du canon.
+
+## Traductions sous droits (liens vers YouVersion)
 
 Les traductions modernes (NIV, NLT, NKJV, Parole de Vie, Bible du Semeur, Segond 21, Nouvelle Français courant…) appartiennent à leurs éditeurs : leur texte ne doit pas être copié dans ce dépôt public ni servi sans licence. Elles sont donc déclarées à part, dans `packages/bible-data/src/external-versions.ts` : l'application les propose dans le sélecteur de version du lecteur (groupe « Sur YouVersion ») et ouvre le même passage sur bible.com dans un nouvel onglet.
 

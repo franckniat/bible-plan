@@ -402,7 +402,7 @@
     },
     "bible": {
       "title": "Bible",
-      "description": "La version lue dans l’application. Les deux sont du domaine public ; pour une autre traduction, le lecteur propose un lien vers YouVersion.",
+      "description": "La version lue dans l’application. Elle devient celle de vos lectures, de vos rappels et du verset du jour.",
       "details": "{language}, {year}",
       "saving": "Enregistrement…",
       "saved": "Version enregistrée.",
@@ -864,7 +864,9 @@
     "versionGroups": {
       "app": "Dans l’application",
       "external": "Sur YouVersion (nouvel onglet)"
-    }
+    },
+    "credit": "{name}. {notice}. Texte fourni par la plateforme YouVersion.",
+    "publicDomain": "Domaine public"
   },
   "BibleIndex": {
     "title": "La Bible",

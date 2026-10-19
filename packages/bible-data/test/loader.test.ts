@@ -12,7 +12,11 @@ import {
 } from "@workspace/core"
 
 import { chapterPath, chapterSchema } from "../src/chapter"
-import { loadPassage, type ChapterFetcher } from "../src/loader"
+import {
+  fetchChaptersFrom,
+  loadPassage,
+  type ChapterFetcher,
+} from "../src/loader"
 import { mapPassage } from "../src/versification"
 import {
   bibleVersions,
@@ -37,13 +41,17 @@ const lsg = getBibleVersion("lsg1910")
 const kjv = getBibleVersion("kjv")
 
 describe("version registry", () => {
-  it("lists the public-domain versions", () => {
-    expect(bibleVersions.map((version) => version.id)).toEqual([
-      "lsg1910",
-      "kjv",
-    ])
+  it("lists the stored versions first, then the remote ones that are set up", () => {
+    const ids = bibleVersions.map((version) => version.id)
+    expect(ids.slice(0, 2)).toEqual(["lsg1910", "kjv"])
+    expect(bibleVersions.slice(0, 2).every((v) => v.kind === "hosted")).toBe(
+      true
+    )
+    expect(bibleVersions.slice(2).every((v) => v.kind === "youversion")).toBe(
+      true
+    )
     expect(isBibleVersionId("kjv")).toBe(true)
-    expect(isBibleVersionId("niv")).toBe(false)
+    expect(isBibleVersionId("nope")).toBe(false)
     for (const version of bibleVersions) {
       expect(Object.keys(version.verseCounts)).toEqual(bookIds)
     }
@@ -152,5 +160,57 @@ describe("loadPassage", () => {
     expect(text.chapters[0]!.verses[0]![1]).toBe(
       "Au chef des chantres. Psaume de David."
     )
+  })
+})
+
+describe("fetchChaptersFrom", () => {
+  const chapter = {
+    version: "kjv",
+    book: "John",
+    chapter: 3,
+    verses: [[16, "For God so loved the world"]],
+  }
+
+  function withFetch(run: (urls: string[]) => Promise<void>) {
+    const urls: string[] = []
+    const original = globalThis.fetch
+    globalThis.fetch = (async (input: RequestInfo | URL) => {
+      urls.push(String(input))
+      return new Response(JSON.stringify(chapter), { status: 200 })
+    }) as typeof fetch
+    return run(urls).finally(() => {
+      globalThis.fetch = original
+    })
+  }
+
+  it("asks a stored version from the static files", () =>
+    withFetch(async (urls) => {
+      const fetcher = fetchChaptersFrom("/bible/", {
+        remoteBaseUrl: "/api/bible",
+      })
+      await fetcher("kjv", "John", 3)
+      expect(urls).toEqual(["/bible/kjv/John/3.json"])
+    }))
+
+  it("asks a remote version from the site's API route", () =>
+    withFetch(async (urls) => {
+      const fetcher = fetchChaptersFrom("/bible", {
+        remoteBaseUrl: "/api/bible/",
+      })
+      await fetcher("bsb", "John", 3)
+      expect(urls).toEqual(["/api/bible/bsb/John/3"])
+    }))
+
+  it("fails with the address and the status when the answer is not ok", async () => {
+    const original = globalThis.fetch
+    globalThis.fetch = (async () =>
+      new Response("no", { status: 404 })) as typeof fetch
+    try {
+      await expect(
+        fetchChaptersFrom("/bible")("kjv", "John", 3)
+      ).rejects.toThrow("/bible/kjv/John/3.json: HTTP 404")
+    } finally {
+      globalThis.fetch = original
+    }
   })
 })
