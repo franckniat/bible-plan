@@ -231,7 +231,8 @@
       "today": "Today",
       "settings": "Settings",
       "plans": "Plans",
-      "bible": "Bible"
+      "bible": "Bible",
+      "prayer": "Prayer"
     },
     "account": {
       "signOut": "Sign out",
@@ -884,5 +885,69 @@
   "VerseOfTheDay": {
     "title": "Verse of the day",
     "read": "Read the chapter"
+  },
+  "Prayer": {
+    "title": "Prayer",
+    "description": "Write down your prayer requests, mark when you prayed and keep track of what was answered. Nothing is shared.",
+    "add": "Add a request",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "archive": "Archive",
+    "restore": "Move back to active requests",
+    "confirmDelete": "Delete this prayer request? This cannot be undone.",
+    "prayed": "I prayed",
+    "answered": "Answered",
+    "confirmAnswered": "Mark as answered",
+    "answerNote": "What happened?",
+    "answerPlaceholder": "What God did (optional)",
+    "neverPrayed": "Not prayed for yet.",
+    "lastPrayed": "Last prayed on {date} · {count, plural, one {# time} other {# times}} in total",
+    "answeredOn": "Answered on {date}",
+    "statuses": {
+      "ACTIVE": "Active",
+      "ANSWERED": "Answered",
+      "ARCHIVED": "Archived"
+    },
+    "categories": {
+      "PERSONAL": "Personal",
+      "FAMILY": "Family",
+      "FRIENDS": "Friends",
+      "CHURCH": "Church",
+      "WORLD": "World",
+      "OTHER": "Other"
+    },
+    "filters": {
+      "status": "Request status",
+      "category": "Category",
+      "all": "All"
+    },
+    "fields": {
+      "title": "Prayer request",
+      "titlePlaceholder": "Who or what are you praying for?",
+      "details": "Details (optional)",
+      "category": "Category"
+    },
+    "empty": {
+      "ACTIVE": {
+        "title": "No active requests",
+        "description": "Add what is on your heart. The requests you prayed for least recently come first."
+      },
+      "ANSWERED": {
+        "title": "No answered prayers yet",
+        "description": "When a prayer is answered, mark it here to keep track of what God did."
+      },
+      "ARCHIVED": {
+        "title": "No archived requests",
+        "description": "Archive a request to set it aside without deleting it."
+      }
+    },
+    "errors": {
+      "invalid": "Check the request you entered.",
+      "limit": "You have reached the limit of {max} prayer requests. Delete some to add more.",
+      "notFound": "This request no longer exists. Reload the page.",
+      "unexpected": "Something went wrong. Try again in a moment."
+    }
   }
 }

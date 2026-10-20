@@ -231,7 +231,8 @@
       "today": "Aujourd’hui",
       "settings": "Réglages",
       "plans": "Plans",
-      "bible": "Bible"
+      "bible": "Bible",
+      "prayer": "Prière"
     },
     "account": {
       "signOut": "Se déconnecter",
@@ -884,5 +885,69 @@
   "VerseOfTheDay": {
     "title": "Verset du jour",
     "read": "Lire le chapitre"
+  },
+  "Prayer": {
+    "title": "Prière",
+    "description": "Notez vos sujets de prière, indiquez quand vous avez prié et gardez la trace de ce qui a été exaucé. Rien n’est partagé.",
+    "add": "Ajouter un sujet",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "archive": "Archiver",
+    "restore": "Remettre parmi les sujets actifs",
+    "confirmDelete": "Supprimer ce sujet de prière ? Cette action est définitive.",
+    "prayed": "J’ai prié",
+    "answered": "Exaucé",
+    "confirmAnswered": "Marquer comme exaucé",
+    "answerNote": "Que s’est-il passé ?",
+    "answerPlaceholder": "Ce que Dieu a fait (facultatif)",
+    "neverPrayed": "Pas encore prié pour ce sujet.",
+    "lastPrayed": "Dernière prière le {date} · {count, plural, one {# fois} other {# fois}} au total",
+    "answeredOn": "Exaucé le {date}",
+    "statuses": {
+      "ACTIVE": "Actifs",
+      "ANSWERED": "Exaucés",
+      "ARCHIVED": "Archivés"
+    },
+    "categories": {
+      "PERSONAL": "Personnel",
+      "FAMILY": "Famille",
+      "FRIENDS": "Amis",
+      "CHURCH": "Église",
+      "WORLD": "Monde",
+      "OTHER": "Autre"
+    },
+    "filters": {
+      "status": "État des sujets",
+      "category": "Catégorie",
+      "all": "Toutes"
+    },
+    "fields": {
+      "title": "Sujet de prière",
+      "titlePlaceholder": "Pour qui ou pour quoi priez-vous ?",
+      "details": "Détails (facultatif)",
+      "category": "Catégorie"
+    },
+    "empty": {
+      "ACTIVE": {
+        "title": "Aucun sujet actif",
+        "description": "Ajoutez ce qui vous tient à cœur. Les sujets pour lesquels vous avez prié le moins récemment apparaissent en premier."
+      },
+      "ANSWERED": {
+        "title": "Aucune prière exaucée pour l’instant",
+        "description": "Quand une prière est exaucée, marquez-la ici pour garder la trace de ce que Dieu a fait."
+      },
+      "ARCHIVED": {
+        "title": "Aucun sujet archivé",
+        "description": "Archivez un sujet pour le mettre de côté sans le supprimer."
+      }
+    },
+    "errors": {
+      "invalid": "Vérifiez le sujet saisi.",
+      "limit": "Vous avez atteint la limite de {max} sujets de prière. Supprimez-en pour en ajouter.",
+      "notFound": "Ce sujet n’existe plus. Rechargez la page.",
+      "unexpected": "Une erreur est survenue. Réessayez dans un instant."
+    }
   }
 }
