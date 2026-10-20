@@ -3,6 +3,7 @@ import { hasLocale } from "next-intl"
 import { getLocale, getTranslations } from "next-intl/server"
 
 import {
+  getToday,
   prayerCategories,
   prayerStatuses,
   type PrayerCategory,
@@ -65,11 +66,16 @@ export default async function PrayerPage({
     details: prayer.details,
     category: prayer.category,
     status: prayer.status,
+    // Calendar dates: read at midnight UTC, so they never move with a zone.
+    startedOn: prayer.startedOn.toISOString().slice(0, 10),
+    passages: prayer.passages,
     prayerCount: prayer.prayerCount,
     lastPrayed: prayer.lastPrayedAt
       ? formatDate.format(prayer.lastPrayedAt)
       : null,
-    answered: prayer.answeredAt ? formatDate.format(prayer.answeredAt) : null,
+    answeredOn: prayer.answeredOn
+      ? prayer.answeredOn.toISOString().slice(0, 10)
+      : null,
     answerNote: prayer.answerNote,
   }))
   const total = counts.ACTIVE + counts.ANSWERED + counts.ARCHIVED
@@ -130,7 +136,12 @@ export default async function PrayerPage({
         ))}
       </nav>
 
-      <PrayerJournal prayers={views} status={status} total={total} />
+      <PrayerJournal
+        prayers={views}
+        status={status}
+        total={total}
+        today={getToday(user.timezone)}
+      />
     </div>
   )
 }

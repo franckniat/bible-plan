@@ -900,8 +900,6 @@
     "prayed": "I prayed",
     "answered": "Answered",
     "confirmAnswered": "Mark as answered",
-    "answerNote": "What happened?",
-    "answerPlaceholder": "What God did (optional)",
     "neverPrayed": "Not prayed for yet.",
     "lastPrayed": "Last prayed on {date} · {count, plural, one {# time} other {# times}} in total",
     "answeredOn": "Answered on {date}",
@@ -927,7 +925,13 @@
       "title": "Prayer request",
       "titlePlaceholder": "Who or what are you praying for?",
       "details": "Details (optional)",
-      "category": "Category"
+      "category": "Category",
+      "startedOn": "Prayer started on",
+      "passages": "Reference verses (optional)",
+      "passagesPlaceholder": "E.g. Ps 51:1-4; John 3:16",
+      "answeredOn": "Date it was answered",
+      "answerNote": "Circumstances of the answer",
+      "answerPlaceholder": "How did God answer? (optional)"
     },
     "empty": {
       "ACTIVE": {
@@ -948,6 +952,19 @@
       "limit": "You have reached the limit of {max} prayer requests. Delete some to add more.",
       "notFound": "This request no longer exists. Reload the page.",
       "unexpected": "Something went wrong. Try again in a moment."
+    },
+    "startedOn": "Started on {date}",
+    "noCircumstances": "No circumstances written down.",
+    "editAnswer": "Edit the answer",
+    "passages": {
+      "label": "Reference verses",
+      "read": "read in the Bible",
+      "add": "Add",
+      "remove": "Remove {passage}",
+      "errors": {
+        "invalid": "Reference not found. Try for example “Ps 51:1-4” or “John 3:16”.",
+        "limit": "At most {max} passages per request."
+      }
     }
   }
 }

@@ -2,6 +2,7 @@ import "server-only"
 
 import {
   maxPrayerRequestsPerUser,
+  type IsoDate,
   type PrayerAnswerInput,
   type PrayerCategory,
   type PrayerRequestInput,
@@ -25,11 +26,19 @@ export type PrayerListItem = {
   details: string | null
   category: PrayerCategory
   status: PrayerStatus
+  /** Calendar dates, read at midnight UTC. */
+  startedOn: Date
+  passages: string[]
   lastPrayedAt: Date | null
   prayerCount: number
-  answeredAt: Date | null
+  answeredOn: Date | null
   answerNote: string | null
   createdAt: Date
+}
+
+/** A calendar date as stored in a date column. */
+function dateOnly(date: IsoDate): Date {
+  return new Date(`${date}T00:00:00Z`)
 }
 
 const select = {
@@ -38,9 +47,11 @@ const select = {
   details: true,
   category: true,
   status: true,
+  startedOn: true,
+  passages: true,
   lastPrayedAt: true,
   prayerCount: true,
-  answeredAt: true,
+  answeredOn: true,
   answerNote: true,
   createdAt: true,
 } as const
@@ -61,7 +72,7 @@ export async function listPrayers(
     select,
     orderBy:
       status === "ANSWERED"
-        ? [{ answeredAt: "desc" }, { id: "desc" }]
+        ? [{ answeredOn: "desc" }, { id: "desc" }]
         : status === "ARCHIVED"
           ? [{ updatedAt: "desc" }, { id: "desc" }]
           : [
@@ -93,11 +104,14 @@ export async function countPrayers(
 export async function createPrayer(
   db: Pick<PrismaClient, "prayerRequest">,
   userId: string,
-  input: PrayerRequestInput
+  { startedOn, ...input }: PrayerRequestInput,
+  today: IsoDate
 ): Outcome {
   const total = await db.prayerRequest.count({ where: { userId } })
   if (total >= maxPrayerRequestsPerUser) return { ok: false, error: "limit" }
-  await db.prayerRequest.create({ data: { userId, ...input } })
+  await db.prayerRequest.create({
+    data: { userId, ...input, startedOn: dateOnly(startedOn ?? today) },
+  })
   return { ok: true }
 }
 
@@ -124,9 +138,13 @@ export function updatePrayer(
   db: Pick<PrismaClient, "prayerRequest">,
   userId: string,
   id: string,
-  input: PrayerRequestInput
+  { startedOn, ...input }: PrayerRequestInput
 ): Outcome {
-  return changeOwned(db, userId, id, input)
+  return changeOwned(db, userId, id, {
+    ...input,
+    // Left out, the start date stays as it was.
+    ...(startedOn ? { startedOn: dateOnly(startedOn) } : {}),
+  })
 }
 
 /**
@@ -159,15 +177,38 @@ export function markAnswered(
   db: Pick<PrismaClient, "prayerRequest">,
   userId: string,
   id: string,
-  { answerNote }: PrayerAnswerInput,
-  now: Date = new Date()
+  { answeredOn, answerNote }: PrayerAnswerInput,
+  today: IsoDate
 ): Outcome {
   return changeOwned(
     db,
     userId,
     id,
-    { status: "ANSWERED", answeredAt: now, answerNote },
+    {
+      status: "ANSWERED",
+      answeredOn: dateOnly(answeredOn ?? today),
+      answerNote,
+    },
     { status: "ACTIVE" }
+  )
+}
+
+/** Corrects the day and the circumstances of an answered request. */
+export function updateAnswer(
+  db: Pick<PrismaClient, "prayerRequest">,
+  userId: string,
+  id: string,
+  { answeredOn, answerNote }: PrayerAnswerInput
+): Outcome {
+  return changeOwned(
+    db,
+    userId,
+    id,
+    {
+      ...(answeredOn ? { answeredOn: dateOnly(answeredOn) } : {}),
+      answerNote,
+    },
+    { status: "ANSWERED" }
   )
 }
 

@@ -900,8 +900,6 @@
     "prayed": "J’ai prié",
     "answered": "Exaucé",
     "confirmAnswered": "Marquer comme exaucé",
-    "answerNote": "Que s’est-il passé ?",
-    "answerPlaceholder": "Ce que Dieu a fait (facultatif)",
     "neverPrayed": "Pas encore prié pour ce sujet.",
     "lastPrayed": "Dernière prière le {date} · {count, plural, one {# fois} other {# fois}} au total",
     "answeredOn": "Exaucé le {date}",
@@ -924,10 +922,16 @@
       "all": "Toutes"
     },
     "fields": {
-      "title": "Sujet de prière",
+      "title": "Requête de prière",
       "titlePlaceholder": "Pour qui ou pour quoi priez-vous ?",
       "details": "Détails (facultatif)",
-      "category": "Catégorie"
+      "category": "Catégorie",
+      "startedOn": "Début de la prière",
+      "passages": "Versets de référence (facultatif)",
+      "passagesPlaceholder": "Ex. Ps 51:1-4 ; Jean 3:16",
+      "answeredOn": "Date de l’exaucement",
+      "answerNote": "Circonstances de l’exaucement",
+      "answerPlaceholder": "Comment Dieu a-t-il répondu ? (facultatif)"
     },
     "empty": {
       "ACTIVE": {
@@ -948,6 +952,19 @@
       "limit": "Vous avez atteint la limite de {max} sujets de prière. Supprimez-en pour en ajouter.",
       "notFound": "Ce sujet n’existe plus. Rechargez la page.",
       "unexpected": "Une erreur est survenue. Réessayez dans un instant."
+    },
+    "startedOn": "Commencé le {date}",
+    "noCircumstances": "Aucune circonstance notée.",
+    "editAnswer": "Modifier l’exaucement",
+    "passages": {
+      "label": "Versets de référence",
+      "read": "lire dans la Bible",
+      "add": "Ajouter",
+      "remove": "Retirer {passage}",
+      "errors": {
+        "invalid": "Référence introuvable. Essayez par exemple « Ps 51:1-4 » ou « Jean 3:16 ».",
+        "limit": "Au plus {max} passages par sujet."
+      }
     }
   }
 }
