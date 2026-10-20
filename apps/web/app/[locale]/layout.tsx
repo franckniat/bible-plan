@@ -9,6 +9,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { routing } from "@/i18n/routing"
+import { baseOpenGraph, getSiteUrl } from "@/lib/site"
 
 const loraHeading = Lora({ subsets: ["latin"], variable: "--font-heading" })
 
@@ -31,8 +32,26 @@ export async function generateMetadata({
 
   const t = await getTranslations({ locale, namespace: "Metadata" })
   return {
+    // Relative addresses below (canonical, images) are resolved against it.
+    metadataBase: getSiteUrl(),
     title: t("title"),
     description: t("description"),
+    applicationName: "Bible Plan",
+    keywords: t("keywords")
+      .split(",")
+      .map((keyword) => keyword.trim()),
+    // The preview image of every page comes from opengraph-image.tsx; pages
+    // that have their own (a verse) override it.
+    openGraph: {
+      ...baseOpenGraph(locale),
+      title: t("title"),
+      description: t("description"),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("description"),
+    },
     // Installed on an iPhone home screen, the app opens without browser bars.
     appleWebApp: {
       capable: true,

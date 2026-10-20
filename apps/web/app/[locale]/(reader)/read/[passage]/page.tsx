@@ -46,6 +46,8 @@ import { formatCompareParam, parseCompareParam } from "@/lib/compare"
 import { parseSelectionParam } from "@/lib/verse-selection"
 import { listHighlights } from "@/server/services/highlights"
 import { getReadingForUser } from "@/server/services/plans"
+import { getPassageSnippet } from "@/lib/passage-snippet"
+import { pageAlternates, pageSocial } from "@/lib/site"
 import { getSession } from "@/server/session"
 
 export async function generateMetadata({
@@ -55,7 +57,20 @@ export async function generateMetadata({
   const passage = parsePassageSlug(decodeURIComponent(slug))
   if (!passage) return {}
   const locale = (await getLocale()) as Locale
-  return { title: `${formatPassage(passage, locale)} · Bible Plan` }
+  const reference = formatPassage(passage, locale)
+  const title = `${reference} · Bible Plan`
+  // The words of the verses are what makes a shared link worth a click.
+  const snippet = await getPassageSnippet(passage, locale, 200)
+  const path = `/read/${toPassageSlug(passage)}`
+  return {
+    title,
+    description: snippet ?? undefined,
+    alternates: pageAlternates(locale, path),
+    ...pageSocial(locale, path, {
+      title,
+      description: snippet ?? undefined,
+    }),
+  }
 }
 
 /**

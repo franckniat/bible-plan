@@ -9,6 +9,7 @@ import type { Locale } from "@workspace/core"
 import { SiteShell } from "@/components/landing/site-shell"
 import { LegalPage } from "@/components/legal/legal-page"
 import { routing } from "@/i18n/routing"
+import { pageAlternates, pageSocial } from "@/lib/site"
 
 export type LegalDocument = {
   kind: "privacy" | "terms"
@@ -27,9 +28,13 @@ export async function getLegalMetadata(
   if (!hasLocale(routing.locales, locale)) return {}
 
   const t = await getTranslations({ locale, namespace: "Legal" })
+  const title = `${t(`${kind}.title`)} · Bible Plan`
+  const description = t(`${kind}.description`)
   return {
-    title: `${t(`${kind}.title`)} · Bible Plan`,
-    description: t(`${kind}.description`),
+    title,
+    description,
+    alternates: pageAlternates(locale, `/${kind}`),
+    ...pageSocial(locale, `/${kind}`, { title, description }),
   }
 }
 

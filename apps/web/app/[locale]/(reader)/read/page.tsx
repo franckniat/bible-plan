@@ -19,6 +19,7 @@ import { ResumeReading } from "@/components/reader/resume-reading"
 import { Link } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
 import { bibleVersionCookie, pickBibleVersion } from "@/lib/bible-version"
+import { pageAlternates, pageSocial } from "@/lib/site"
 import { getSession } from "@/server/session"
 
 export async function generateMetadata({
@@ -27,7 +28,12 @@ export async function generateMetadata({
   const { locale } = await params
   if (!hasLocale(routing.locales, locale)) return {}
   const t = await getTranslations({ locale, namespace: "BibleIndex" })
-  return { title: `${t("title")} · Bible Plan` }
+  const title = `${t("title")} · Bible Plan`
+  return {
+    title,
+    alternates: pageAlternates(locale, "/read"),
+    ...pageSocial(locale, "/read", { title }),
+  }
 }
 
 const chapterHref = (book: (typeof books)[number]["id"], chapter: number) =>

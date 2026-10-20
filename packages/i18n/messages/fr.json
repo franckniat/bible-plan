@@ -1,7 +1,8 @@
 {
   "Metadata": {
     "title": "Bible Plan",
-    "description": "Lisez la Bible à votre rythme : plans de lecture, rappels, surbrillance et comparaison de traductions. La version web est disponible, la liste d’attente reste ouverte."
+    "description": "Lisez la Bible à votre rythme : plans de lecture, rappels, surbrillance et comparaison de traductions. La version web est disponible, la liste d’attente reste ouverte.",
+    "keywords": "Bible, plan de lecture, lecture quotidienne, verset du jour, Louis Segond, rappels de lecture, méditation, prière"
   },
   "Landing": {
     "header": {

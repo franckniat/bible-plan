@@ -1,7 +1,8 @@
 {
   "Metadata": {
     "title": "Bible Plan",
-    "description": "Read the Bible at your own pace: reading plans, reminders, highlights and translation comparison. The web app is open, the waitlist is still open."
+    "description": "Read the Bible at your own pace: reading plans, reminders, highlights and translation comparison. The web app is open, the waitlist is still open.",
+    "keywords": "Bible, reading plan, daily reading, verse of the day, King James, reading reminders, meditation, prayer"
   },
   "Landing": {
     "header": {
