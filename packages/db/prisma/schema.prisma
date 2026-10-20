@@ -447,10 +447,17 @@ model PrayerLog {
 // A timed session, with a passage to meditate on. The duration is the time
 // really spent, which can be shorter than planned.
 
+enum SessionKind {
+  MEDITATION
+  PRAYER
+}
+
 model MeditationSession {
   id              String           @id @default(uuid(7))
   userId          String
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Whether it was a time of meditation or of prayer (the same timer).
+  kind            SessionKind      @default(MEDITATION)
   /// The passage meditated on, as a passage slug ("Ps.23"); optional.
   passage         String?
   plannedSeconds  Int
@@ -501,6 +508,7 @@ model ActivityDay {
   readings          Int      @default(0)
   prayers           Int      @default(0)
   meditationSeconds Int      @default(0)
+  prayerSeconds     Int      @default(0)
 
   @@unique([userId, day])
 }
