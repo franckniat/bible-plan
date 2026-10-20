@@ -85,6 +85,12 @@ export function PrivacyFr() {
         avez choisie, et votre préférence de thème clair ou sombre est
         enregistrée dans votre navigateur.
       </p>
+      <p>
+        Les visites sont comptées avec Vercel Web Analytics, qui n’utilise{" "}
+        <strong>aucun cookie</strong> et ne vous suit pas d’un site à l’autre :
+        seules des statistiques agrégées (pages vues, pays, type d’appareil)
+        sont conservées.
+      </p>
 
       <h2>Vos droits</h2>
       <p>

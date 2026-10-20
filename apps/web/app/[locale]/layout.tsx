@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next"
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono, Lora } from "next/font/google"
 import { notFound } from "next/navigation"
@@ -90,6 +91,8 @@ export default async function LocaleLayout({
         <NextIntlClientProvider>
           <ThemeProvider>{children}</ThemeProvider>
         </NextIntlClientProvider>
+        {/* Visits counted by Vercel Web Analytics: no cookie, no personal data. */}
+        <Analytics />
       </body>
     </html>
   )

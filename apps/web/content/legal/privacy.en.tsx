@@ -78,6 +78,12 @@ export function PrivacyEn() {
         chose, and your light or dark theme preference is stored in your
         browser.
       </p>
+      <p>
+        Visits are counted with Vercel Web Analytics, which uses{" "}
+        <strong>no cookie</strong> and does not follow you from one site to
+        another: only aggregated statistics (page views, country, type of
+        device) are kept.
+      </p>
 
       <h2>Your rights</h2>
       <p>

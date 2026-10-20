@@ -16,6 +16,7 @@
     "check-links": "node scripts/check-links.mjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "@workspace/auth": "workspace:*",
     "@workspace/bible-data": "workspace:*",
     "@workspace/core": "workspace:*",
