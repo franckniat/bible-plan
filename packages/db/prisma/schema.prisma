@@ -54,21 +54,22 @@ model EmailDailyUsage {
 // ─── Authentication (better-auth, generated: pnpm --filter @workspace/auth auth:generate) ─
 
 model User {
-  id            String           @id
-  name          String
-  email         String
-  emailVerified Boolean          @default(false)
-  image         String?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  ownedPlans    ReadingPlan[]
-  enrollments   PlanEnrollment[]
-  reminders     Reminder[]
-  notifications Notification[]
-  highlights    Highlight[]
-  pushDevices   PushDevice[]
+  id             String           @id
+  name           String
+  email          String
+  emailVerified  Boolean          @default(false)
+  image          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  sessions       Session[]
+  accounts       Account[]
+  ownedPlans     ReadingPlan[]
+  enrollments    PlanEnrollment[]
+  reminders      Reminder[]
+  notifications  Notification[]
+  highlights     Highlight[]
+  prayerRequests PrayerRequest[]
+  pushDevices    PushDevice[]
 
   locale       String  @default("fr")
   timezone     String?
@@ -380,4 +381,56 @@ model PushDevice {
   lastUsedAt DateTime?
 
   @@index([userId])
+}
+
+// ─── Prayer journal ─────────────────────────────────────────────────────────
+// What a person prays for, when they last prayed, and what was answered.
+// Private to the owner: nothing here is shared (groups come later).
+
+enum PrayerCategory {
+  PERSONAL
+  FAMILY
+  FRIENDS
+  CHURCH
+  WORLD
+  OTHER
+}
+
+enum PrayerStatus {
+  ACTIVE
+  ANSWERED
+  ARCHIVED
+}
+
+model PrayerRequest {
+  id           String         @id @default(uuid(7))
+  userId       String
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  details      String?
+  category     PrayerCategory @default(PERSONAL)
+  status       PrayerStatus   @default(ACTIVE)
+  /// The last time the person said "I prayed"; null until the first time.
+  lastPrayedAt DateTime?
+  prayerCount  Int            @default(0)
+  answeredAt   DateTime?
+  /// What happened: the note written when the prayer is marked answered.
+  answerNote   String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  logs         PrayerLog[]
+
+  @@index([userId, status, updatedAt])
+}
+
+/// One "I prayed", kept so that streaks and statistics can count prayer days.
+model PrayerLog {
+  id        String        @id @default(uuid(7))
+  requestId String
+  request   PrayerRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  userId    String
+  prayedAt  DateTime      @default(now())
+
+  @@index([userId, prayedAt])
+  @@index([requestId])
 }
