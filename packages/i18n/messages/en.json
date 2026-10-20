@@ -223,6 +223,12 @@
         "description": "Choose a plan to find your readings for each day here.",
         "create": "Create a plan",
         "templates": "Browse templates"
+      },
+      "shortcuts": {
+        "label": "Shortcuts",
+        "meditate": "Meditate",
+        "notes": "My notes",
+        "stats": "Statistics"
       }
     },
     "home": "Today — Bible Plan",
@@ -232,7 +238,10 @@
       "settings": "Settings",
       "plans": "Plans",
       "bible": "Bible",
-      "prayer": "Prayer"
+      "prayer": "Prayer",
+      "meditate": "Meditation",
+      "notes": "Notes",
+      "stats": "Statistics"
     },
     "account": {
       "signOut": "Sign out",
@@ -1042,6 +1051,34 @@
       "noteSaved": "Note saved.",
       "seeNotes": "See my notes",
       "again": "New session"
+    }
+  },
+  "Stats": {
+    "title": "Statistics",
+    "description": "Your regularity: reading, prayer and meditation each count.",
+    "streak": {
+      "days": "{count, plural, one {# day in a row} other {# days in a row}}",
+      "none": "No streak yet",
+      "todayDone": "Today is done. Well done.",
+      "keepGoing": "Do something today to keep it going.",
+      "start": "A reading, a prayer or a meditation starts one."
+    },
+    "totals": {
+      "longest": "Longest streak",
+      "activeDays": "Active days",
+      "readings": "Readings finished",
+      "prayers": "Prayers said",
+      "meditation": "Meditation",
+      "minutes": "{count} min",
+      "last30": "Over 30 days",
+      "daysCount": "{count, plural, one {# active day} other {# active days}}"
+    },
+    "heatmap": {
+      "title": "The last six months",
+      "label": "Activity by day",
+      "nothing": "nothing recorded",
+      "day": "{readings} reading(s), {prayers} prayer(s), {minutes} min of meditation",
+      "legend": "The more golden the square, the fuller the day."
     }
   }
 }

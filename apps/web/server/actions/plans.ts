@@ -17,6 +17,7 @@ import {
 import { prisma } from "@workspace/db"
 
 import { redirect } from "@/i18n/navigation"
+import { recordActivity } from "@/server/services/activity"
 import {
   applyCatchUp,
   createPlan,
@@ -73,8 +74,14 @@ export async function setReadingProgressAction(
     return { ok: false }
   }
   const ok = await setReadingProgress(prisma, user.id, readingId, read)
-  // Progress shows on Today, the plan list and the plan page.
-  if (ok) revalidatePath("/[locale]", "layout")
+  if (ok) {
+    // A reading counts for the streak, in the day of the user.
+    await recordActivity(prisma, user.id, getToday(user.timezone), {
+      readings: read ? 1 : -1,
+    }).catch((error) => console.error("Recording activity failed", error))
+    // Progress shows on Today, the plan list and the plan page.
+    revalidatePath("/[locale]", "layout")
+  }
   return { ok }
 }
 

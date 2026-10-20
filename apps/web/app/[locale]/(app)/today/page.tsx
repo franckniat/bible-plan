@@ -1,8 +1,8 @@
-import { Library, Plus } from "lucide-react"
+import { BarChart3, Flower2, Library, NotebookPen, Plus } from "lucide-react"
 import { cookies } from "next/headers"
 import { getLocale, getTranslations } from "next-intl/server"
 
-import { getToday, type Locale } from "@workspace/core"
+import { computeStreak, getToday, type Locale } from "@workspace/core"
 import { prisma } from "@workspace/db"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
@@ -10,10 +10,12 @@ import { cn } from "@workspace/ui/lib/utils"
 import { CatchUpBanner } from "@/components/plans/catch-up-banner"
 import { toChecklist } from "@/components/plans/checklist"
 import { ReadingChecklist } from "@/components/plans/reading-checklist"
+import { StreakBadge } from "@/components/stats/streak-badge"
 import { VerseOfTheDay } from "@/components/reader/verse-of-the-day"
 import { Link } from "@/i18n/navigation"
 import { bibleVersionCookie, pickBibleVersion } from "@/lib/bible-version"
 import { formatIsoDate } from "@/lib/dates"
+import { listActiveDays } from "@/server/services/activity"
 import { getTodayPlans, type TodayPlan } from "@/server/services/plans"
 import { requireUser } from "@/server/session"
 
@@ -93,7 +95,11 @@ export default async function TodayPage() {
   const locale = await getLocale()
   // "Today" is the user's day, not the server's.
   const today = getToday(user.timezone)
-  const plans = await getTodayPlans(prisma, user.id, today)
+  const [plans, activeDays] = await Promise.all([
+    getTodayPlans(prisma, user.id, today),
+    listActiveDays(prisma, user.id),
+  ])
+  const streak = computeStreak(activeDays, today)
   // The verse is shown in the version the user reads in.
   const version = pickBibleVersion(
     [user.bibleVersion, (await cookies()).get(bibleVersionCookie)?.value],
@@ -117,6 +123,28 @@ export default async function TodayPage() {
       </div>
 
       <VerseOfTheDay version={version} timeZone={user.timezone} />
+
+      <StreakBadge streak={streak} />
+
+      <nav aria-label={t("shortcuts.label")}>
+        <ul className="grid grid-cols-3 gap-3">
+          {[
+            { href: "/meditate", label: t("shortcuts.meditate"), Icon: Flower2 },
+            { href: "/notes", label: t("shortcuts.notes"), Icon: NotebookPen },
+            { href: "/stats", label: t("shortcuts.stats"), Icon: BarChart3 },
+          ].map(({ href, label, Icon }) => (
+            <li key={href}>
+              <Link
+                href={href}
+                className="flex h-full flex-col items-center gap-2 rounded-3xl bg-white/85 p-4 text-center text-sm font-medium ring-1 ring-brand-night/10 transition-colors outline-none hover:bg-white focus-visible:ring-3 focus-visible:ring-ring/40 dark:bg-neutral-900/85 dark:ring-white/10 dark:hover:bg-neutral-900"
+              >
+                <Icon aria-hidden className="size-5 text-brand-gold" />
+                {label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
       {plans.length === 0 ? (
         <div className="flex flex-col items-start gap-4 rounded-3xl border border-dashed border-brand-night/20 p-6 dark:border-white/20">

@@ -223,6 +223,12 @@
         "description": "Choisissez un plan pour retrouver ici vos lectures de chaque jour.",
         "create": "Créer un plan",
         "templates": "Parcourir les modèles"
+      },
+      "shortcuts": {
+        "label": "Raccourcis",
+        "meditate": "Méditer",
+        "notes": "Mes notes",
+        "stats": "Statistiques"
       }
     },
     "home": "Aujourd’hui — Bible Plan",
@@ -232,7 +238,10 @@
       "settings": "Réglages",
       "plans": "Plans",
       "bible": "Bible",
-      "prayer": "Prière"
+      "prayer": "Prière",
+      "meditate": "Méditation",
+      "notes": "Notes",
+      "stats": "Statistiques"
     },
     "account": {
       "signOut": "Se déconnecter",
@@ -1042,6 +1051,34 @@
       "noteSaved": "Note enregistrée.",
       "seeNotes": "Voir mes notes",
       "again": "Nouvelle session"
+    }
+  },
+  "Stats": {
+    "title": "Statistiques",
+    "description": "Votre régularité : lecture, prière et méditation comptent chacune.",
+    "streak": {
+      "days": "{count, plural, one {# jour de suite} other {# jours de suite}}",
+      "none": "Pas de série en cours",
+      "todayDone": "Aujourd’hui est fait. Bravo.",
+      "keepGoing": "Faites quelque chose aujourd’hui pour la prolonger.",
+      "start": "Une lecture, une prière ou une méditation la démarre."
+    },
+    "totals": {
+      "longest": "Plus longue série",
+      "activeDays": "Jours actifs",
+      "readings": "Lectures terminées",
+      "prayers": "Prières faites",
+      "meditation": "Méditation",
+      "minutes": "{count} min",
+      "last30": "Sur 30 jours",
+      "daysCount": "{count, plural, one {# jour actif} other {# jours actifs}}"
+    },
+    "heatmap": {
+      "title": "Les six derniers mois",
+      "label": "Activité par jour",
+      "nothing": "rien de noté",
+      "day": "{readings} lecture(s), {prayers} prière(s), {minutes} min de méditation",
+      "legend": "Plus la case est dorée, plus la journée était pleine."
     }
   }
 }

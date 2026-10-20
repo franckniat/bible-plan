@@ -10,6 +10,7 @@ import {
 } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
+import { recordActivity } from "@/server/services/activity"
 import {
   createNote,
   deleteNote,
@@ -38,6 +39,9 @@ export async function saveMeditationSessionAction(
   if (!parsed.success) return { ok: false }
   try {
     const sessionId = await saveMeditationSession(prisma, user.id, parsed.data)
+    await recordActivity(prisma, user.id, getToday(user.timezone), {
+      meditationSeconds: parsed.data.durationSeconds,
+    }).catch((error) => console.error("Recording activity failed", error))
     revalidatePath("/[locale]", "layout")
     return { ok: true, sessionId }
   } catch (error) {
