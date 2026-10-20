@@ -54,22 +54,22 @@ model EmailDailyUsage {
 // ─── Authentication (better-auth, generated: pnpm --filter @workspace/auth auth:generate) ─
 
 model User {
-  id             String           @id
-  name           String
-  email          String
-  emailVerified  Boolean          @default(false)
-  image          String?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  sessions       Session[]
-  accounts       Account[]
-  ownedPlans     ReadingPlan[]
-  enrollments    PlanEnrollment[]
-  reminders      Reminder[]
-  notifications  Notification[]
-  highlights     Highlight[]
-  prayerRequests PrayerRequest[]
-  pushDevices    PushDevice[]
+  id                 String              @id
+  name               String
+  email              String
+  emailVerified      Boolean             @default(false)
+  image              String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  sessions           Session[]
+  accounts           Account[]
+  ownedPlans         ReadingPlan[]
+  enrollments        PlanEnrollment[]
+  reminders          Reminder[]
+  notifications      Notification[]
+  highlights         Highlight[]
+  prayerRequests     PrayerRequest[]
+  pushDevices        PushDevice[]
 
   locale       String  @default("fr")
   timezone     String?
@@ -410,11 +410,16 @@ model PrayerRequest {
   details      String?
   category     PrayerCategory @default(PERSONAL)
   status       PrayerStatus   @default(ACTIVE)
+  /// The day the person started praying for it (a calendar date).
+  startedOn    DateTime       @default(now()) @db.Date
+  /// Passages that go with the prayer, as passage slugs ("Ps.51.1-4").
+  passages     String[]       @default([])
   /// The last time the person said "I prayed"; null until the first time.
   lastPrayedAt DateTime?
   prayerCount  Int            @default(0)
-  answeredAt   DateTime?
-  /// What happened: the note written when the prayer is marked answered.
+  /// The day it was answered, chosen by the person (a calendar date).
+  answeredOn   DateTime?      @db.Date
+  /// What happened: the circumstances of the answer.
   answerNote   String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
