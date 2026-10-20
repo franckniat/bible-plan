@@ -71,6 +71,7 @@ model User {
   prayerRequests     PrayerRequest[]
   meditationSessions MeditationSession[]
   meditationNotes    MeditationNote[]
+  activityDays       ActivityDay[]
   pushDevices        PushDevice[]
 
   locale       String  @default("fr")
@@ -484,4 +485,22 @@ model MeditationNote {
 
   @@index([userId, book, updatedAt])
   @@index([userId, updatedAt])
+}
+
+// ─── Activity ───────────────────────────────────────────────────────────────
+// What a person did on a day of their own calendar: readings ticked, prayers
+// said, seconds of meditation. Kept up to date when each of these happens, so
+// streaks and the heatmap are a read of this table.
+
+model ActivityDay {
+  id                String   @id @default(uuid(7))
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// The day in the time zone of the person when it happened (a calendar date).
+  day               DateTime @db.Date
+  readings          Int      @default(0)
+  prayers           Int      @default(0)
+  meditationSeconds Int      @default(0)
+
+  @@unique([userId, day])
 }
