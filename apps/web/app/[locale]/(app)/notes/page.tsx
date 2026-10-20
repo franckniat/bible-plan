@@ -1,4 +1,4 @@
-import { Search } from "lucide-react"
+import { SearchIcon } from "lucide-react"
 import type { Metadata } from "next"
 import { hasLocale } from "next-intl"
 import { getLocale, getTranslations } from "next-intl/server"
@@ -11,7 +11,16 @@ import {
 } from "@workspace/core"
 import { prisma } from "@workspace/db"
 import { Button } from "@workspace/ui/components/button"
+import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 
 import {
   NotesManager,
@@ -53,6 +62,13 @@ export default async function NotesPage({
     listNotes(prisma, user.id, { book, query: q }),
     listNoteBooks(prisma, user.id),
   ])
+  // "all" stands for no filter: a select cannot submit an empty choice.
+  const bookItems = [
+    { value: "all", label: t("search.allBooks") },
+    ...books
+      .filter(isBookId)
+      .map((id) => ({ value: id, label: getBookName(id, locale) })),
+  ]
   const formatDate = new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeZone: user.timezone || "UTC",
@@ -70,51 +86,49 @@ export default async function NotesPage({
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-1">
         <h1 className="font-heading text-3xl font-semibold">{t("title")}</h1>
-        <p className="text-brand-night/70 dark:text-neutral-100/70">
+        <p className="text-muted-foreground">
           {t("description")}
         </p>
       </div>
 
-      <form
-        role="search"
-        method="get"
-        className="flex flex-wrap items-end gap-3"
-      >
-        <div className="flex min-w-48 flex-1 flex-col gap-1.5">
-          <label htmlFor="notes-q" className="text-sm font-medium">
-            {t("search.label")}
-          </label>
-          <Input
-            id="notes-q"
-            name="q"
-            type="search"
-            defaultValue={q ?? ""}
-            placeholder={t("search.placeholder")}
-            className="h-10"
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="notes-book" className="text-sm font-medium">
-            {t("search.book")}
-          </label>
-          <select
-            id="notes-book"
-            name="book"
-            defaultValue={book ?? ""}
-            className="h-10 rounded-lg border border-input bg-transparent px-3"
-          >
-            <option value="">{t("search.allBooks")}</option>
-            {books.filter(isBookId).map((id) => (
-              <option key={id} value={id}>
-                {getBookName(id, locale)}
-              </option>
-            ))}
-          </select>
-        </div>
-        <Button type="submit" variant="outline" className="h-10">
-          <Search />
-          {t("search.submit")}
-        </Button>
+      <form role="search" method="get">
+        <FieldGroup className="flex-row flex-wrap items-end gap-3">
+          <Field className="min-w-48 flex-1">
+            <FieldLabel htmlFor="notes-q">{t("search.label")}</FieldLabel>
+            <Input
+              id="notes-q"
+              name="q"
+              type="search"
+              defaultValue={q ?? ""}
+              placeholder={t("search.placeholder")}
+            />
+          </Field>
+          <Field className="w-auto">
+            <FieldLabel htmlFor="notes-book">{t("search.book")}</FieldLabel>
+            <Select
+              name="book"
+              items={bookItems}
+              defaultValue={book ?? "all"}
+            >
+              <SelectTrigger id="notes-book" className="min-w-44">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {bookItems.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Field>
+          <Button type="submit" variant="outline">
+            <SearchIcon data-icon="inline-start" />
+            {t("search.submit")}
+          </Button>
+        </FieldGroup>
       </form>
 
       <NotesManager

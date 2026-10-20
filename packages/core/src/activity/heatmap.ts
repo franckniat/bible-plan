@@ -5,6 +5,8 @@ export type HeatmapDay = {
   readings: number
   prayers: number
   meditationSeconds: number
+  /** Optional: sessions of prayer with the timer. */
+  prayerSeconds?: number
 }
 
 export type HeatmapCell = {
@@ -24,9 +26,18 @@ export function activityLevel(day: HeatmapDay | undefined): HeatmapCell["level"]
   const score =
     Math.min(day.readings, 2) +
     Math.min(day.prayers, 2) +
-    Math.min(Math.floor(day.meditationSeconds / 300), 2) +
+    Math.min(
+      Math.floor((day.meditationSeconds + (day.prayerSeconds ?? 0)) / 300),
+      2
+    ) +
     // Any activity at all is at least a first level.
-    (day.readings + day.prayers + day.meditationSeconds > 0 ? 1 : 0)
+    (day.readings +
+      day.prayers +
+      day.meditationSeconds +
+      (day.prayerSeconds ?? 0) >
+    0
+      ? 1
+      : 0)
   return Math.min(4, score) as HeatmapCell["level"]
 }
 

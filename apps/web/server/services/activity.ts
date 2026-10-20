@@ -10,6 +10,7 @@ export type ActivityDelta = {
   readings?: number
   prayers?: number
   meditationSeconds?: number
+  prayerSeconds?: number
 }
 
 export type ActivityEntry = {
@@ -17,6 +18,7 @@ export type ActivityEntry = {
   readings: number
   prayers: number
   meditationSeconds: number
+  prayerSeconds: number
 }
 
 /** A calendar date as stored in a DATE column (midnight UTC). */
@@ -36,10 +38,20 @@ export async function recordActivity(
   day: IsoDate,
   delta: ActivityDelta
 ): Promise<void> {
-  const { readings = 0, prayers = 0, meditationSeconds = 0 } = delta
+  const {
+    readings = 0,
+    prayers = 0,
+    meditationSeconds = 0,
+    prayerSeconds = 0,
+  } = delta
   const where = { userId_day: { userId, day: dateOnly(day) } }
 
-  if (readings > 0 || prayers > 0 || meditationSeconds > 0) {
+  if (
+    readings > 0 ||
+    prayers > 0 ||
+    meditationSeconds > 0 ||
+    prayerSeconds > 0
+  ) {
     await db.activityDay.upsert({
       where,
       create: {
@@ -48,12 +60,16 @@ export async function recordActivity(
         readings: Math.max(0, readings),
         prayers: Math.max(0, prayers),
         meditationSeconds: Math.max(0, meditationSeconds),
+        prayerSeconds: Math.max(0, prayerSeconds),
       },
       update: {
         ...(readings > 0 ? { readings: { increment: readings } } : {}),
         ...(prayers > 0 ? { prayers: { increment: prayers } } : {}),
         ...(meditationSeconds > 0
           ? { meditationSeconds: { increment: meditationSeconds } }
+          : {}),
+        ...(prayerSeconds > 0
+          ? { prayerSeconds: { increment: prayerSeconds } }
           : {}),
       },
     })
@@ -71,6 +87,7 @@ const select = {
   readings: true,
   prayers: true,
   meditationSeconds: true,
+  prayerSeconds: true,
 } as const
 
 /** The days with something done, between two dates (both included). */
@@ -102,6 +119,7 @@ export async function listActiveDays(
         { readings: { gt: 0 } },
         { prayers: { gt: 0 } },
         { meditationSeconds: { gt: 0 } },
+        { prayerSeconds: { gt: 0 } },
       ],
     },
     select: { day: true },
@@ -118,12 +136,18 @@ export async function activityTotals(
   readings: number
   prayers: number
   meditationSeconds: number
+  prayerSeconds: number
   activeDays: number
 }> {
   const [sums, activeDays] = await Promise.all([
     db.activityDay.aggregate({
       where: { userId },
-      _sum: { readings: true, prayers: true, meditationSeconds: true },
+      _sum: {
+        readings: true,
+        prayers: true,
+        meditationSeconds: true,
+        prayerSeconds: true,
+      },
     }),
     db.activityDay.count({
       where: {
@@ -132,6 +156,7 @@ export async function activityTotals(
           { readings: { gt: 0 } },
           { prayers: { gt: 0 } },
           { meditationSeconds: { gt: 0 } },
+          { prayerSeconds: { gt: 0 } },
         ],
       },
     }),
@@ -140,10 +165,16 @@ export async function activityTotals(
     readings: sums._sum.readings ?? 0,
     prayers: sums._sum.prayers ?? 0,
     meditationSeconds: sums._sum.meditationSeconds ?? 0,
+    prayerSeconds: sums._sum.prayerSeconds ?? 0,
     activeDays,
   }
 }
 
 function isActive(entry: ActivityEntry): boolean {
-  return entry.readings > 0 || entry.prayers > 0 || entry.meditationSeconds > 0
+  return (
+    entry.readings > 0 ||
+    entry.prayers > 0 ||
+    entry.meditationSeconds > 0 ||
+    entry.prayerSeconds > 0
+  )
 }

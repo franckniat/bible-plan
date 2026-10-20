@@ -11,6 +11,13 @@ import {
 } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card"
+
 import { Heatmap } from "@/components/stats/heatmap"
 import { StreakBadge } from "@/components/stats/streak-badge"
 import { routing } from "@/i18n/routing"
@@ -62,6 +69,12 @@ export default async function StatsPage() {
   const last30 = entries.filter((entry) => entry.day > addDays(today, -30))
 
   const cards: { label: string; value: string }[] = [
+    {
+      label: t("totals.prayerTime"),
+      value: t("totals.minutes", {
+        count: Math.round(totals.prayerSeconds / 60),
+      }),
+    },
     { label: t("totals.longest"), value: t("streak.days", { count: streak.longest }) },
     { label: t("totals.activeDays"), value: String(totals.activeDays) },
     { label: t("totals.readings"), value: String(totals.readings) },
@@ -79,28 +92,27 @@ export default async function StatsPage() {
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-1">
         <h1 className="font-heading text-3xl font-semibold">{t("title")}</h1>
-        <p className="text-brand-night/70 dark:text-neutral-100/70">
+        <p className="text-muted-foreground">
           {t("description")}
         </p>
       </div>
 
       <StreakBadge streak={streak} />
 
-      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {cards.map((card) => (
-          <div
-            key={card.label}
-            className="flex flex-col gap-1 rounded-3xl bg-white/85 p-4 ring-1 ring-brand-night/10 dark:bg-neutral-900/85 dark:ring-white/10"
-          >
-            <dt className="text-sm text-brand-night/70 dark:text-neutral-100/70">
-              {card.label}
-            </dt>
-            <dd className="font-heading text-2xl font-semibold tabular-nums">
-              {card.value}
-            </dd>
-          </div>
+          <li key={card.label}>
+            <Card size="sm" className="h-full">
+              <CardHeader>
+                <CardDescription>{card.label}</CardDescription>
+                <CardTitle className="font-heading text-2xl tabular-nums">
+                  {card.value}
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          </li>
         ))}
-      </dl>
+      </ul>
 
       <section className="flex flex-col gap-3">
         <h2 className="font-heading text-xl font-semibold">
@@ -110,7 +122,7 @@ export default async function StatsPage() {
           weeks={buildHeatmap(byDay, today, heatmapWeeks)}
           details={details}
         />
-        <p className="text-sm text-brand-night/70 dark:text-neutral-100/70">
+        <p className="text-sm text-muted-foreground">
           {t("heatmap.legend")}
         </p>
       </section>

@@ -4,9 +4,14 @@ import { parsePassageSlug } from "../bible/slug"
 
 /** Durations offered to start a session, in minutes. */
 export const meditationMinutes = [5, 10, 15, 20, 30] as const
+export const prayerMinutes = [15, 30, 45, 60, 90] as const
+
+export const sessionKinds = ["MEDITATION", "PRAYER"] as const
+export type SessionKind = (typeof sessionKinds)[number]
 
 export const minMeditationMinutes = 1
-export const maxMeditationMinutes = 120
+/** Long enough for several hours of prayer: the same limit for both kinds. */
+export const maxMeditationMinutes = 240
 
 export const maxNoteTextLength = 5000
 
@@ -19,6 +24,8 @@ const passageSlugSchema = z
 /** A finished session, as the timer reports it. */
 export const meditationSessionInputSchema = z
   .object({
+    /** A time of meditation or of prayer: the same timer. */
+    kind: z.enum(sessionKinds).default("MEDITATION"),
     /** The passage meditated on, as a passage slug. */
     passage: passageSlugSchema.nullable().default(null),
     plannedSeconds: z

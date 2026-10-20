@@ -906,7 +906,6 @@
     "delete": "Supprimer",
     "archive": "Archiver",
     "restore": "Remettre parmi les sujets actifs",
-    "confirmDelete": "Supprimer ce sujet de prière ? Cette action est définitive.",
     "prayed": "J’ai prié",
     "answered": "Exaucé",
     "confirmAnswered": "Marquer comme exaucé",
@@ -938,10 +937,10 @@
       "category": "Catégorie",
       "startedOn": "Début de la prière",
       "passages": "Versets de référence (facultatif)",
-      "passagesPlaceholder": "Ex. Ps 51:1-4 ; Jean 3:16",
       "answeredOn": "Date de l’exaucement",
       "answerNote": "Circonstances de l’exaucement",
-      "answerPlaceholder": "Comment Dieu a-t-il répondu ? (facultatif)"
+      "answerPlaceholder": "Comment Dieu a-t-il répondu ? (facultatif)",
+      "passagesHint": "Choisissez un livre, un chapitre et des versets, puis ajoutez le passage."
     },
     "empty": {
       "ACTIVE": {
@@ -972,9 +971,13 @@
       "add": "Ajouter",
       "remove": "Retirer {passage}",
       "errors": {
-        "invalid": "Référence introuvable. Essayez par exemple « Ps 51:1-4 » ou « Jean 3:16 ».",
         "limit": "Au plus {max} passages par sujet."
       }
+    },
+    "timer": "Minuteur de prière",
+    "deleteDialog": {
+      "title": "Supprimer ce sujet ?",
+      "description": "« {title} » et son historique seront supprimés. Cette action est définitive."
     }
   },
   "Notes": {
@@ -985,12 +988,9 @@
     "cancel": "Annuler",
     "edit": "Modifier",
     "delete": "Supprimer",
-    "confirmDelete": "Supprimer cette note ? Cette action est définitive.",
     "fields": {
       "passage": "Passage",
-      "passagePlaceholder": "Ex. Jean 3:1-21",
       "keyVerse": "Verset clé",
-      "keyVersePlaceholder": "Ex. Jean 3:16",
       "reflection": "Réflexion",
       "reflectionPlaceholder": "Que dit ce passage ? Qu’avez-vous découvert ?",
       "application": "Application personnelle",
@@ -1011,11 +1011,14 @@
     },
     "errors": {
       "passage": "Passage introuvable. Essayez par exemple « Jean 3:1-21 ».",
-      "keyVerse": "Verset introuvable. Essayez par exemple « Jean 3:16 ».",
       "invalid": "Écrivez au moins une réflexion, une application ou un verset clé.",
       "limit": "Vous avez atteint la limite de notes. Supprimez-en pour en ajouter.",
       "notFound": "Cette note n’existe plus. Rechargez la page.",
       "unexpected": "Une erreur est survenue. Réessayez dans un instant."
+    },
+    "deleteDialog": {
+      "title": "Supprimer cette note ?",
+      "description": "Cette action est définitive."
     }
   },
   "Meditate": {
@@ -1025,12 +1028,11 @@
       "duration": "Durée",
       "minutes": "{count} min",
       "custom": "Autre durée (minutes)",
-      "passage": "Passage à méditer",
-      "passagePlaceholder": "Ex. Psaume 23",
+      "passage": "Passage",
       "passageToday": "C’est la lecture du jour de votre plan. Vous pouvez la changer.",
       "passageHint": "Facultatif. Laissez vide pour méditer sans passage.",
-      "passageError": "Passage introuvable. Essayez par exemple « Psaume 23 ».",
-      "start": "Commencer"
+      "start": "Commencer",
+      "customHint": "De 1 à {max} minutes."
     },
     "timer": {
       "label": "Minuteur de méditation",
@@ -1039,7 +1041,8 @@
       "paused": "En pause",
       "pause": "Pause",
       "resume": "Reprendre",
-      "stop": "Terminer"
+      "stop": "Terminer",
+      "progress": "Progression de la session"
     },
     "done": {
       "title": "Session terminée",
@@ -1050,7 +1053,8 @@
       "writeNote": "Écrire une note",
       "noteSaved": "Note enregistrée.",
       "seeNotes": "Voir mes notes",
-      "again": "Nouvelle session"
+      "again": "Nouvelle session",
+      "saving": "Enregistrement…"
     }
   },
   "Stats": {
@@ -1071,7 +1075,8 @@
       "meditation": "Méditation",
       "minutes": "{count} min",
       "last30": "Sur 30 jours",
-      "daysCount": "{count, plural, one {# jour actif} other {# jours actifs}}"
+      "daysCount": "{count, plural, one {# jour actif} other {# jours actifs}}",
+      "prayerTime": "Temps de prière"
     },
     "heatmap": {
       "title": "Les six derniers mois",
@@ -1079,6 +1084,57 @@
       "nothing": "rien de noté",
       "day": "{readings} lecture(s), {prayers} prière(s), {minutes} min de méditation",
       "legend": "Plus la case est dorée, plus la journée était pleine."
+    }
+  },
+  "PassagePicker": {
+    "book": "Livre",
+    "bookPlaceholder": "Chercher un livre",
+    "showBooks": "Afficher les livres",
+    "clear": "Effacer le livre",
+    "noBook": "Aucun livre trouvé.",
+    "scope": {
+      "label": "Étendue",
+      "chapter": "Chapitre",
+      "chapters": "Plusieurs chapitres",
+      "verses": "Versets"
+    },
+    "chapter": "Chapitre",
+    "fromChapter": "Du chapitre",
+    "toChapter": "Au chapitre",
+    "fromVerse": "Du verset",
+    "toVerse": "Au verset"
+  },
+  "PrayerTimer": {
+    "title": "Temps de prière",
+    "description": "Choisissez combien de temps vous voulez prier, par exemple une heure. Un son retentit à la fin.",
+    "back": "Retour au journal de prière",
+    "setup": {
+      "duration": "Durée",
+      "minutes": "{count} min",
+      "custom": "Autre durée (minutes)",
+      "customHint": "De 1 à {max} minutes.",
+      "passage": "Passage",
+      "passageHint": "Facultatif. Choisissez un livre pour prier avec un passage.",
+      "passageToday": "C’est la lecture du jour de votre plan. Vous pouvez la changer.",
+      "start": "Commencer"
+    },
+    "timer": {
+      "label": "Minuteur",
+      "progress": "Progression de la session",
+      "readPassage": "lire dans un nouvel onglet",
+      "paused": "En pause",
+      "pause": "Pause",
+      "resume": "Reprendre",
+      "stop": "Terminer",
+      "breathe": "Parlez à Dieu, ou écoutez-le."
+    },
+    "done": {
+      "title": "Temps de prière terminé",
+      "saving": "Enregistrement…",
+      "saved": "{duration} de prière enregistrées.",
+      "notSaved": "{duration} de prière. La session n’a pas pu être enregistrée.",
+      "backToJournal": "Retour au journal de prière",
+      "again": "Nouveau temps de prière"
     }
   }
 }

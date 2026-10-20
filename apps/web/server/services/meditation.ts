@@ -53,6 +53,7 @@ export async function saveMeditationSession(
   const { id } = await db.meditationSession.create({
     data: {
       userId,
+      kind: input.kind,
       passage: input.passage,
       plannedSeconds: input.plannedSeconds,
       durationSeconds: input.durationSeconds,

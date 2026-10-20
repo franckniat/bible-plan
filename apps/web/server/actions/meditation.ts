@@ -39,9 +39,16 @@ export async function saveMeditationSessionAction(
   if (!parsed.success) return { ok: false }
   try {
     const sessionId = await saveMeditationSession(prisma, user.id, parsed.data)
-    await recordActivity(prisma, user.id, getToday(user.timezone), {
-      meditationSeconds: parsed.data.durationSeconds,
-    }).catch((error) => console.error("Recording activity failed", error))
+    // A time of prayer counts as a prayer and as time prayed; a meditation as
+    // time meditated.
+    await recordActivity(
+      prisma,
+      user.id,
+      getToday(user.timezone),
+      parsed.data.kind === "PRAYER"
+        ? { prayers: 1, prayerSeconds: parsed.data.durationSeconds }
+        : { meditationSeconds: parsed.data.durationSeconds }
+    ).catch((error) => console.error("Recording activity failed", error))
     revalidatePath("/[locale]", "layout")
     return { ok: true, sessionId }
   } catch (error) {

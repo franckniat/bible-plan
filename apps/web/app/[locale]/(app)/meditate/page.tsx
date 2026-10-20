@@ -2,10 +2,10 @@ import type { Metadata } from "next"
 import { hasLocale } from "next-intl"
 import { getTranslations } from "next-intl/server"
 
-import { getToday, toPassageSlug } from "@workspace/core"
+import { getToday, meditationMinutes, toPassageSlug } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
-import { MeditationFlow } from "@/components/meditation/meditation-flow"
+import { SessionFlow } from "@/components/session/session-flow"
 import { routing } from "@/i18n/routing"
 import { getTodayPlans } from "@/server/services/plans"
 import { requireUser } from "@/server/session"
@@ -36,7 +36,10 @@ export default async function MeditatePage() {
           {t("description")}
         </p>
       </div>
-      <MeditationFlow
+      <SessionFlow
+        kind="MEDITATION"
+        minutes={meditationMinutes}
+        defaultMinutes={10}
         todayPassage={reading ? toPassageSlug(reading.passage) : null}
       />
     </div>

@@ -1,42 +1,74 @@
 "use client"
 
 import {
-  Archive,
-  ArchiveRestore,
-  BookOpen,
-  Check,
-  HandHeart,
-  Pencil,
-  Plus,
-  Sparkles,
-  Trash2,
-  X,
+  ArchiveIcon,
+  ArchiveRestoreIcon,
+  BookOpenIcon,
+  CheckIcon,
+  CircleAlertIcon,
+  HandHeartIcon,
+  PencilIcon,
+  PlusIcon,
+  SparklesIcon,
+  XIcon,
 } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useId, useState, useTransition } from "react"
 
 import {
-  formatPassage,
   maxPrayerPassages,
   maxPrayerRequestsPerUser,
   maxPrayerTextLength,
   maxPrayerTitleLength,
-  parsePassageSlug,
-  parseReference,
   prayerCategories,
-  toPassageSlug,
   type IsoDate,
   type Locale,
   type PrayerCategory,
   type PrayerStatus,
 } from "@workspace/core"
+import { Alert, AlertDescription } from "@workspace/ui/components/alert"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@workspace/ui/components/empty"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
+import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 
+import { PassagePicker } from "@/components/bible/passage-picker"
+import { ConfirmDeleteButton } from "@/components/confirm-delete-button"
 import { Link } from "@/i18n/navigation"
 import { formatIsoDate } from "@/lib/dates"
+import { labelOfSlug } from "@/lib/passage-input"
 import {
   answeredAction,
   deletePrayerAction,
@@ -122,32 +154,34 @@ export function PrayerJournal({
   return (
     <div className="flex flex-col gap-6">
       {error && (
-        <p
-          role="alert"
-          className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive"
-        >
-          {t(`errors.${error}`, { max: maxPrayerRequestsPerUser })}
-        </p>
+        <Alert variant="destructive" role="alert">
+          <CircleAlertIcon />
+          <AlertDescription>
+            {t(`errors.${error}`, { max: maxPrayerRequestsPerUser })}
+          </AlertDescription>
+        </Alert>
       )}
 
       {status === "ACTIVE" &&
         (editing === "new" ? (
-          <div className="rounded-3xl bg-white/85 p-5 ring-1 ring-brand-night/10 dark:bg-neutral-900/85 dark:ring-white/10">
-            <PrayerForm
-              initial={emptyDraft}
-              today={today}
-              pending={pending}
-              onCancel={() => setEditing(null)}
-              onSave={(draft) =>
-                run(
-                  () => savePrayerAction(null, draft),
-                  () => setEditing(null)
-                )
-              }
-            />
-          </div>
+          <Card>
+            <CardContent>
+              <PrayerForm
+                initial={emptyDraft}
+                today={today}
+                pending={pending}
+                onCancel={() => setEditing(null)}
+                onSave={(draft) =>
+                  run(
+                    () => savePrayerAction(null, draft),
+                    () => setEditing(null)
+                  )
+                }
+              />
+            </CardContent>
+          </Card>
         ) : (
-          <div className="flex flex-col items-start gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             <Button
               size="lg"
               className="h-11 sm:px-5"
@@ -157,11 +191,21 @@ export function PrayerJournal({
                 setEditing("new")
               }}
             >
-              <Plus />
+              <PlusIcon data-icon="inline-start" />
               {t("add")}
             </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="h-11 sm:px-5"
+              nativeButton={false}
+              render={<Link href="/prayer/timer" />}
+            >
+              <HandHeartIcon data-icon="inline-start" />
+              {t("timer")}
+            </Button>
             {atLimit && (
-              <p className="text-sm text-brand-night/70 dark:text-neutral-100/70">
+              <p className="text-sm text-muted-foreground">
                 {t("errors.limit", { max: maxPrayerRequestsPerUser })}
               </p>
             )}
@@ -169,80 +213,80 @@ export function PrayerJournal({
         ))}
 
       {prayers.length === 0 && editing !== "new" ? (
-        <div className="flex flex-col items-start gap-2 rounded-3xl border border-dashed border-brand-night/20 p-6 dark:border-white/20">
-          <HandHeart aria-hidden className="size-6 text-brand-gold" />
-          <h2 className="font-heading text-xl font-semibold">
-            {t(`empty.${status}.title`)}
-          </h2>
-          <p className="text-brand-night/70 dark:text-neutral-100/70">
-            {t(`empty.${status}.description`)}
-          </p>
-        </div>
+        <Empty className="border border-dashed">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <HandHeartIcon />
+            </EmptyMedia>
+            <EmptyTitle>{t(`empty.${status}.title`)}</EmptyTitle>
+            <EmptyDescription>
+              {t(`empty.${status}.description`)}
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       ) : (
         <ul className="flex flex-col gap-3">
           {prayers.map((prayer) => (
-            <li
-              key={prayer.id}
-              className="rounded-3xl bg-white/85 p-5 ring-1 ring-brand-night/10 dark:bg-neutral-900/85 dark:ring-white/10"
-            >
-              {editing === prayer.id ? (
-                <PrayerForm
-                  initial={{
-                    title: prayer.title,
-                    details: prayer.details ?? "",
-                    category: prayer.category,
-                    startedOn: prayer.startedOn,
-                    passages: prayer.passages,
-                  }}
-                  today={today}
-                  pending={pending}
-                  onCancel={() => setEditing(null)}
-                  onSave={(draft) =>
-                    run(
-                      () => savePrayerAction(prayer.id, draft),
-                      () => setEditing(null)
-                    )
-                  }
-                />
-              ) : (
-                <PrayerCard
-                  prayer={prayer}
-                  today={today}
-                  pending={pending}
-                  answering={answering === prayer.id}
-                  onPrayed={() => run(() => prayedAction(prayer.id))}
-                  onStartAnswer={() => {
-                    setError(null)
-                    setAnswering(prayer.id)
-                  }}
-                  onCancelAnswer={() => setAnswering(null)}
-                  onAnswer={(draft) =>
-                    run(
-                      () =>
-                        prayer.status === "ANSWERED"
-                          ? updateAnswerAction(prayer.id, draft)
-                          : answeredAction(prayer.id, draft),
-                      () => setAnswering(null)
-                    )
-                  }
-                  onEdit={() => {
-                    setError(null)
-                    setEditing(prayer.id)
-                  }}
-                  onArchive={() =>
-                    run(() =>
-                      setPrayerStatusAction(
-                        prayer.id,
-                        prayer.status === "ARCHIVED" ? "ACTIVE" : "ARCHIVED"
+            <li key={prayer.id}>
+              <Card>
+                {editing === prayer.id ? (
+                  <CardContent>
+                    <PrayerForm
+                      initial={{
+                        title: prayer.title,
+                        details: prayer.details ?? "",
+                        category: prayer.category,
+                        startedOn: prayer.startedOn,
+                        passages: prayer.passages,
+                      }}
+                      today={today}
+                      pending={pending}
+                      onCancel={() => setEditing(null)}
+                      onSave={(draft) =>
+                        run(
+                          () => savePrayerAction(prayer.id, draft),
+                          () => setEditing(null)
+                        )
+                      }
+                    />
+                  </CardContent>
+                ) : (
+                  <PrayerCard
+                    prayer={prayer}
+                    today={today}
+                    pending={pending}
+                    answering={answering === prayer.id}
+                    onPrayed={() => run(() => prayedAction(prayer.id))}
+                    onStartAnswer={() => {
+                      setError(null)
+                      setAnswering(prayer.id)
+                    }}
+                    onCancelAnswer={() => setAnswering(null)}
+                    onAnswer={(draft) =>
+                      run(
+                        () =>
+                          prayer.status === "ANSWERED"
+                            ? updateAnswerAction(prayer.id, draft)
+                            : answeredAction(prayer.id, draft),
+                        () => setAnswering(null)
                       )
-                    )
-                  }
-                  onDelete={() => {
-                    if (window.confirm(t("confirmDelete")))
-                      run(() => deletePrayerAction(prayer.id))
-                  }}
-                />
-              )}
+                    }
+                    onEdit={() => {
+                      setError(null)
+                      setEditing(prayer.id)
+                    }}
+                    onArchive={() =>
+                      run(() =>
+                        setPrayerStatusAction(
+                          prayer.id,
+                          prayer.status === "ARCHIVED" ? "ACTIVE" : "ARCHIVED"
+                        )
+                      )
+                    }
+                    onDelete={() => run(() => deletePrayerAction(prayer.id))}
+                  />
+                )}
+              </Card>
             </li>
           ))}
         </ul>
@@ -255,23 +299,20 @@ export function PrayerJournal({
 function PassageLinks({ slugs }: { slugs: string[] }) {
   const t = useTranslations("Prayer")
   const locale = useLocale() as Locale
-  const passages = slugs.flatMap((slug) => {
-    const passage = parsePassageSlug(slug)
-    return passage ? [{ slug, label: formatPassage(passage, locale) }] : []
-  })
-  if (passages.length === 0) return null
+  if (slugs.length === 0) return null
   return (
     <ul aria-label={t("passages.label")} className="flex flex-wrap gap-2">
-      {passages.map(({ slug, label }) => (
+      {slugs.map((slug) => (
         <li key={slug}>
-          <Link
-            href={`/read/${slug}`}
-            className="flex items-center gap-1.5 rounded-full px-3 py-1 text-sm ring-1 ring-brand-night/15 transition-colors outline-none hover:bg-brand-gold/10 focus-visible:ring-3 focus-visible:ring-brand-gold dark:ring-white/20"
+          <Badge
+            variant="outline"
+            className="h-6 px-2.5 text-sm"
+            render={<Link href={`/read/${slug}`} />}
           >
-            <BookOpen aria-hidden className="size-3.5 text-brand-gold" />
-            {label}
+            <BookOpenIcon data-icon="inline-start" />
+            {labelOfSlug(slug, locale)}
             <span className="sr-only"> — {t("passages.read")}</span>
-          </Link>
+          </Badge>
         </li>
       ))}
     </ul>
@@ -308,21 +349,21 @@ function PrayerCard({
   const answered = prayer.status === "ANSWERED"
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <h2 className="font-heading text-xl font-semibold">{prayer.title}</h2>
-          <span className="rounded-full bg-brand-night/[0.06] px-2.5 py-0.5 text-xs font-medium dark:bg-white/10">
-            {t(`categories.${prayer.category}`)}
-          </span>
-        </div>
+    <>
+      <CardHeader>
+        <CardTitle className="flex flex-wrap items-center gap-x-3 gap-y-1 font-heading text-xl">
+          {prayer.title}
+          <Badge variant="secondary">{t(`categories.${prayer.category}`)}</Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
         {prayer.details && (
-          <p className="whitespace-pre-line text-brand-night/80 dark:text-neutral-100/80">
+          <p className="whitespace-pre-line text-muted-foreground">
             {prayer.details}
           </p>
         )}
         <PassageLinks slugs={prayer.passages} />
-        <p className="text-sm text-brand-night/60 dark:text-neutral-100/60">
+        <p className="text-sm text-muted-foreground">
           {t("startedOn", { date: formatIsoDate(prayer.startedOn, locale) })}
           {" · "}
           {prayer.lastPrayed
@@ -333,44 +374,50 @@ function PrayerCard({
             : t("neverPrayed")}
         </p>
         {answered && !answering && (
-          <div className="mt-2 flex flex-col gap-1 rounded-2xl bg-brand-gold/15 p-4">
-            <p className="flex items-center gap-2 text-sm font-medium">
-              <Sparkles aria-hidden className="size-4 text-brand-gold" />
-              {t("answeredOn", {
-                date: prayer.answeredOn
-                  ? formatIsoDate(prayer.answeredOn, locale)
-                  : "",
-              })}
-            </p>
-            {prayer.answerNote ? (
-              <p className="whitespace-pre-line">{prayer.answerNote}</p>
-            ) : (
-              <p className="text-sm text-brand-night/70 dark:text-neutral-100/70">
-                {t("noCircumstances")}
-              </p>
-            )}
-          </div>
+          <Alert>
+            <SparklesIcon />
+            <AlertDescription className="flex flex-col gap-1 text-foreground">
+              <span className="font-medium">
+                {t("answeredOn", {
+                  date: prayer.answeredOn
+                    ? formatIsoDate(prayer.answeredOn, locale)
+                    : "",
+                })}
+              </span>
+              {prayer.answerNote ? (
+                <span className="whitespace-pre-line">{prayer.answerNote}</span>
+              ) : (
+                <span className="text-muted-foreground">
+                  {t("noCircumstances")}
+                </span>
+              )}
+            </AlertDescription>
+          </Alert>
         )}
-      </div>
-
-      {answering ? (
-        <AnswerForm
-          initial={{
-            answeredOn: prayer.answeredOn ?? today,
-            answerNote: prayer.answerNote ?? "",
-          }}
-          today={today}
-          pending={pending}
-          submitLabel={answered ? t("save") : t("confirmAnswered")}
-          onCancel={onCancelAnswer}
-          onSave={onAnswer}
-        />
-      ) : (
-        <div className="flex flex-wrap items-center gap-2">
+        {answering && (
+          <AnswerForm
+            initial={{
+              answeredOn: prayer.answeredOn ?? today,
+              answerNote: prayer.answerNote ?? "",
+            }}
+            today={today}
+            pending={pending}
+            submitLabel={answered ? t("save") : t("confirmAnswered")}
+            onCancel={onCancelAnswer}
+            onSave={onAnswer}
+          />
+        )}
+      </CardContent>
+      {!answering && (
+        <CardFooter className="flex-wrap gap-2">
           {prayer.status === "ACTIVE" && (
             <>
               <Button disabled={pending} onClick={onPrayed}>
-                <HandHeart />
+                {pending ? (
+                  <Spinner data-icon="inline-start" />
+                ) : (
+                  <HandHeartIcon data-icon="inline-start" />
+                )}
                 {t("prayed")}
               </Button>
               <Button
@@ -378,14 +425,14 @@ function PrayerCard({
                 disabled={pending}
                 onClick={onStartAnswer}
               >
-                <Sparkles />
+                <SparklesIcon data-icon="inline-start" />
                 {t("answered")}
               </Button>
             </>
           )}
           {answered && (
             <Button variant="outline" onClick={onStartAnswer}>
-              <Pencil />
+              <PencilIcon data-icon="inline-start" />
               {t("editAnswer")}
             </Button>
           )}
@@ -396,7 +443,7 @@ function PrayerCard({
               onClick={onEdit}
               aria-label={t("edit")}
             >
-              <Pencil />
+              <PencilIcon />
             </Button>
             <Button
               variant="ghost"
@@ -407,21 +454,27 @@ function PrayerCard({
                 prayer.status === "ARCHIVED" ? t("restore") : t("archive")
               }
             >
-              {prayer.status === "ARCHIVED" ? <ArchiveRestore /> : <Archive />}
+              {prayer.status === "ARCHIVED" ? (
+                <ArchiveRestoreIcon />
+              ) : (
+                <ArchiveIcon />
+              )}
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
+            <ConfirmDeleteButton
+              label={t("delete")}
+              title={t("deleteDialog.title")}
+              description={t("deleteDialog.description", {
+                title: prayer.title,
+              })}
+              confirmLabel={t("delete")}
+              cancelLabel={t("cancel")}
               disabled={pending}
-              onClick={onDelete}
-              aria-label={t("delete")}
-            >
-              <Trash2 />
-            </Button>
+              onConfirm={onDelete}
+            />
           </div>
-        </div>
+        </CardFooter>
       )}
-    </div>
+    </>
   )
 }
 
@@ -447,48 +500,54 @@ function AnswerForm({
 
   return (
     <form
-      className="flex flex-col gap-4"
       onSubmit={(event) => {
         event.preventDefault()
         if (draft.answeredOn) onSave(draft)
       }}
     >
-      <div className="flex flex-col gap-2 sm:max-w-xs">
-        <Label htmlFor={`${id}-day`}>{t("fields.answeredOn")}</Label>
-        <Input
-          id={`${id}-day`}
-          type="date"
-          value={draft.answeredOn}
-          max={today}
-          onChange={(event) =>
-            setDraft({ ...draft, answeredOn: event.target.value })
-          }
-          className="h-10"
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${id}-note`}>{t("fields.answerNote")}</Label>
-        <Textarea
-          id={`${id}-note`}
-          value={draft.answerNote}
-          maxLength={maxPrayerTextLength}
-          placeholder={t("fields.answerPlaceholder")}
-          onChange={(event) =>
-            setDraft({ ...draft, answerNote: event.target.value })
-          }
-          className="min-h-24"
-          autoFocus
-        />
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <Button type="submit" disabled={pending || !draft.answeredOn}>
-          <Check />
-          {submitLabel}
-        </Button>
-        <Button type="button" variant="ghost" onClick={onCancel}>
-          {t("cancel")}
-        </Button>
-      </div>
+      <FieldGroup>
+        <Field className="sm:max-w-xs">
+          <FieldLabel htmlFor={`${id}-day`}>{t("fields.answeredOn")}</FieldLabel>
+          <Input
+            id={`${id}-day`}
+            type="date"
+            value={draft.answeredOn}
+            max={today}
+            onChange={(event) =>
+              setDraft({ ...draft, answeredOn: event.target.value })
+            }
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor={`${id}-note`}>
+            {t("fields.answerNote")}
+          </FieldLabel>
+          <Textarea
+            id={`${id}-note`}
+            value={draft.answerNote}
+            maxLength={maxPrayerTextLength}
+            placeholder={t("fields.answerPlaceholder")}
+            onChange={(event) =>
+              setDraft({ ...draft, answerNote: event.target.value })
+            }
+            className="min-h-24"
+            autoFocus
+          />
+        </Field>
+        <div className="flex flex-wrap gap-2">
+          <Button type="submit" disabled={pending || !draft.answeredOn}>
+            {pending ? (
+              <Spinner data-icon="inline-start" />
+            ) : (
+              <CheckIcon data-icon="inline-start" />
+            )}
+            {submitLabel}
+          </Button>
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            {t("cancel")}
+          </Button>
+        </div>
+      </FieldGroup>
     </form>
   )
 }
@@ -509,175 +568,172 @@ function PrayerForm({
   const t = useTranslations("Prayer")
   const locale = useLocale() as Locale
   const [draft, setDraft] = useState<Draft>(initial)
-  const [reference, setReference] = useState("")
-  const [referenceError, setReferenceError] = useState<
-    "invalid" | "limit" | null
-  >(null)
+  // The passage being chosen, added to the list with the button.
+  const [candidate, setCandidate] = useState("")
+  // Remounts the picker once a passage is added, to start another.
+  const [pickerKey, setPickerKey] = useState(0)
   const id = useId()
   const valid = draft.title.trim() !== "" && draft.startedOn !== ""
+  const full = draft.passages.length >= maxPrayerPassages
 
-  /** Reads what was typed ("Ps 51:1-4; Jn 3:16") and adds its passages. */
-  function addReference() {
-    const text = reference.trim()
-    if (text === "") return
-    const parsed = parseReference(text, { locale })
-    if (!parsed) return setReferenceError("invalid")
-    const slugs = [
-      ...new Set([...draft.passages, ...parsed.map((p) => toPassageSlug(p))]),
-    ]
-    if (slugs.length > maxPrayerPassages) return setReferenceError("limit")
-    setDraft({ ...draft, passages: slugs })
-    setReference("")
-    setReferenceError(null)
+  function addPassage() {
+    if (candidate === "" || draft.passages.includes(candidate)) return
+    setDraft({ ...draft, passages: [...draft.passages, candidate] })
+    setCandidate("")
+    setPickerKey((key) => key + 1)
   }
+
+  const categories = prayerCategories.map((category) => ({
+    value: category,
+    label: t(`categories.${category}`),
+  }))
 
   return (
     <form
       noValidate
-      className="flex flex-col gap-5"
       onSubmit={(event) => {
         event.preventDefault()
         if (valid) onSave(draft)
       }}
     >
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${id}-title`}>{t("fields.title")}</Label>
-        <Input
-          id={`${id}-title`}
-          value={draft.title}
-          maxLength={maxPrayerTitleLength}
-          placeholder={t("fields.titlePlaceholder")}
-          onChange={(event) => setDraft({ ...draft, title: event.target.value })}
-          className="h-10"
-          autoFocus
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${id}-details`}>{t("fields.details")}</Label>
-        <Textarea
-          id={`${id}-details`}
-          value={draft.details}
-          maxLength={maxPrayerTextLength}
-          onChange={(event) =>
-            setDraft({ ...draft, details: event.target.value })
-          }
-          className="min-h-24"
-        />
-      </div>
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor={`${id}-started`}>{t("fields.startedOn")}</Label>
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor={`${id}-title`}>{t("fields.title")}</FieldLabel>
           <Input
-            id={`${id}-started`}
-            type="date"
-            value={draft.startedOn}
-            max={today}
+            id={`${id}-title`}
+            value={draft.title}
+            maxLength={maxPrayerTitleLength}
+            placeholder={t("fields.titlePlaceholder")}
             onChange={(event) =>
-              setDraft({ ...draft, startedOn: event.target.value })
+              setDraft({ ...draft, title: event.target.value })
             }
-            className="h-10"
+            autoFocus
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor={`${id}-category`}>{t("fields.category")}</Label>
-          <select
-            id={`${id}-category`}
-            value={draft.category}
+        </Field>
+        <Field>
+          <FieldLabel htmlFor={`${id}-details`}>
+            {t("fields.details")}
+          </FieldLabel>
+          <Textarea
+            id={`${id}-details`}
+            value={draft.details}
+            maxLength={maxPrayerTextLength}
             onChange={(event) =>
-              setDraft({
-                ...draft,
-                category: event.target.value as PrayerCategory,
-              })
+              setDraft({ ...draft, details: event.target.value })
             }
-            className="h-10 rounded-lg border border-input bg-transparent px-3"
-          >
-            {prayerCategories.map((category) => (
-              <option key={category} value={category}>
-                {t(`categories.${category}`)}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={`${id}-reference`}>{t("fields.passages")}</Label>
-        <div className="flex gap-2">
-          <Input
-            id={`${id}-reference`}
-            value={reference}
-            placeholder={t("fields.passagesPlaceholder")}
-            aria-invalid={referenceError !== null}
-            onChange={(event) => {
-              setReference(event.target.value)
-              setReferenceError(null)
-            }}
-            onKeyDown={(event) => {
-              // Enter adds the passage instead of saving the whole request.
-              if (event.key === "Enter") {
-                event.preventDefault()
-                addReference()
+            className="min-h-24"
+          />
+        </Field>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field>
+            <FieldLabel htmlFor={`${id}-started`}>
+              {t("fields.startedOn")}
+            </FieldLabel>
+            <Input
+              id={`${id}-started`}
+              type="date"
+              value={draft.startedOn}
+              max={today}
+              onChange={(event) =>
+                setDraft({ ...draft, startedOn: event.target.value })
               }
-            }}
-            className="h-10"
-          />
-          <Button
-            type="button"
-            variant="outline"
-            className="h-10"
-            disabled={reference.trim() === ""}
-            onClick={addReference}
-          >
-            {t("passages.add")}
+            />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor={`${id}-category`}>
+              {t("fields.category")}
+            </FieldLabel>
+            <Select
+              items={categories}
+              value={draft.category}
+              onValueChange={(category) =>
+                category &&
+                setDraft({ ...draft, category: category as PrayerCategory })
+              }
+            >
+              <SelectTrigger id={`${id}-category`} className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {categories.map((category) => (
+                    <SelectItem key={category.value} value={category.value}>
+                      {category.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
+
+        <FieldSet>
+          <FieldLegend variant="label">{t("fields.passages")}</FieldLegend>
+          <FieldDescription>{t("fields.passagesHint")}</FieldDescription>
+          {draft.passages.length > 0 && (
+            <ul className="flex flex-wrap gap-2">
+              {draft.passages.map((slug) => {
+                const label = labelOfSlug(slug, locale)
+                return (
+                  <li key={slug}>
+                    <Badge variant="secondary" className="h-7 gap-1 pr-1 pl-2.5 text-sm">
+                      {label}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-xs"
+                        aria-label={t("passages.remove", { passage: label })}
+                        onClick={() =>
+                          setDraft({
+                            ...draft,
+                            passages: draft.passages.filter((s) => s !== slug),
+                          })
+                        }
+                      >
+                        <XIcon />
+                      </Button>
+                    </Badge>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+          {full ? (
+            <FieldError>
+              {t("passages.errors.limit", { max: maxPrayerPassages })}
+            </FieldError>
+          ) : (
+            <>
+              <PassagePicker
+                key={pickerKey}
+                value={candidate}
+                onChange={setCandidate}
+              />
+              <div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={candidate === ""}
+                  onClick={addPassage}
+                >
+                  <PlusIcon data-icon="inline-start" />
+                  {t("passages.add")}
+                </Button>
+              </div>
+            </>
+          )}
+        </FieldSet>
+
+        <div className="flex flex-wrap gap-2">
+          <Button type="submit" disabled={pending || !valid}>
+            {pending && <Spinner data-icon="inline-start" />}
+            {t("save")}
+          </Button>
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            {t("cancel")}
           </Button>
         </div>
-        {referenceError && (
-          <p role="alert" className="text-sm text-destructive">
-            {t(`passages.errors.${referenceError}`, {
-              max: maxPrayerPassages,
-            })}
-          </p>
-        )}
-        {draft.passages.length > 0 && (
-          <ul className="flex flex-wrap gap-2">
-            {draft.passages.flatMap((slug) => {
-              const passage = parsePassageSlug(slug)
-              if (!passage) return []
-              const label = formatPassage(passage, locale)
-              return [
-                <li
-                  key={slug}
-                  className="flex items-center gap-1 rounded-full bg-brand-night/[0.06] py-1 pr-1 pl-3 text-sm dark:bg-white/10"
-                >
-                  {label}
-                  <button
-                    type="button"
-                    aria-label={t("passages.remove", { passage: label })}
-                    onClick={() =>
-                      setDraft({
-                        ...draft,
-                        passages: draft.passages.filter((s) => s !== slug),
-                      })
-                    }
-                    className="rounded-full p-1 outline-none hover:bg-brand-night/10 focus-visible:ring-3 focus-visible:ring-brand-gold dark:hover:bg-white/10"
-                  >
-                    <X aria-hidden className="size-3.5" />
-                  </button>
-                </li>,
-              ]
-            })}
-          </ul>
-        )}
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        <Button type="submit" disabled={pending || !valid}>
-          {t("save")}
-        </Button>
-        <Button type="button" variant="ghost" onClick={onCancel}>
-          {t("cancel")}
-        </Button>
-      </div>
+      </FieldGroup>
     </form>
   )
 }

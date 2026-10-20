@@ -10,6 +10,7 @@ import {
   type PrayerStatus,
 } from "@workspace/core"
 import { prisma } from "@workspace/db"
+import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -80,19 +81,21 @@ export default async function PrayerPage({
   }))
   const total = counts.ACTIVE + counts.ANSWERED + counts.ARCHIVED
 
+  // The filters are links (they change the address), dressed like buttons.
   const chip = (selected: boolean) =>
     cn(
-      "rounded-full px-3.5 py-1.5 text-sm ring-1 transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand-gold",
-      selected
-        ? "bg-brand-night text-brand-cream ring-brand-night dark:bg-brand-gold dark:text-neutral-950 dark:ring-brand-gold"
-        : "ring-brand-night/15 hover:bg-brand-gold/10 dark:ring-white/20"
+      buttonVariants({
+        variant: selected ? "default" : "outline",
+        size: "sm",
+      }),
+      "rounded-full"
     )
 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-1">
         <h1 className="font-heading text-3xl font-semibold">{t("title")}</h1>
-        <p className="text-brand-night/70 dark:text-neutral-100/70">
+        <p className="text-muted-foreground">
           {t("description")}
         </p>
       </div>

@@ -113,6 +113,32 @@ describe("meditation inputs", () => {
     ).toBe(false)
   })
 
+  it("is a meditation unless the session says it is a prayer", () => {
+    const base = {
+      plannedSeconds: 3600,
+      durationSeconds: 3600,
+      startedAt: "2026-10-20T08:00:00.000Z",
+    }
+    expect(meditationSessionInputSchema.parse(base).kind).toBe("MEDITATION")
+    expect(
+      meditationSessionInputSchema.parse({ ...base, kind: "PRAYER" }).kind
+    ).toBe("PRAYER")
+    expect(
+      meditationSessionInputSchema.safeParse({ ...base, kind: "NAP" }).success
+    ).toBe(false)
+  })
+
+  it("allows an hour of prayer and more", () => {
+    expect(
+      meditationSessionInputSchema.safeParse({
+        kind: "PRAYER",
+        plannedSeconds: 3 * 3600,
+        durationSeconds: 3 * 3600,
+        startedAt: "2026-10-20T08:00:00.000Z",
+      }).success
+    ).toBe(true)
+  })
+
   it("keeps the time really spent within reach of the plan", () => {
     const base = {
       plannedSeconds: 600,

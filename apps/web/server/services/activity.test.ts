@@ -23,6 +23,7 @@ describe("recordActivity", () => {
         readings: 0,
         prayers: 1,
         meditationSeconds: 600,
+        prayerSeconds: 0,
       },
       update: {
         prayers: { increment: 1 },
@@ -60,6 +61,7 @@ describe("listActivity", () => {
           readings: 1,
           prayers: 0,
           meditationSeconds: 0,
+          prayerSeconds: 0,
         },
         {
           day: new Date("2026-10-20T00:00:00Z"),
@@ -72,7 +74,13 @@ describe("listActivity", () => {
     expect(
       await listActivity(dbOf(activityDay), "user-1", "2026-10-01", "2026-10-31")
     ).toEqual([
-      { day: "2026-10-19", readings: 1, prayers: 0, meditationSeconds: 0 },
+      {
+        day: "2026-10-19",
+        readings: 1,
+        prayers: 0,
+        meditationSeconds: 0,
+        prayerSeconds: 0,
+      },
     ])
   })
 })
@@ -81,7 +89,12 @@ describe("activityTotals", () => {
   it("sums what was done, with zero for nothing", async () => {
     const activityDay = {
       aggregate: vi.fn().mockResolvedValue({
-        _sum: { readings: null, prayers: 4, meditationSeconds: 900 },
+        _sum: {
+          readings: null,
+          prayers: 4,
+          meditationSeconds: 900,
+          prayerSeconds: 3600,
+        },
       }),
       count: vi.fn().mockResolvedValue(3),
     }
@@ -89,6 +102,7 @@ describe("activityTotals", () => {
       readings: 0,
       prayers: 4,
       meditationSeconds: 900,
+      prayerSeconds: 3600,
       activeDays: 3,
     })
   })
