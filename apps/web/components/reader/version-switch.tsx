@@ -5,6 +5,15 @@ import { useLocale, useTranslations } from "next-intl"
 import { useState, useTransition } from "react"
 
 import { bibleVersions, type BibleVersionId } from "@workspace/bible-data"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 
 import { useRouter, usePathname } from "@/i18n/navigation"
 import { bibleVersionCookie } from "@/lib/bible-version"
@@ -46,68 +55,80 @@ export function VersionSwitch({
   const [value, setValue] = useState(version)
   const [pending, startTransition] = useTransition()
 
+  // The translations of the language of the page come first.
+  const externals = [...externalLinks].sort(
+    (a, b) => Number(b.language === locale) - Number(a.language === locale)
+  )
+  // What the closed select shows for the chosen value.
+  const items = [
+    ...bibleVersions.map((option) => ({ value: option.id, label: option.name })),
+    ...externals.map((link) => ({
+      value: `external:${link.id}`,
+      label: link.label,
+    })),
+  ]
+
+  function change(chosen: string) {
+    const external = externals.find((link) => `external:${link.id}` === chosen)
+    if (external) {
+      // Not hosted here: read it on YouVersion, and stay on this version.
+      window.open(external.href, "_blank", "noopener,noreferrer")
+      return
+    }
+    const next = chosen as BibleVersionId
+    if (next === value) return
+    const previous = value
+    setValue(next)
+    startTransition(async () => {
+      if (signedIn) {
+        const { ok } = await setBibleVersionAction(next).catch(() => ({
+          ok: false,
+        }))
+        if (!ok) {
+          setValue(previous)
+          return
+        }
+      } else {
+        document.cookie = `${bibleVersionCookie}=${next}; path=/; max-age=${oneYear}; samesite=lax`
+      }
+      const params = new URLSearchParams(searchParams)
+      params.delete("v")
+      const search = params.toString()
+      router.replace(search ? `${pathname}?${search}` : pathname)
+      router.refresh()
+    })
+  }
+
   return (
-    <label className="flex items-center gap-2 text-sm text-brand-night/60 dark:text-neutral-100/60">
-      <span className="sr-only">{t("version")}</span>
-      <select
-        value={value}
-        disabled={pending}
-        onChange={(event) => {
-          const external = externalLinks.find(
-            (link) => `external:${link.id}` === event.target.value
-          )
-          if (external) {
-            // Not hosted here: read it on YouVersion, and stay on this version.
-            window.open(external.href, "_blank", "noopener,noreferrer")
-            return
-          }
-          const next = event.target.value as BibleVersionId
-          const previous = value
-          setValue(next)
-          startTransition(async () => {
-            if (signedIn) {
-              const { ok } = await setBibleVersionAction(next).catch(() => ({
-                ok: false,
-              }))
-              if (!ok) {
-                setValue(previous)
-                return
-              }
-            } else {
-              document.cookie = `${bibleVersionCookie}=${next}; path=/; max-age=${oneYear}; samesite=lax`
-            }
-            const params = new URLSearchParams(searchParams)
-            params.delete("v")
-            const search = params.toString()
-            router.replace(search ? `${pathname}?${search}` : pathname)
-            router.refresh()
-          })
-        }}
-        className="h-8 rounded-lg border border-brand-night/15 bg-transparent px-2 dark:border-white/15"
-      >
-        <optgroup label={t("versionGroups.app")}>
+    <Select
+      items={items}
+      value={value}
+      disabled={pending}
+      onValueChange={(chosen) => chosen && change(chosen)}
+    >
+      <SelectTrigger size="sm" aria-label={t("version")} className="min-w-44">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent className="w-72 max-w-[90vw]">
+        <SelectGroup>
+          <SelectLabel>{t("versionGroups.app")}</SelectLabel>
           {bibleVersions.map((option) => (
-            <option key={option.id} value={option.id}>
+            <SelectItem key={option.id} value={option.id}>
               {option.name}
-            </option>
+            </SelectItem>
           ))}
-        </optgroup>
-        {externalLinks.length > 0 && (
-          <optgroup label={t("versionGroups.external")}>
-            {/* The translations of the language of the page come first. */}
-            {[...externalLinks]
-              .sort(
-                (a, b) =>
-                  Number(b.language === locale) - Number(a.language === locale)
-              )
-              .map((link) => (
-                <option key={link.id} value={`external:${link.id}`}>
-                  {link.label}
-                </option>
-              ))}
-          </optgroup>
+        </SelectGroup>
+        {externals.length > 0 && (
+          <SelectGroup>
+            <SelectLabel>{t("versionGroups.external")}</SelectLabel>
+            {externals.map((link) => (
+              <SelectItem key={link.id} value={`external:${link.id}`}>
+                {link.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
         )}
-      </select>
-    </label>
+      </SelectContent>
+    </Select>
   )
 }
