@@ -867,7 +867,8 @@
       "external": "On YouVersion (new tab)"
     },
     "credit": "{name}. {notice}. Text provided by the YouVersion Platform.",
-    "publicDomain": "Public domain"
+    "publicDomain": "Public domain",
+    "writeNote": "Write a note"
   },
   "BibleIndex": {
     "title": "The Bible",
@@ -965,6 +966,82 @@
         "invalid": "Reference not found. Try for example “Ps 51:1-4” or “John 3:16”.",
         "limit": "At most {max} passages per request."
       }
+    }
+  },
+  "Notes": {
+    "title": "Meditation notes",
+    "description": "Keep what you take from a passage: the key verse, your reflection and how you will live it.",
+    "add": "New note",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Delete this note? This cannot be undone.",
+    "fields": {
+      "passage": "Passage",
+      "passagePlaceholder": "E.g. John 3:1-21",
+      "keyVerse": "Key verse",
+      "keyVersePlaceholder": "E.g. John 3:16",
+      "reflection": "Reflection",
+      "reflectionPlaceholder": "What does this passage say? What did you discover?",
+      "application": "Personal application",
+      "applicationPlaceholder": "How will you live it this week?"
+    },
+    "search": {
+      "label": "Search",
+      "placeholder": "A word from your notes",
+      "book": "Book",
+      "allBooks": "All books",
+      "submit": "Search"
+    },
+    "empty": {
+      "title": "No notes yet",
+      "description": "After a reading or a meditation, write down what struck you.",
+      "filteredTitle": "No notes found",
+      "filteredDescription": "Try another word or another book."
+    },
+    "errors": {
+      "passage": "Passage not found. Try for example “John 3:1-21”.",
+      "keyVerse": "Verse not found. Try for example “John 3:16”.",
+      "invalid": "Write at least a reflection, an application or a key verse.",
+      "limit": "You have reached the limit of notes. Delete some to add more.",
+      "notFound": "This note no longer exists. Reload the page.",
+      "unexpected": "Something went wrong. Try again in a moment."
+    }
+  },
+  "Meditate": {
+    "title": "Meditation",
+    "description": "Take a quiet time with a passage, with a screen that stays on.",
+    "setup": {
+      "duration": "Duration",
+      "minutes": "{count} min",
+      "custom": "Other duration (minutes)",
+      "passage": "Passage to meditate on",
+      "passagePlaceholder": "E.g. Psalm 23",
+      "passageToday": "This is today’s reading in your plan. You can change it.",
+      "passageHint": "Optional. Leave empty to meditate without a passage.",
+      "passageError": "Passage not found. Try for example “Psalm 23”.",
+      "start": "Start"
+    },
+    "timer": {
+      "label": "Meditation timer",
+      "readPassage": "read in a new tab",
+      "breathe": "Breathe. God is here.",
+      "paused": "Paused",
+      "pause": "Pause",
+      "resume": "Resume",
+      "stop": "Finish"
+    },
+    "done": {
+      "title": "Session complete",
+      "saved": "{duration} of meditation saved.",
+      "notSaved": "{duration} of meditation. The session could not be saved.",
+      "offerTitle": "Write down your reflection",
+      "offerDescription": "Keep what you received during this time, while it is fresh.",
+      "writeNote": "Write a note",
+      "noteSaved": "Note saved.",
+      "seeNotes": "See my notes",
+      "again": "New session"
     }
   }
 }

@@ -867,7 +867,8 @@
       "external": "Sur YouVersion (nouvel onglet)"
     },
     "credit": "{name}. {notice}. Texte fourni par la plateforme YouVersion.",
-    "publicDomain": "Domaine public"
+    "publicDomain": "Domaine public",
+    "writeNote": "Noter"
   },
   "BibleIndex": {
     "title": "La Bible",
@@ -965,6 +966,82 @@
         "invalid": "Référence introuvable. Essayez par exemple « Ps 51:1-4 » ou « Jean 3:16 ».",
         "limit": "Au plus {max} passages par sujet."
       }
+    }
+  },
+  "Notes": {
+    "title": "Notes de méditation",
+    "description": "Gardez ce que vous retenez d’un passage : le verset clé, votre réflexion et ce que vous allez en vivre.",
+    "add": "Nouvelle note",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "confirmDelete": "Supprimer cette note ? Cette action est définitive.",
+    "fields": {
+      "passage": "Passage",
+      "passagePlaceholder": "Ex. Jean 3:1-21",
+      "keyVerse": "Verset clé",
+      "keyVersePlaceholder": "Ex. Jean 3:16",
+      "reflection": "Réflexion",
+      "reflectionPlaceholder": "Que dit ce passage ? Qu’avez-vous découvert ?",
+      "application": "Application personnelle",
+      "applicationPlaceholder": "Comment allez-vous le vivre cette semaine ?"
+    },
+    "search": {
+      "label": "Rechercher",
+      "placeholder": "Un mot de vos notes",
+      "book": "Livre",
+      "allBooks": "Tous les livres",
+      "submit": "Chercher"
+    },
+    "empty": {
+      "title": "Aucune note pour l’instant",
+      "description": "Après une lecture ou une méditation, écrivez ce qui vous a marqué.",
+      "filteredTitle": "Aucune note trouvée",
+      "filteredDescription": "Essayez un autre mot ou un autre livre."
+    },
+    "errors": {
+      "passage": "Passage introuvable. Essayez par exemple « Jean 3:1-21 ».",
+      "keyVerse": "Verset introuvable. Essayez par exemple « Jean 3:16 ».",
+      "invalid": "Écrivez au moins une réflexion, une application ou un verset clé.",
+      "limit": "Vous avez atteint la limite de notes. Supprimez-en pour en ajouter.",
+      "notFound": "Cette note n’existe plus. Rechargez la page.",
+      "unexpected": "Une erreur est survenue. Réessayez dans un instant."
+    }
+  },
+  "Meditate": {
+    "title": "Méditation",
+    "description": "Prenez un temps au calme avec un passage, sans écran qui s’éteigne.",
+    "setup": {
+      "duration": "Durée",
+      "minutes": "{count} min",
+      "custom": "Autre durée (minutes)",
+      "passage": "Passage à méditer",
+      "passagePlaceholder": "Ex. Psaume 23",
+      "passageToday": "C’est la lecture du jour de votre plan. Vous pouvez la changer.",
+      "passageHint": "Facultatif. Laissez vide pour méditer sans passage.",
+      "passageError": "Passage introuvable. Essayez par exemple « Psaume 23 ».",
+      "start": "Commencer"
+    },
+    "timer": {
+      "label": "Minuteur de méditation",
+      "readPassage": "lire dans un nouvel onglet",
+      "breathe": "Respirez. Dieu est là.",
+      "paused": "En pause",
+      "pause": "Pause",
+      "resume": "Reprendre",
+      "stop": "Terminer"
+    },
+    "done": {
+      "title": "Session terminée",
+      "saved": "{duration} de méditation enregistrées.",
+      "notSaved": "{duration} de méditation. La session n’a pas pu être enregistrée.",
+      "offerTitle": "Noter votre réflexion",
+      "offerDescription": "Gardez ce que vous avez reçu pendant ce temps, tant que c’est frais.",
+      "writeNote": "Écrire une note",
+      "noteSaved": "Note enregistrée.",
+      "seeNotes": "Voir mes notes",
+      "again": "Nouvelle session"
     }
   }
 }

@@ -1,4 +1,9 @@
-import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  NotebookPen,
+} from "lucide-react"
 import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
@@ -286,6 +291,16 @@ export default async function ReadPage({
             passage.start.chapter === passage.end.chapter && (
               <ParallelToggle main={versionId} others={others} />
             )}
+          {/* Notes are kept in the account: nothing to offer a visitor. */}
+          {user && (
+            <Link
+              href={`/notes?new=${toPassageSlug(passage)}`}
+              className="flex items-center gap-1.5 text-sm text-brand-night/70 underline-offset-4 hover:underline dark:text-neutral-100/70"
+            >
+              <NotebookPen aria-hidden className="size-3.5" />
+              {t("writeNote")}
+            </Link>
+          )}
           <a
             href={youVersionUrl(passage, version.id)}
             target="_blank"
