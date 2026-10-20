@@ -26,6 +26,7 @@ import {
   previewPlan,
   PreviewStep,
 } from "@/components/plans/wizard/preview-step"
+import { BookRangeStep } from "@/components/plans/wizard/book-range-step"
 import { ScheduleStep } from "@/components/plans/wizard/schedule-step"
 import {
   findPreset,
@@ -134,13 +135,19 @@ export function PlanWizard({
         }
       />
     ),
-    selection: (
-      <SelectionStep
-        passages={state.passages}
-        onChange={(passages) => update({ passages })}
-        free={state.type === "free"}
-      />
-    ),
+    selection:
+      state.type === "chapters" ? (
+        <BookRangeStep
+          passages={state.passages}
+          onChange={(passages) => update({ passages })}
+        />
+      ) : (
+        <SelectionStep
+          passages={state.passages}
+          onChange={(passages) => update({ passages })}
+          free={state.type === "free"}
+        />
+      ),
     schedule: state.type && (
       <ScheduleStep
         type={state.type}

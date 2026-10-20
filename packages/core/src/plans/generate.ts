@@ -57,6 +57,27 @@ function schedule(
       const groups = tracks.map((units) => planOverDays(units, dates.length))
       return { dates, groups }
     }
+    case "chaptersPerDay": {
+      // The same number of chapters every day, in every track; the plan lasts
+      // as long as the longest track needs. A chapter is one unit (a part of
+      // a chapter counts as one, so only passages made of whole chapters give
+      // exactly the number asked for).
+      const days = Math.max(
+        ...tracks.map((units) => Math.ceil(units.length / pace.chapters))
+      )
+      if (days > maxPlanDays) throw new PlanGenerationError("too_long")
+      const dates = computeActiveDates({
+        startDate,
+        activeWeekdays,
+        count: days,
+      })
+      const groups = tracks.map((units) =>
+        Array.from({ length: Math.ceil(units.length / pace.chapters) }, (_, day) =>
+          units.slice(day * pace.chapters, (day + 1) * pace.chapters)
+        )
+      )
+      return { dates, groups }
+    }
     case "minutesPerDay": {
       // The time is a guide to size the plan, not a daily limit: the plan
       // lasts as many days as the average day needs to fit in it.
@@ -94,7 +115,8 @@ export function generatePlan(input: PlanInput): GeneratedPlan {
 
   const days: PlanDay[] = dates.map((date, index) => {
     const readings: PlanReading[] = groups.flatMap((trackDays, track) =>
-      mergeUnits(trackDays[index]!).map((passage) => ({
+      // A shorter track is over before the others: nothing to read on its side.
+      mergeUnits(trackDays[index] ?? []).map((passage) => ({
         track,
         passage,
         verses: countPassageVerses(passage),

@@ -229,3 +229,81 @@ describe("generatePlan", () => {
     expect(run).toThrow(/too_many_days/)
   })
 })
+
+describe("generatePlan by chapters per day", () => {
+  const input = (reference: string, chapters: number): PlanInput => ({
+    tracks: [track(reference)],
+    startDate: "2026-11-02",
+    pace: { mode: "chaptersPerDay", chapters },
+  })
+
+  it("reads the same number of chapters every day, in order", () => {
+    // Genesis 1 to 50 and Exodus: 3 chapters a day.
+    const plan = generatePlan(input("Gn", 3))
+    expect(plan.days).toHaveLength(Math.ceil(50 / 3))
+    expect(readings(plan.days[0]!)).toBe("Genèse 1–3")
+    expect(readings(plan.days[1]!)).toBe("Genèse 4–6")
+    // 50 chapters: the last day has the 2 that remain.
+    expect(readings(plan.days.at(-1)!)).toBe("Genèse 49–50")
+  })
+
+  it("goes over from one book to the next without a gap", () => {
+    // Ruth has 4 chapters, then Esther's 10: 14 chapters, 5 a day.
+    const plan = generatePlan({
+      tracks: [
+        { passages: [bookPassage("Ruth"), bookPassage("Esth")] },
+      ],
+      startDate: "2026-11-02",
+      pace: { mode: "chaptersPerDay", chapters: 5 },
+    })
+    expect(plan.days).toHaveLength(3)
+    expect(readings(plan.days[0]!)).toBe("Ruth 1–4; Esther 1")
+    expect(readings(plan.days[1]!)).toBe("Esther 2–6")
+    expect(readings(plan.days[2]!)).toBe("Esther 7–10")
+  })
+
+  it("reads one chapter a day for as many days as there are chapters", () => {
+    const plan = generatePlan(input("Jn", 1))
+    expect(plan.days).toHaveLength(21)
+    expect(plan.endDate).toBe("2026-11-22")
+  })
+
+  it("covers every verse once whatever the number of chapters", () => {
+    for (const chapters of [1, 2, 3, 7, 50]) {
+      const plan = generatePlan(input("Mt", chapters))
+      const verses = plan.days.reduce((total, day) => total + day.verses, 0)
+      expect(verses).toBe(plan.totalVerses)
+    }
+  })
+
+  it("skips the days that are not read, like the other paces", () => {
+    const plan = generatePlan({
+      ...input("Jn", 7),
+      startDate: "2026-11-02", // a Monday
+      activeWeekdays: [1, 3, 5],
+    })
+    expect(plan.days.map((day) => getWeekday(day.date))).toEqual([1, 3, 5])
+  })
+
+  it("keeps a shorter track going no further than its chapters", () => {
+    const plan = generatePlan({
+      tracks: [track("Jn"), track("Jude")],
+      startDate: "2026-11-02",
+      pace: { mode: "chaptersPerDay", chapters: 1 },
+    })
+    // John lasts 21 days, Jude is one chapter: read on the first day only.
+    expect(plan.days).toHaveLength(21)
+    expect(plan.days[0]!.readings).toHaveLength(2)
+    expect(plan.days[1]!.readings).toHaveLength(1)
+  })
+
+  it("reads the whole Bible at a chapter a day, within the plan limit", () => {
+    const wholeBible = books.map((book) => bookPassage(book.id))
+    const plan = generatePlan({
+      tracks: [{ passages: wholeBible }],
+      startDate: "2026-11-02",
+      pace: { mode: "chaptersPerDay", chapters: 1 },
+    })
+    expect(plan.days).toHaveLength(1189)
+  })
+})

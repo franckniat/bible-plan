@@ -15,8 +15,14 @@ import {
   type Weekday,
 } from "@workspace/core"
 
-/** The four ways of creating a plan. */
-export const wizardTypes = ["template", "duration", "time", "free"] as const
+/** The five ways of creating a plan. */
+export const wizardTypes = [
+  "template",
+  "duration",
+  "time",
+  "chapters",
+  "free",
+] as const
 export type WizardType = (typeof wizardTypes)[number]
 
 export type WizardStep = "type" | "selection" | "schedule" | "preview"
@@ -100,6 +106,8 @@ export function defaultPace(
       return { mode: "days", days: 90 }
     case "time":
       return { mode: "minutesPerDay", minutes: 15, readingWpm }
+    case "chapters":
+      return { mode: "chaptersPerDay", chapters: 3 }
     case "free":
       return { mode: "days", days: 30 }
   }
@@ -129,7 +137,13 @@ export function suggestTitle(state: WizardState, locale: Locale): string {
   }
   const bookIds = new Set(state.passages.map((passage) => passage.book))
   const [only] = bookIds
-  return bookIds.size === 1 && only ? getBookName(only, locale) : ""
+  if (bookIds.size === 1 && only) return getBookName(only, locale)
+  // From a book to a book: "Genèse – Deutéronome".
+  const first = state.passages[0]?.book
+  const last = state.passages.at(-1)?.book
+  return state.type === "chapters" && first && last
+    ? `${getBookName(first, locale)} – ${getBookName(last, locale)}`
+    : ""
 }
 
 /** The request sent to the server to create the plan. */

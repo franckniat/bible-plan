@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl"
 
 import {
   addDays,
+  maxChaptersPerDay,
   maxMinutesPerDay,
   maxPlanDays,
   type IsoDate,
@@ -34,11 +35,13 @@ const modesByType: Record<WizardType, PaceMode[]> = {
   template: ["days", "endDate", "minutesPerDay"],
   duration: ["days", "endDate"],
   time: ["minutesPerDay"],
+  chapters: ["chaptersPerDay"],
   free: ["days", "endDate", "minutesPerDay"],
 }
 
 const quickDays = [30, 90, 180, 365]
 const quickMinutes = [5, 10, 15, 20, 30]
+const quickChapters = [1, 2, 3, 5, 10]
 
 const chipClassName = (active: boolean) =>
   cn(
@@ -102,6 +105,8 @@ export function ScheduleStep({
         })
       case "minutesPerDay":
         return onChange({ pace: { mode, minutes: 15, readingWpm } })
+      case "chaptersPerDay":
+        return onChange({ pace: { mode, chapters: 3 } })
     }
   }
 
@@ -232,6 +237,45 @@ export function ScheduleStep({
               {t("endDate.beforeStart")}
             </p>
           )}
+        </Field>
+      )}
+
+      {pace.mode === "chaptersPerDay" && (
+        <Field>
+          <FieldLabel htmlFor="chapters">{t("chapters.label")}</FieldLabel>
+          <Input
+            id="chapters"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={maxChaptersPerDay}
+            value={Number.isNaN(pace.chapters) ? "" : pace.chapters}
+            onChange={(event) =>
+              onChange({
+                pace: {
+                  mode: "chaptersPerDay",
+                  chapters: event.target.valueAsNumber,
+                },
+              })
+            }
+            className="h-10 w-32"
+          />
+          <div className="flex flex-wrap gap-2">
+            {quickChapters.map((chapters) => (
+              <button
+                key={chapters}
+                type="button"
+                aria-pressed={pace.chapters === chapters}
+                onClick={() =>
+                  onChange({ pace: { mode: "chaptersPerDay", chapters } })
+                }
+                className={chipClassName(pace.chapters === chapters)}
+              >
+                {t("chapters.quick", { chapters })}
+              </button>
+            ))}
+          </div>
+          <FieldDescription>{t("chapters.hint")}</FieldDescription>
         </Field>
       )}
 

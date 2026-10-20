@@ -1,6 +1,12 @@
 "use client"
 
-import { BookOpen, CalendarRange, Clock, Library } from "lucide-react"
+import {
+  BookOpen,
+  CalendarRange,
+  Clock,
+  Library,
+  ListOrdered,
+} from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 
 import { planTemplates, type Locale } from "@workspace/core"
@@ -16,6 +22,7 @@ const typeIcons = {
   template: Library,
   duration: CalendarRange,
   time: Clock,
+  chapters: ListOrdered,
   free: BookOpen,
 } satisfies Record<WizardType, unknown>
 

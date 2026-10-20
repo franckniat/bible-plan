@@ -14,6 +14,8 @@ export const maxPlanDays = 3650
 /** Parallel tracks read every day, e.g. Old and New Testament (M'Cheyne has 4). */
 export const maxTracks = 4
 export const maxMinutesPerDay = 240
+/** Chapters read on a day, at most, when the pace is a number of chapters. */
+export const maxChaptersPerDay = 50
 
 /** How the length of the plan is chosen. */
 export const planPaceSchema = z.discriminatedUnion("mode", [
@@ -26,6 +28,11 @@ export const planPaceSchema = z.discriminatedUnion("mode", [
     mode: z.literal("minutesPerDay"),
     minutes: z.int().min(1).max(maxMinutesPerDay),
     readingWpm: z.int().min(minReadingWpm).max(maxReadingWpm),
+  }),
+  // A number of chapters on each reading day, until the passages are read.
+  z.object({
+    mode: z.literal("chaptersPerDay"),
+    chapters: z.int().min(1).max(maxChaptersPerDay),
   }),
 ])
 
