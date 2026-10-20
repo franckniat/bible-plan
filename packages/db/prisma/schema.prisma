@@ -69,6 +69,8 @@ model User {
   notifications      Notification[]
   highlights         Highlight[]
   prayerRequests     PrayerRequest[]
+  meditationSessions MeditationSession[]
+  meditationNotes    MeditationNote[]
   pushDevices        PushDevice[]
 
   locale       String  @default("fr")
@@ -438,4 +440,48 @@ model PrayerLog {
 
   @@index([userId, prayedAt])
   @@index([requestId])
+}
+
+// ─── Meditation ─────────────────────────────────────────────────────────────
+// A timed session, with a passage to meditate on. The duration is the time
+// really spent, which can be shorter than planned.
+
+model MeditationSession {
+  id              String           @id @default(uuid(7))
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// The passage meditated on, as a passage slug ("Ps.23"); optional.
+  passage         String?
+  plannedSeconds  Int
+  /// The time really spent, pauses excluded.
+  durationSeconds Int
+  startedAt       DateTime
+  createdAt       DateTime         @default(now())
+  notes           MeditationNote[]
+
+  @@index([userId, startedAt])
+}
+
+/// What a person wrote about a passage: the key verse, a reflection and how
+/// they will live it. Linked to a passage, and to the book for filtering.
+model MeditationNote {
+  id          String             @id @default(uuid(7))
+  userId      String
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// OSIS book code of the passage, to find notes by book.
+  book        String
+  /// The passage, as a passage slug ("John.3.1-21").
+  passage     String
+  /// The key verse, as a passage slug ("John.3.16"); optional.
+  keyVerse    String?
+  reflection  String?
+  application String?
+  /// The session the note was written after, if any.
+  sessionId   String?
+  session     MeditationSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([userId, book, updatedAt])
+  @@index([userId, updatedAt])
 }
