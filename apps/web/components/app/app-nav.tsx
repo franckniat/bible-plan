@@ -3,6 +3,7 @@
 import {
   BookOpen,
   CalendarCheck,
+  HandHeart,
   Settings,
   Sun,
   type LucideIcon,
@@ -15,7 +16,7 @@ import { Link, usePathname } from "@/i18n/navigation"
 
 type NavItem = {
   href: string
-  label: "today" | "plans" | "bible" | "settings"
+  label: "today" | "plans" | "bible" | "prayer" | "settings"
   icon: LucideIcon
 }
 
@@ -24,6 +25,7 @@ const navItems: NavItem[] = [
   { href: "/today", label: "today", icon: Sun },
   { href: "/read", label: "bible", icon: BookOpen },
   { href: "/plans", label: "plans", icon: CalendarCheck },
+  { href: "/prayer", label: "prayer", icon: HandHeart },
   { href: "/settings", label: "settings", icon: Settings },
 ]
 
