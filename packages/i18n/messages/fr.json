@@ -577,7 +577,11 @@
         "description": "Composez votre plan livre par livre, passage par passage, dans l’ordre de votre choix."
       },
       "templateLegend": "Choisissez un modèle",
-      "days": "{days, plural, one {# jour} other {# jours}}"
+      "days": "{days, plural, one {# jour} other {# jours}}",
+      "chapters": {
+        "label": "Par chapitres",
+        "description": "Choisissez le nombre de chapitres par jour, un livre de début et un livre de fin : le plan en découle."
+      }
     },
     "selection": {
       "presets": "Pour aller vite",
@@ -622,7 +626,8 @@
         "legend": "Durée du plan",
         "days": "Un nombre de jours",
         "endDate": "Une date de fin",
-        "minutesPerDay": "Des minutes par jour"
+        "minutesPerDay": "Des minutes par jour",
+        "chaptersPerDay": "Des chapitres par jour"
       },
       "days": {
         "label": "Nombre de jours de lecture",
@@ -636,6 +641,11 @@
         "label": "Minutes par jour, en moyenne",
         "quick": "{minutes} min",
         "hint": "C’est un repère pour fixer la durée du plan : certains jours seront un peu plus longs, d’autres plus courts. Estimation à {wpm} mots par minute (<settings>modifier ma vitesse de lecture</settings>)."
+      },
+      "chapters": {
+        "label": "Chapitres à lire chaque jour",
+        "quick": "{chapters, plural, one {# chapitre} other {# chapitres}}",
+        "hint": "Chaque jour de lecture compte ce nombre de chapitres. Le plan dure le temps qu’il faut pour tout lire."
       }
     },
     "preview": {
@@ -670,6 +680,17 @@
         "too_long": "Ce plan dépasserait dix ans : choisissez une durée plus courte ou plus de temps par jour.",
         "invalid": "Certaines informations ne sont pas valides : vérifiez les étapes précédentes.",
         "unexpected": "Le plan n’a pas pu être créé. Veuillez réessayer."
+      }
+    },
+    "range": {
+      "from": "Livre de début",
+      "to": "Livre de fin",
+      "placeholder": "Choisir un livre",
+      "hint": "Tous les livres entre les deux sont lus, dans l’ordre de la Bible. Choisissez le même livre pour n’en lire qu’un.",
+      "summary": "{books, plural, one {# livre} other {# livres}}, {chapters} chapitres, {verses} versets.",
+      "testaments": {
+        "old": "Ancien Testament",
+        "new": "Nouveau Testament"
       }
     }
   },
@@ -815,7 +836,6 @@
     },
     "wholeChapter": "Lire tout le chapitre",
     "passageOnly": "Revenir au passage",
-    "youVersion": "Lire dans une autre traduction (YouVersion)",
     "newTab": "(s’ouvre dans un nouvel onglet)",
     "numbering": "Dans la {version}, ces versets portent les numéros {verses}.",
     "settings": {
@@ -871,10 +891,6 @@
       "limit": "{max, plural, one {# version} other {# versions}} au maximum.",
       "loading": "Chargement…",
       "loadFailed": "Le texte n’a pas pu être chargé. Vérifiez votre connexion et réessayez."
-    },
-    "versionGroups": {
-      "app": "Dans l’application",
-      "external": "Sur YouVersion (nouvel onglet)"
     },
     "credit": "{name}. {notice}. Texte fourni par la plateforme YouVersion.",
     "publicDomain": "Domaine public",

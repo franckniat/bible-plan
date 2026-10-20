@@ -577,7 +577,11 @@
         "description": "Build your plan book by book, passage by passage, in the order you like."
       },
       "templateLegend": "Choose a template",
-      "days": "{days, plural, one {# day} other {# days}}"
+      "days": "{days, plural, one {# day} other {# days}}",
+      "chapters": {
+        "label": "By chapters",
+        "description": "Choose the number of chapters a day, a first book and a last book: the plan follows."
+      }
     },
     "selection": {
       "presets": "Quick picks",
@@ -622,7 +626,8 @@
         "legend": "Length of the plan",
         "days": "A number of days",
         "endDate": "An end date",
-        "minutesPerDay": "Minutes per day"
+        "minutesPerDay": "Minutes per day",
+        "chaptersPerDay": "Chapters per day"
       },
       "days": {
         "label": "Number of reading days",
@@ -636,6 +641,11 @@
         "label": "Minutes per day, on average",
         "quick": "{minutes} min",
         "hint": "A guide to set the length of the plan: some days will be a little longer, others shorter. Estimated at {wpm} words per minute (<settings>change my reading speed</settings>)."
+      },
+      "chapters": {
+        "label": "Chapters to read each day",
+        "quick": "{chapters, plural, one {# chapter} other {# chapters}}",
+        "hint": "Every reading day has this many chapters. The plan lasts as long as it takes to read everything."
       }
     },
     "preview": {
@@ -670,6 +680,17 @@
         "too_long": "This plan would last more than ten years: choose a shorter length or more time per day.",
         "invalid": "Some details are not valid: check the previous steps.",
         "unexpected": "The plan could not be created. Please try again."
+      }
+    },
+    "range": {
+      "from": "First book",
+      "to": "Last book",
+      "placeholder": "Choose a book",
+      "hint": "Every book in between is read, in the order of the Bible. Choose the same book to read only one.",
+      "summary": "{books, plural, one {# book} other {# books}}, {chapters} chapters, {verses} verses.",
+      "testaments": {
+        "old": "Old Testament",
+        "new": "New Testament"
       }
     }
   },
@@ -815,7 +836,6 @@
     },
     "wholeChapter": "Read the whole chapter",
     "passageOnly": "Back to the passage",
-    "youVersion": "Read in another translation (YouVersion)",
     "newTab": "(opens in a new tab)",
     "numbering": "In the {version}, these verses are numbered {verses}.",
     "settings": {
@@ -871,10 +891,6 @@
       "limit": "Up to {max, plural, one {# version} other {# versions}}.",
       "loading": "Loading…",
       "loadFailed": "The text could not be loaded. Check your connection and try again."
-    },
-    "versionGroups": {
-      "app": "In the app",
-      "external": "On YouVersion (new tab)"
     },
     "credit": "{name}. {notice}. Text provided by the YouVersion Platform.",
     "publicDomain": "Public domain",

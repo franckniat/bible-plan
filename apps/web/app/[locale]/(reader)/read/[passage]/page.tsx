@@ -1,7 +1,6 @@
 import {
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
   NotebookPen,
 } from "lucide-react"
 import type { Metadata } from "next"
@@ -13,10 +12,7 @@ import {
   getBibleVersion,
   isBibleVersionId,
   mapPassage,
-  externalVersions,
   isPublicDomainNotice,
-  externalVersionUrl,
-  youVersionUrl,
 } from "@workspace/bible-data"
 import {
   adjacentChapter,
@@ -288,19 +284,7 @@ export default async function ReadPage({
           {formatPassage(passage, locale)}
         </h1>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <VersionSwitch
-            version={version.id}
-            signedIn={user !== null}
-            externalLinks={externalVersions
-              // A translation that joined the app is read in the app.
-              .filter((external) => !isBibleVersionId(external.id))
-              .map((external) => ({
-                id: external.id,
-                label: `${external.name} (${external.abbreviation})`,
-                language: external.language,
-                href: externalVersionUrl(passage, external.id),
-              }))}
-          />
+          <VersionSwitch version={version.id} signedIn={user !== null} />
           {/* Parallel reading is for whole chapters. */}
           {coversWholeChapters(passage) &&
             passage.start.chapter === passage.end.chapter && (
@@ -316,16 +300,6 @@ export default async function ReadPage({
               {t("writeNote")}
             </Link>
           )}
-          <a
-            href={youVersionUrl(passage, version.id)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-sm text-brand-night/70 underline-offset-4 hover:underline dark:text-neutral-100/70"
-          >
-            {t("youVersion")}
-            <ExternalLink aria-hidden className="size-3.5" />
-            <span className="sr-only">{t("newTab")}</span>
-          </a>
         </div>
       </header>
 

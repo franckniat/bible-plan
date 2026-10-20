@@ -40,7 +40,7 @@ import nvsIndex from "../data/nvs/index.json"
   language: "fr",          // "fr" ou "en" : langue de l'application où elle est proposée par défaut
   year: 2000,
   source: nvsIndex.source,
-  youVersion: { id: 0, abbreviation: "NVS" }, // la même traduction sur bible.com (lien « lire dans une autre traduction »)
+  youVersion: { id: 0, abbreviation: "NVS" }, // la même traduction sur YouVersion (identifiant de l'API et abréviation affichée)
   verseCounts: nvsIndex.verseCounts,
 },
 ```
@@ -72,11 +72,6 @@ Une traduction peut aussi être lue dans l'application sans que son texte soit s
 
 Disponibles aujourd'hui : BSB, WEB et Ostervald. NIV et la Bible du Semeur demandent d'accepter la « Biblica Fast-track Bible License » pour la clé, dans le portail YouVersion Platform. NLT, NKJV, Parole de Vie, Segond 21 et Nouvelle Français courant ne sont pas proposées par l'API YouVersion. Darby et Martin 1744 sont exclues : leur découpage de Joël et de Malachie diffère du canon.
 
-## Traductions sous droits (liens vers YouVersion)
+## Traductions sous droits
 
-Les traductions modernes (NIV, NLT, NKJV, Parole de Vie, Bible du Semeur, Segond 21, Nouvelle Français courant…) appartiennent à leurs éditeurs : leur texte ne doit pas être copié dans ce dépôt public ni servi sans licence. Elles sont donc déclarées à part, dans `packages/bible-data/src/external-versions.ts` : l'application les propose dans le sélecteur de version du lecteur (groupe « Sur YouVersion ») et ouvre le même passage sur bible.com dans un nouvel onglet.
-
-Pour en ajouter une, ajouter une entrée à la liste avec l'identifiant et l'abréviation de YouVersion (visibles dans l'adresse de la version, par exemple `bible.com/versions/111-niv-…` : identifiant 111, abréviation `NIV`). Ces traductions ne se lisent pas dans l'application et ne se comparent pas ; les surbrillances et la comparaison ne concernent que les versions hébergées. Un psalme s'ouvre en chapitre entier, parce que leur numérotation n'est pas connue.
-
-Pour proposer une de ces traductions dans l'application, il faut une licence de son éditeur (ou un accès comme API.Bible), puis suivre les étapes ci-dessus avec le texte fourni.
-
+Les traductions modernes (NLT, NKJV, Parole de Vie, Segond 21, Nouvelle Français courant…) appartiennent à leurs éditeurs : leur texte ne doit pas être copié dans ce dépôt public ni servi sans licence. L'application ne propose pas de lien vers un autre site pour les lire : une traduction n'y figure que si elle est hébergée ou servie par l'API YouVersion avec une licence valide. Pour en proposer une autre, il faut une licence de son éditeur (ou un accès comme API.Bible), puis suivre les étapes ci-dessus avec le texte fourni.

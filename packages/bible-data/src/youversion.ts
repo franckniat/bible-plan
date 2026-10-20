@@ -1,14 +1,6 @@
-import {
-  bookIds,
-  getVerseCount,
-  type BookId,
-  type Passage,
-} from "@workspace/core"
+import { bookIds, type BookId } from "@workspace/core"
 
-import { mapPassage } from "./versification"
-import { getBibleVersion, type BibleVersionId } from "./versions"
-
-/** USFM book codes used by bible.com, in canonical order (as bookIds). */
+/** USFM book codes used by YouVersion, in canonical order (as bookIds). */
 const usfmCodes = [
   "GEN",
   "EXO",
@@ -85,29 +77,4 @@ export function usfmCode(book: BookId): string {
 /** The book of a USFM code ("JHN" is "John"), or undefined for an unknown code. */
 export function bookOfUsfm(code: string): BookId | undefined {
   return bookIds[usfmCodes.findIndex((usfm) => usfm === code)]
-}
-
-/**
- * The same passage on YouVersion (bible.com), in the same translation; from
- * there the reader can switch to any other translation. A passage over
- * several chapters opens at its first chapter, as bible.com links hold one
- * chapter.
- */
-export function youVersionUrl(
-  passage: Passage,
-  versionId: BibleVersionId
-): string {
-  const version = getBibleVersion(versionId)
-  const first = mapPassage(passage, version)[0]!
-  const count = version.verseCounts[passage.book]?.[first.chapter - 1]
-  const wholeChapter =
-    first.from === 1 &&
-    first.to === (count ?? getVerseCount(passage.book, first.chapter))
-  const verses = wholeChapter
-    ? ""
-    : first.from === first.to
-      ? `.${first.from}`
-      : `.${first.from}-${first.to}`
-  const { id, abbreviation } = version.youVersion
-  return `https://www.bible.com/bible/${id}/${usfmCode(passage.book)}.${first.chapter}${verses}.${abbreviation}`
 }
