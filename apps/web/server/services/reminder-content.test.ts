@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import { parseReference, type Passage } from "@workspace/core"
 
 import {
+  pickReminderTopics,
   reminderContent,
   remainingReadings,
   type ContentTranslator,
@@ -140,7 +141,7 @@ describe("reminderContent: meditation and prayer", () => {
     expect(content.href).toBe("/read/Phil.4.19")
   })
 
-  it("has a plain invitation without a verse, and for prayer", () => {
+  it("has a plain invitation without a verse, and for prayer without a request", () => {
     expect(
       reminderContent({
         kind: "MEDITATION",
@@ -158,6 +159,58 @@ describe("reminderContent: meditation and prayer", () => {
         verse: null,
         t,
       })
-    ).toEqual({ title: "PRAYER.title", body: "PRAYER.body" })
+    ).toEqual({ title: "PRAYER.title", body: "PRAYER.body", href: "/prayer" })
+  })
+})
+
+describe("pickReminderTopics", () => {
+  const requests = ["A", "B", "C", "D", "E", "F", "G"]
+
+  it("names all of them when there are three or fewer", () => {
+    expect(pickReminderTopics([], 5)).toEqual([])
+    expect(pickReminderTopics(["A", "B"], 5)).toEqual(["A", "B"])
+    expect(pickReminderTopics(["A", "B", "C"], 9)).toEqual(["A", "B", "C"])
+  })
+
+  it("takes three, a different three each day", () => {
+    const days = [0, 1, 2].map((day) => pickReminderTopics(requests, day))
+    expect(days).toEqual([
+      ["A", "B", "C"],
+      ["D", "E", "F"],
+      ["G", "A", "B"],
+    ])
+    for (const day of days) expect(new Set(day).size).toBe(3)
+  })
+
+  it("starts from the same place for the same day", () => {
+    expect(pickReminderTopics(requests, 20_000)).toEqual(
+      pickReminderTopics(requests, 20_000)
+    )
+  })
+
+  it("holds for days before the epoch", () => {
+    expect(pickReminderTopics(requests, -1)).toHaveLength(3)
+  })
+})
+
+describe("prayer reminders", () => {
+  const prayer = (topics: string[]) =>
+    reminderContent({ kind: "PRAYER", locale: "fr", plans: [], verse: null, topics, t })
+
+  it("names the requests to pray for, and opens the journal", () => {
+    expect(prayer(["Pour Marie", "Ma famille"])).toMatchObject({
+      body: "PRAYER.bodyWith(topics=Pour Marie et Ma famille)",
+      href: "/prayer",
+    })
+  })
+
+  it("is a plain invitation when there is no request", () => {
+    expect(prayer([])).toMatchObject({ body: "PRAYER.body", href: "/prayer" })
+  })
+
+  it("cuts a long title for the notification", () => {
+    const body = prayer(["x".repeat(100)])!.body
+    expect(body.length).toBeLessThan(80)
+    expect(body).toContain("…")
   })
 })

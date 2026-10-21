@@ -3,14 +3,16 @@ import "server-only"
 import { hasLocale } from "next-intl"
 import { getTranslations } from "next-intl/server"
 
-import { defaultLocale, getToday } from "@workspace/core"
+import { daysBetween, defaultLocale, getToday } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
 import { routing } from "@/i18n/routing"
 import { findVerseOfTheDay } from "@/lib/verse-of-the-day"
 import { getTodayPlans } from "@/server/services/plans"
+import { listPrayerTitles } from "@/server/services/prayers"
 import type { DueReminder } from "@/server/services/reminder-dispatch"
 import {
+  pickReminderTopics,
   reminderContent,
   type ContentTranslator,
   type ReminderContent,
@@ -44,6 +46,13 @@ export async function getReminderContent(
         : [],
     verse:
       reminder.kind === "MEDITATION" ? findVerseOfTheDay(today, locale) : null,
+    topics:
+      reminder.kind === "PRAYER"
+        ? pickReminderTopics(
+            await listPrayerTitles(prisma, reminder.user.id),
+            daysBetween("1970-01-01", today)
+          )
+        : [],
     // Keys are built from the kind; the messages are checked by their tests.
     t: t as unknown as ContentTranslator,
   })

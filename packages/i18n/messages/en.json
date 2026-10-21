@@ -485,7 +485,8 @@
       },
       "PRAYER": {
         "title": "Time to pray",
-        "body": "Take a moment to pray."
+        "body": "Take a moment to pray.",
+        "bodyWith": "Pray for: {topics}."
       },
       "MEDITATION": {
         "title": "Time to meditate",

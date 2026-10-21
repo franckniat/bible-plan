@@ -485,7 +485,8 @@
       },
       "PRAYER": {
         "title": "C’est l’heure de prier",
-        "body": "Prenez un moment pour prier."
+        "body": "Prenez un moment pour prier.",
+        "bodyWith": "Pensez à prier pour : {topics}."
       },
       "MEDITATION": {
         "title": "C’est l’heure de méditer",

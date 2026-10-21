@@ -82,6 +82,26 @@ export async function listPrayers(
   })
 }
 
+/**
+ * The titles of the active requests, those prayed for least recently first
+ * (never prayed for ones before all), for the prayer reminders.
+ */
+export async function listPrayerTitles(
+  db: Pick<PrismaClient, "prayerRequest">,
+  userId: string
+): Promise<string[]> {
+  const rows = await db.prayerRequest.findMany({
+    where: { userId, status: "ACTIVE" },
+    select: { title: true },
+    orderBy: [
+      { lastPrayedAt: { sort: "asc", nulls: "first" } },
+      { createdAt: "asc" },
+      { id: "asc" },
+    ],
+  })
+  return rows.map((row) => row.title)
+}
+
 /** How many requests a user has in each status. */
 export async function countPrayers(
   db: Pick<PrismaClient, "prayerRequest">,
