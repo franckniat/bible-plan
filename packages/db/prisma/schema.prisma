@@ -72,6 +72,7 @@ model User {
   meditationSessions MeditationSession[]
   meditationNotes    MeditationNote[]
   activityDays       ActivityDay[]
+  groupMemberships   GroupMember[]
   pushDevices        PushDevice[]
 
   locale       String  @default("fr")
@@ -511,4 +512,39 @@ model ActivityDay {
   prayerSeconds     Int      @default(0)
 
   @@unique([userId, day])
+}
+
+// ─── Groups ─────────────────────────────────────────────────────────────────
+// A church, a cell, a family: people who read and pray together. Everything in
+// a group is reserved to its members; roles say who manages it.
+
+enum GroupRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model Group {
+  id          String        @id @default(uuid(7))
+  name        String
+  description String?
+  /// What a person types or follows to join (random, easy to read aloud).
+  /// Changing it cancels the links already given out.
+  inviteCode  String        @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  members     GroupMember[]
+}
+
+model GroupMember {
+  id       String    @id @default(uuid(7))
+  groupId  String
+  group    Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     GroupRole @default(MEMBER)
+  joinedAt DateTime  @default(now())
+
+  @@unique([groupId, userId])
+  @@index([userId])
 }
