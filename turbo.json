@@ -5,6 +5,7 @@
   "globalPassThroughEnv": [
     "DATABASE_URL",
     "DIRECT_URL",
+    "VERCEL_ENV",
     "IP_HASH_SECRET",
     "RESEND_API_KEY",
     "EMAIL_FROM",
