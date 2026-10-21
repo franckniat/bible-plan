@@ -7,6 +7,7 @@ import {
   Flower2,
   HandHeart,
   NotebookPen,
+  Users,
   Settings,
   Sun,
   type LucideIcon,
@@ -26,6 +27,7 @@ type NavItem = {
     | "prayer"
     | "meditate"
     | "notes"
+    | "groups"
     | "stats"
     | "settings"
   icon: LucideIcon
@@ -41,6 +43,7 @@ const navItems: NavItem[] = [
   { href: "/prayer", label: "prayer", icon: HandHeart },
   { href: "/meditate", label: "meditate", icon: Flower2, sidebarOnly: true },
   { href: "/notes", label: "notes", icon: NotebookPen, sidebarOnly: true },
+  { href: "/groups", label: "groups", icon: Users, sidebarOnly: true },
   { href: "/stats", label: "stats", icon: BarChart3, sidebarOnly: true },
   { href: "/settings", label: "settings", icon: Settings },
 ]

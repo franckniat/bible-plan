@@ -229,7 +229,8 @@
         "label": "Shortcuts",
         "meditate": "Meditate",
         "notes": "My notes",
-        "stats": "Statistics"
+        "stats": "Statistics",
+        "groups": "My groups"
       }
     },
     "home": "Today — Bible Plan",
@@ -242,7 +243,8 @@
       "prayer": "Prayer",
       "meditate": "Meditation",
       "notes": "Notes",
-      "stats": "Statistics"
+      "stats": "Statistics",
+      "groups": "Groups"
     },
     "account": {
       "signOut": "Sign out",
@@ -1153,6 +1155,103 @@
       "notSaved": "{duration} of prayer. The session could not be saved.",
       "backToJournal": "Back to the prayer journal",
       "again": "New time of prayer"
+    }
+  },
+  "Groups": {
+    "title": "Groups",
+    "description": "Read and pray with your church, your cell group or your family. A group is only visible to its members.",
+    "back": "Back to groups",
+    "cancel": "Cancel",
+    "you": "(you)",
+    "members": "{count, plural, one {# member} other {# members}}",
+    "membersTitle": "{count, plural, one {# member} other {# members}}",
+    "joined": "Since {date}",
+    "roles": {
+      "OWNER": "Owner",
+      "ADMIN": "Administrator",
+      "MEMBER": "Member"
+    },
+    "changeRole": "Role of {name}",
+    "join": {
+      "title": "Join a group",
+      "description": "Enter the code you received, or open the invitation link.",
+      "label": "Invitation code",
+      "placeholder": "Code, for example ABCD-EFGH",
+      "submit": "Join"
+    },
+    "create": {
+      "title": "Create a group",
+      "description": "You will be its owner and can invite the others.",
+      "open": "New group",
+      "name": "Group name",
+      "namePlaceholder": "Thursday cell group",
+      "descriptionLabel": "Description (optional)",
+      "submit": "Create the group"
+    },
+    "empty": {
+      "title": "No groups yet",
+      "description": "Create your own or join one with an invitation code."
+    },
+    "invite": {
+      "title": "Invite",
+      "description": "Send this link, or give the code: the person joins the group once signed in.",
+      "link": "Invitation link",
+      "copy": "Copy",
+      "copied": "Copied",
+      "code": "Code:",
+      "share": "Share",
+      "shareText": "Join the group “{name}” on Bible Plan.",
+      "regenerate": "New code",
+      "regenerateDialog": {
+        "title": "Create a new code?",
+        "description": "The current link and code will stop working. People already in the group are not affected.",
+        "confirm": "Create a new code"
+      }
+    },
+    "handOver": {
+      "button": "Hand over ownership",
+      "title": "Give the group to {name}?",
+      "description": "This person becomes the owner and you become an administrator. You will not be able to take ownership back yourself.",
+      "confirm": "Hand over"
+    },
+    "remove": {
+      "button": "Remove",
+      "label": "Remove {name} from the group",
+      "title": "Remove {name} from the group?",
+      "description": "This person will no longer see the group. They can join again with a code.",
+      "confirm": "Remove"
+    },
+    "leave": {
+      "button": "Leave the group",
+      "title": "Leave “{name}”?",
+      "description": "You will no longer see this group. You can join again with a code.",
+      "confirm": "Leave",
+      "ownerHint": "To leave this group, first hand ownership over to another member."
+    },
+    "delete": {
+      "button": "Delete the group",
+      "title": "Delete “{name}”?",
+      "description": "The group and everything in it will be deleted for all its members. This cannot be undone.",
+      "confirm": "Delete"
+    },
+    "joinPage": {
+      "invited": "You are invited to join",
+      "join": "Join the group",
+      "toGroups": "See my groups",
+      "notFound": {
+        "title": "Invitation not found",
+        "description": "This link or code does not exist or is no longer valid. Ask the person who invited you for a new one."
+      }
+    },
+    "errors": {
+      "invalid": "Check what you entered.",
+      "invalidCode": "This code is not valid. It has 8 letters and digits.",
+      "notFound": "This group or invitation does not exist or is no longer valid.",
+      "forbidden": "Your role does not allow this action.",
+      "limit": "You have reached the limit of {max} groups.",
+      "full": "This group is full.",
+      "ownerMustHandOver": "First hand ownership of the group over to another member.",
+      "unexpected": "Something went wrong. Try again in a moment."
     }
   }
 }

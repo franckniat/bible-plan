@@ -229,7 +229,8 @@
         "label": "Raccourcis",
         "meditate": "Méditer",
         "notes": "Mes notes",
-        "stats": "Statistiques"
+        "stats": "Statistiques",
+        "groups": "Mes groupes"
       }
     },
     "home": "Aujourd’hui — Bible Plan",
@@ -242,7 +243,8 @@
       "prayer": "Prière",
       "meditate": "Méditation",
       "notes": "Notes",
-      "stats": "Statistiques"
+      "stats": "Statistiques",
+      "groups": "Groupes"
     },
     "account": {
       "signOut": "Se déconnecter",
@@ -1153,6 +1155,103 @@
       "notSaved": "{duration} de prière. La session n’a pas pu être enregistrée.",
       "backToJournal": "Retour au journal de prière",
       "again": "Nouveau temps de prière"
+    }
+  },
+  "Groups": {
+    "title": "Groupes",
+    "description": "Lisez et priez avec votre église, votre cellule ou votre famille. Un groupe n’est visible que de ses membres.",
+    "back": "Retour aux groupes",
+    "cancel": "Annuler",
+    "you": "(vous)",
+    "members": "{count, plural, one {# membre} other {# membres}}",
+    "membersTitle": "{count, plural, one {# membre} other {# membres}}",
+    "joined": "Depuis le {date}",
+    "roles": {
+      "OWNER": "Propriétaire",
+      "ADMIN": "Administrateur",
+      "MEMBER": "Membre"
+    },
+    "changeRole": "Rôle de {name}",
+    "join": {
+      "title": "Rejoindre un groupe",
+      "description": "Entrez le code reçu, ou ouvrez le lien d’invitation.",
+      "label": "Code d’invitation",
+      "placeholder": "Code, par exemple ABCD-EFGH",
+      "submit": "Rejoindre"
+    },
+    "create": {
+      "title": "Créer un groupe",
+      "description": "Vous en serez le propriétaire et pourrez inviter les autres.",
+      "open": "Nouveau groupe",
+      "name": "Nom du groupe",
+      "namePlaceholder": "Cellule du jeudi",
+      "descriptionLabel": "Description (facultatif)",
+      "submit": "Créer le groupe"
+    },
+    "empty": {
+      "title": "Aucun groupe pour l’instant",
+      "description": "Créez le vôtre ou rejoignez-en un avec un code d’invitation."
+    },
+    "invite": {
+      "title": "Inviter",
+      "description": "Envoyez ce lien, ou donnez le code : la personne rejoint le groupe après s’être connectée.",
+      "link": "Lien d’invitation",
+      "copy": "Copier",
+      "copied": "Copié",
+      "code": "Code :",
+      "share": "Partager",
+      "shareText": "Rejoins le groupe « {name} » sur Bible Plan.",
+      "regenerate": "Nouveau code",
+      "regenerateDialog": {
+        "title": "Créer un nouveau code ?",
+        "description": "Le lien et le code actuels cesseront de fonctionner. Les membres déjà dans le groupe n’en sont pas affectés.",
+        "confirm": "Créer un nouveau code"
+      }
+    },
+    "handOver": {
+      "button": "Transférer la propriété",
+      "title": "Donner le groupe à {name} ?",
+      "description": "Cette personne devient propriétaire et vous devenez administrateur. Vous ne pourrez plus reprendre la propriété vous-même.",
+      "confirm": "Transférer"
+    },
+    "remove": {
+      "button": "Retirer",
+      "label": "Retirer {name} du groupe",
+      "title": "Retirer {name} du groupe ?",
+      "description": "Cette personne ne verra plus le groupe. Elle pourra le rejoindre de nouveau avec un code.",
+      "confirm": "Retirer"
+    },
+    "leave": {
+      "button": "Quitter le groupe",
+      "title": "Quitter « {name} » ?",
+      "description": "Vous ne verrez plus ce groupe. Vous pourrez le rejoindre de nouveau avec un code.",
+      "confirm": "Quitter",
+      "ownerHint": "Pour quitter ce groupe, transférez d’abord la propriété à un autre membre."
+    },
+    "delete": {
+      "button": "Supprimer le groupe",
+      "title": "Supprimer « {name} » ?",
+      "description": "Le groupe et tout ce qu’il contient seront supprimés pour tous ses membres. Cette action est définitive.",
+      "confirm": "Supprimer"
+    },
+    "joinPage": {
+      "invited": "Vous êtes invité à rejoindre",
+      "join": "Rejoindre le groupe",
+      "toGroups": "Voir mes groupes",
+      "notFound": {
+        "title": "Invitation introuvable",
+        "description": "Ce lien ou ce code n’existe pas ou n’est plus valable. Demandez-en un nouveau à la personne qui vous a invité."
+      }
+    },
+    "errors": {
+      "invalid": "Vérifiez ce que vous avez saisi.",
+      "invalidCode": "Ce code n’est pas valide. Il compte 8 lettres et chiffres.",
+      "notFound": "Ce groupe ou cette invitation n’existe pas ou n’est plus valable.",
+      "forbidden": "Votre rôle ne permet pas cette action.",
+      "limit": "Vous avez atteint la limite de {max} groupes.",
+      "full": "Ce groupe est complet.",
+      "ownerMustHandOver": "Transférez d’abord la propriété du groupe à un autre membre.",
+      "unexpected": "Une erreur est survenue. Réessayez dans un instant."
     }
   }
 }

@@ -1,4 +1,11 @@
-import { BarChart3, Flower2, Library, NotebookPen, Plus } from "lucide-react"
+import {
+  BarChart3,
+  Flower2,
+  Library,
+  NotebookPen,
+  Plus,
+  Users,
+} from "lucide-react"
 import { cookies } from "next/headers"
 import { getLocale, getTranslations } from "next-intl/server"
 
@@ -127,10 +134,11 @@ export default async function TodayPage() {
       <StreakBadge streak={streak} />
 
       <nav aria-label={t("shortcuts.label")}>
-        <ul className="grid grid-cols-3 gap-3">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
             { href: "/meditate", label: t("shortcuts.meditate"), Icon: Flower2 },
             { href: "/notes", label: t("shortcuts.notes"), Icon: NotebookPen },
+            { href: "/groups", label: t("shortcuts.groups"), Icon: Users },
             { href: "/stats", label: t("shortcuts.stats"), Icon: BarChart3 },
           ].map(({ href, label, Icon }) => (
             <li key={href}>
