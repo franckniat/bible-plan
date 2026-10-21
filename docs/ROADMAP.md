@@ -2,18 +2,22 @@
 
 Le suivi détaillé se fait dans les [issues](https://github.com/franckniat/bible-plan/issues) et les [milestones](https://github.com/franckniat/bible-plan/milestones). Chaque issue liste ses tâches : **une tâche = un commit** sur `main` (`type(scope): description (#n)`, signé avec `git commit -s`).
 
+## État
+
+La version web est en ligne. **Terminés : M0 à M5** (liste d'attente, fondations, plans, Bible, rappels, prière et méditation). **Suivant : M6 — Groupes**, puis M7 (lancement). M8 (trophées) et le mobile (M9 à M19) viennent après.
+
 ## Principes d'architecture
 
-- La logique métier pure (canon biblique, générateur de plans, rattrapage, séries, échéances des rappels, schémas zod) vit dans `@workspace/core`, partagé avec la future app mobile.
+- La logique métier pure (canon biblique, générateur de plans, rattrapage, séries, échéances des rappels, trophées et badges, schémas zod) vit dans `@workspace/core`, partagé avec la future app mobile, qui l'exécute sur l'appareil, hors ligne.
 - Les mutations web passent par des Server Actions qui délèguent à des services serveur (`apps/web/server/services`), réutilisables par une API REST pour le mobile.
-- Le texte biblique provient de versions du domaine public (LSG 1910, KJV) embarquées dans `@workspace/bible-data` : aucune API payante, lecture possible hors ligne.
+- Le texte biblique provient de versions du domaine public (LSG 1910, KJV) embarquées dans `@workspace/bible-data` (lecture possible hors ligne), et de l'API gratuite YouVersion Platform pour BSB, WEB et Ostervald (et pour les versions sous licence acceptée, comme NIV et la Bible du Semeur). Aucune redirection vers un autre site.
 - 100 % gratuit : uniquement des offres gratuites (Neon, Vercel Hobby, Resend, PostHog, GitHub Actions). Seul coût : un nom de domaine pour les emails d’authentification.
 - Notifications : dans l’app et en push. Resend sert aux emails d’authentification ; les rappels par email sont prêts mais désactivés (`EMAIL_REMINDERS_ENABLED`).
-- Avant le lancement, la page d’accueil est une liste d’attente ; elle sera remplacée par l’application au lancement.
+- La page d’accueil présente l’application web, déjà disponible, et garde la liste d’attente ouverte pour la suite (application mobile).
 
-## M0 — Liste d'attente
+## M0 — Liste d'attente ✅
 
-Landing de teasing avec liste d'attente, en page d'accueil jusqu'au lancement de l'application.
+Landing avec liste d'attente : d'abord un teasing, aujourd'hui la présentation de la version web, liste d'attente ouverte.
 
 - [#42 Mode liste d'attente (WAITLIST_MODE)](https://github.com/franckniat/bible-plan/issues/42) — dépend de #4
 - [#43 Pays du monde avec drapeaux](https://github.com/franckniat/bible-plan/issues/43) — dépend de #2, #4
@@ -24,7 +28,7 @@ Landing de teasing avec liste d'attente, en page d'accueil jusqu'au lancement de
 - [#49 Simplifier la landing d'attente](https://github.com/franckniat/bible-plan/issues/49) — dépend de #42, #46
 - [#48 Mise en ligne de la landing sur Vercel](https://github.com/franckniat/bible-plan/issues/48) — dépend de #46, #47, #49
 
-## M1 — Fondations
+## M1 — Fondations ✅
 
 CI, packages de base, base de données, i18n, emails, authentification, squelette de l'app.
 
@@ -37,7 +41,7 @@ CI, packages de base, base de données, i18n, emails, authentification, squelett
 - [#7 Pages d'authentification, Google et magic link](https://github.com/franckniat/bible-plan/issues/7) — dépend de #6
 - [#8 Squelette de l'application et profil utilisateur](https://github.com/franckniat/bible-plan/issues/8) — dépend de #7
 
-## M2 — Plans de lecture
+## M2 — Plans de lecture ✅
 
 Canon biblique, générateur de plans, modèles, création, page Aujourd'hui, gestion du retard.
 
@@ -49,14 +53,14 @@ Canon biblique, générateur de plans, modèles, création, page Aujourd'hui, ge
 - [#14 Page Aujourd'hui et détail d'un plan](https://github.com/franckniat/bible-plan/issues/14) — dépend de #13
 - [#15 Gestion du retard (rattrapage)](https://github.com/franckniat/bible-plan/issues/15) — dépend de #14
 
-## M3 — Bible
+## M3 — Bible ✅
 
 Textes du domaine public (LSG 1910, KJV) et lecteur intégré.
 
 - [#16 packages/bible-data : textes du domaine public (LSG 1910, KJV)](https://github.com/franckniat/bible-plan/issues/16) — dépend de #9
 - [#17 Lecteur biblique intégré](https://github.com/franckniat/bible-plan/issues/17) — dépend de #16, #14
 
-## M4 — Rappels
+## M4 — Rappels ✅
 
 Rappels planifiés (cron GitHub Actions), notifications dans l'app, Web Push / PWA, contenu intelligent. Les rappels par email sont prêts mais désactivés.
 
@@ -66,7 +70,7 @@ Rappels planifiés (cron GitHub Actions), notifications dans l'app, Web Push / P
 - [#20 PWA et notifications Web Push](https://github.com/franckniat/bible-plan/issues/20) — dépend de #19
 - [#21 Contenu intelligent des rappels](https://github.com/franckniat/bible-plan/issues/21) — dépend de #20, #22
 
-## M5 — Prière & méditation
+## M5 — Prière & méditation ✅
 
 Journal de prière, minuteur, notes de méditation, séries et statistiques.
 
@@ -94,9 +98,27 @@ Landing, dons, PostHog, RGPD, accessibilité, e2e, mise en production.
 - [#32 Accessibilité et tests de bout en bout](https://github.com/franckniat/bible-plan/issues/32) — dépend de #21, #25, #29
 - [#33 Mise en production](https://github.com/franckniat/bible-plan/issues/33) — dépend de #32, #31, #35, #36
 
+## M8 — Trophées et badges
+
+Récompenser la régularité (jours, sessions), jamais le volume (minutes, chapitres). Pas de classement, privés par défaut, un badge obtenu n'est jamais retiré. Mêmes règles sur le web et sur le mobile. Détails : [PLAN-MOBILE.md § 3](../apps/mobile/PLAN-MOBILE.md#3-trophées-et-badges-web-et-mobile). Issues à créer. Dépend de #22, #23, #24, #25 ; peut sortir avant ou après le lancement (M7).
+
+- [ ] `@workspace/core/achievements` : catalogue (badges à niveaux bronze / argent / or, trophées) et fonction pure `evaluateAchievements`, tests de propriété et fuseaux horaires.
+- [ ] `packages/db` : modèle `Achievement` (`userId, key, level, unlockedAt`, unique `userId + key + level`) et migration.
+- [ ] Service serveur : évaluation après chaque lecture, prière, session et note ; calcul rétroactif des comptes existants.
+- [ ] `@workspace/i18n` : noms et descriptions FR / EN.
+- [ ] Illustrations SVG des badges et trophées (partagées avec le mobile).
+- [ ] Page Trophées (collection, détail, progression vers le niveau suivant) et aperçu sur le profil.
+- [ ] Notification dans l'app et célébration à l'obtention ; carte image à partager.
+
+## Application mobile (M9 à M19)
+
+Application Expo **locale d'abord** : tout fonctionne sans compte, le compte sert à synchroniser. Temps de prière avec prévenance 5 min et mode concentration (doux ou strict), rappels de méditation, trophées et badges. Feuille de route détaillée : [apps/mobile/PLAN-MOBILE.md](../apps/mobile/PLAN-MOBILE.md). Issues à créer.
+
+- M9 Prérequis serveur et packages partagés · M10 Socle Expo · M11 Stockage local · M12 Bible hors ligne · M13 Plans hors ligne · M14 Prière, méditation, rappels, statistiques et trophées hors ligne · M15 Temps de prière et mode concentration · M16 Compte et synchronisation · M17 Groupes · M18 Qualité · M19 Publication
+
 ## Hors milestone
 
 Travaux planifiés après la v1 web.
 
-- [#30 Connexion avec Apple](https://github.com/franckniat/bible-plan/issues/30) — dépend de #7
+- [#30 Connexion avec Apple](https://github.com/franckniat/bible-plan/issues/30) — dépend de #7 ; à faire en M16 (mobile)
 - [#34 [Épique] Application mobile Expo](https://github.com/franckniat/bible-plan/issues/34) — dépend de #33, #30

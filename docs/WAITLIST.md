@@ -1,6 +1,6 @@
 # Liste d'attente
 
-Avant le lancement, la page d'accueil du site est une liste d'attente (`apps/web/app/[locale]/page.tsx`), accompagnée des pages de confidentialité et de conditions d'utilisation. Elle sera remplacée par l'application au lancement.
+La page d'accueil du site présente l'application et garde ouverte une liste d'attente (`apps/web/app/[locale]/page.tsx`), accompagnée des pages de confidentialité et de conditions d'utilisation. Le déploiement est décrit dans [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Variables d'environnement (`apps/web`)
 
