@@ -18,7 +18,11 @@ import type { PrismaClient } from "@workspace/db"
 
 export type GroupsDb = Pick<
   PrismaClient,
-  "group" | "groupMember" | "$transaction"
+  | "group"
+  | "groupMember"
+  | "readingPlan"
+  | "planEnrollment"
+  | "$transaction"
 >
 
 /**
@@ -64,7 +68,7 @@ export type GroupDetail = {
 const roleOrder: Record<GroupRole, number> = { OWNER: 0, ADMIN: 1, MEMBER: 2 }
 
 /** The role of a person in a group, or null if they are not a member. */
-async function roleOf(
+export async function roleOf(
   db: Pick<PrismaClient, "groupMember">,
   userId: string,
   groupId: string
@@ -232,7 +236,10 @@ export async function previewInvite(
  * an error: the person is simply taken to it.
  */
 export async function joinGroup(
-  db: Pick<PrismaClient, "group" | "groupMember">,
+  db: Pick<
+    PrismaClient,
+    "group" | "groupMember" | "readingPlan" | "planEnrollment"
+  >,
   userId: string,
   code: string
 ): Promise<
@@ -264,7 +271,37 @@ export async function joinGroup(
     if (!isUniqueViolation(error)) throw error
     return { ok: true, groupId: group.id, already: true }
   }
+  // The plans of the group are followed by all its members.
+  await enrollInGroupPlans(db, group.id, userId)
   return { ok: true, groupId: group.id, already: false }
+}
+
+/** Makes a person follow every plan of a group (those they follow already stay as they are). */
+export async function enrollInGroupPlans(
+  db: Pick<PrismaClient, "readingPlan" | "planEnrollment">,
+  groupId: string,
+  userId: string
+): Promise<void> {
+  const plans = await db.readingPlan.findMany({
+    where: { groupId },
+    select: { id: true },
+  })
+  if (plans.length === 0) return
+  await db.planEnrollment.createMany({
+    data: plans.map((plan) => ({ planId: plan.id, userId })),
+    skipDuplicates: true,
+  })
+}
+
+/** Stops a person from following the plans of a group, once they are not in it. */
+async function leaveGroupPlans(
+  db: Pick<PrismaClient, "planEnrollment">,
+  groupId: string,
+  userId: string
+): Promise<void> {
+  await db.planEnrollment.deleteMany({
+    where: { userId, plan: { groupId } },
+  })
 }
 
 /** A new code: the links and codes given out until now stop working. */
@@ -291,7 +328,7 @@ export async function regenerateInviteCode(
 
 /** Removes a member, if the role of the actor allows it. */
 export async function removeMember(
-  db: Pick<PrismaClient, "groupMember">,
+  db: Pick<PrismaClient, "groupMember" | "planEnrollment">,
   actorId: string,
   groupId: string,
   memberId: string
@@ -306,6 +343,7 @@ export async function removeMember(
   await db.groupMember.delete({
     where: { groupId_userId: { groupId, userId: memberId } },
   })
+  await leaveGroupPlans(db, groupId, memberId)
   return { ok: true }
 }
 
@@ -314,7 +352,7 @@ export async function removeMember(
  * the group: they hand it over first (or delete it); alone, leaving deletes it.
  */
 export async function leaveGroup(
-  db: Pick<PrismaClient, "group" | "groupMember">,
+  db: Pick<PrismaClient, "group" | "groupMember" | "planEnrollment">,
   userId: string,
   groupId: string
 ): Outcome {
@@ -332,6 +370,7 @@ export async function leaveGroup(
   await db.groupMember.delete({
     where: { groupId_userId: { groupId, userId } },
   })
+  await leaveGroupPlans(db, groupId, userId)
   return { ok: true }
 }
 

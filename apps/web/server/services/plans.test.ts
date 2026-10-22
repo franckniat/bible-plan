@@ -25,7 +25,13 @@ import {
 /** A fake client whose transaction runs the callback on the same mocks. */
 function fakeDb() {
   const mocks = {
-    readingPlan: { create: vi.fn(), deleteMany: vi.fn(), updateMany: vi.fn() },
+    readingPlan: {
+      create: vi.fn(),
+      delete: vi.fn(),
+      deleteMany: vi.fn(),
+      findUnique: vi.fn(),
+      updateMany: vi.fn(),
+    },
     planDay: { createMany: vi.fn() },
     planReading: {
       createMany: vi.fn(),
@@ -36,6 +42,7 @@ function fakeDb() {
     },
     planEnrollment: {
       create: vi.fn(),
+      createMany: vi.fn(),
       findMany: vi.fn(),
       findUnique: vi.fn(),
       updateMany: vi.fn(),
@@ -115,9 +122,42 @@ describe("createPlan", () => {
       startChapter: 1,
       startVerse: 1,
     })
-    expect(fake.planEnrollment.create).toHaveBeenCalledWith({
-      data: { planId: id, userId: "user-1" },
+    expect(fake.planEnrollment.createMany).toHaveBeenCalledWith({
+      data: [{ planId: id, userId: "user-1" }],
     })
+  })
+
+  it("follows a plan for a group with every member, on the FREE strategy", async () => {
+    const fake = fakeDb()
+    const { id } = await createPlan(
+      fake.db,
+      "manager",
+      templatePlan("mcheyne-1-year", 30),
+      "fr",
+      { id: "group-1", memberIds: ["manager", "marie", "paul"] }
+    )
+    const plan = fake.readingPlan.create.mock.calls[0]![0].data
+    expect(plan).toMatchObject({
+      ownerId: "manager",
+      groupId: "group-1",
+      catchUpStrategy: "FREE",
+    })
+    // The creator is one of the members: enrolled once.
+    expect(fake.planEnrollment.createMany).toHaveBeenCalledWith({
+      data: [
+        { planId: id, userId: "manager" },
+        { planId: id, userId: "marie" },
+        { planId: id, userId: "paul" },
+      ],
+    })
+  })
+
+  it("keeps a personal plan out of any group", async () => {
+    const fake = fakeDb()
+    await createPlan(fake.db, "user-1", templatePlan("mcheyne-1-year", 30), "fr")
+    const plan = fake.readingPlan.create.mock.calls[0]![0].data
+    expect(plan).not.toHaveProperty("groupId")
+    expect(plan).not.toHaveProperty("catchUpStrategy")
   })
 
   it("stores a custom plan with its title", async () => {
@@ -451,21 +491,27 @@ describe("setPlanStatus", () => {
 })
 
 describe("deletePlan", () => {
+  const found = (
+    ownerId: string,
+    group: { members: { role: string }[] } | null = null
+  ) => ({ ownerId, group })
+
   it("deletes a plan the user owns", async () => {
     const fake = fakeDb()
-    fake.readingPlan.deleteMany.mockResolvedValue({ count: 1 })
+    fake.readingPlan.findUnique.mockResolvedValue(found("user-1"))
     expect(await deletePlan(fake.db, "user-1", "plan-1")).toBe(true)
-    expect(fake.readingPlan.deleteMany).toHaveBeenCalledWith({
-      where: { id: "plan-1", ownerId: "user-1" },
+    expect(fake.readingPlan.delete).toHaveBeenCalledWith({
+      where: { id: "plan-1" },
     })
     expect(fake.planEnrollment.deleteMany).not.toHaveBeenCalled()
   })
 
   it("only leaves a plan owned by someone else", async () => {
     const fake = fakeDb()
-    fake.readingPlan.deleteMany.mockResolvedValue({ count: 0 })
+    fake.readingPlan.findUnique.mockResolvedValue(found("owner"))
     fake.planEnrollment.deleteMany.mockResolvedValue({ count: 1 })
     expect(await deletePlan(fake.db, "member-1", "plan-1")).toBe(true)
+    expect(fake.readingPlan.delete).not.toHaveBeenCalled()
     expect(fake.planEnrollment.deleteMany).toHaveBeenCalledWith({
       where: { planId: "plan-1", userId: "member-1" },
     })
@@ -473,9 +519,35 @@ describe("deletePlan", () => {
 
   it("refuses a plan the user neither owns nor follows", async () => {
     const fake = fakeDb()
-    fake.readingPlan.deleteMany.mockResolvedValue({ count: 0 })
+    fake.readingPlan.findUnique.mockResolvedValue(found("owner"))
     fake.planEnrollment.deleteMany.mockResolvedValue({ count: 0 })
     expect(await deletePlan(fake.db, "intruder", "plan-1")).toBe(false)
+  })
+
+  it("refuses a plan that does not exist", async () => {
+    const fake = fakeDb()
+    fake.readingPlan.findUnique.mockResolvedValue(null)
+    expect(await deletePlan(fake.db, "user-1", "nope")).toBe(false)
+    expect(fake.readingPlan.delete).not.toHaveBeenCalled()
+  })
+
+  it("lets a group's administrator delete the plan, not only its author", async () => {
+    const fake = fakeDb()
+    fake.readingPlan.findUnique.mockResolvedValue(
+      found("author", { members: [{ role: "ADMIN" }] })
+    )
+    expect(await deletePlan(fake.db, "admin", "plan-1")).toBe(true)
+    expect(fake.readingPlan.delete).toHaveBeenCalled()
+  })
+
+  it("does not let a plain member delete or leave a plan of the group", async () => {
+    const fake = fakeDb()
+    fake.readingPlan.findUnique.mockResolvedValue(
+      found("author", { members: [{ role: "MEMBER" }] })
+    )
+    expect(await deletePlan(fake.db, "member", "plan-1")).toBe(false)
+    expect(fake.readingPlan.delete).not.toHaveBeenCalled()
+    expect(fake.planEnrollment.deleteMany).not.toHaveBeenCalled()
   })
 })
 

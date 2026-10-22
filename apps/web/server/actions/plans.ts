@@ -18,6 +18,7 @@ import { prisma } from "@workspace/db"
 
 import { redirect } from "@/i18n/navigation"
 import { recordActivity } from "@/server/services/activity"
+import { createGroupPlan } from "@/server/services/group-plans"
 import {
   applyCatchUp,
   createPlan,
@@ -31,7 +32,11 @@ import { requireUser } from "@/server/session"
 
 /** Translated by the wizard ("PlanWizard.create.errors.<code>"). */
 export type CreatePlanErrorCode =
-  PlanGenerationErrorCode | "invalid" | "unexpected"
+  | PlanGenerationErrorCode
+  | "invalid"
+  | "unexpected"
+  /** The plan is for a group the person does not manage. */
+  | "group_forbidden"
 
 /**
  * Creates a plan for the signed-in user, then opens the plan list. Returns
@@ -46,8 +51,21 @@ export async function createPlanAction(
 
   const locale = (await getLocale()) as Locale
   let planId: string
+  const { groupId } = parsed.data
   try {
-    ;({ id: planId } = await createPlan(prisma, user.id, parsed.data, locale))
+    if (groupId) {
+      const result = await createGroupPlan(
+        prisma,
+        user.id,
+        groupId,
+        parsed.data,
+        locale
+      )
+      if (!result.ok) return { error: "group_forbidden" }
+      planId = result.id
+    } else {
+      ;({ id: planId } = await createPlan(prisma, user.id, parsed.data, locale))
+    }
   } catch (error) {
     if (error instanceof PlanGenerationError) return { error: error.code }
     console.error("Plan creation failed", error)
@@ -55,8 +73,12 @@ export async function createPlanAction(
   }
 
   revalidatePath("/[locale]/plans", "page")
+  revalidatePath("/[locale]/groups", "layout")
+  // A plan for a group opens on the group, where everyone's progress is.
   return redirect({
-    href: { pathname: "/plans", query: { created: planId } },
+    href: groupId
+      ? `/groups/${groupId}`
+      : { pathname: "/plans", query: { created: planId } },
     locale,
   })
 }

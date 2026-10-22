@@ -25,6 +25,8 @@ const titleSchema = z
   .max(maxPlanTitleLength, { error: "too_long" })
 
 const scheduleFields = {
+  /** The group the plan is for: every member follows it (members only). */
+  groupId: z.uuid().optional(),
   startDate: isoDateSchema,
   activeWeekdays: weekdaysSchema.default([...allWeekdays]),
   pace: planPaceSchema,

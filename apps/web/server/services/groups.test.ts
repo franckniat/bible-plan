@@ -43,16 +43,25 @@ function fake(members: Record<string, Role>, extra: Record<string, unknown> = {}
     update: vi.fn().mockResolvedValue({}),
     delete: vi.fn().mockResolvedValue({}),
   }
+  const readingPlan = { findMany: vi.fn().mockResolvedValue([]) }
+  const planEnrollment = {
+    createMany: vi.fn().mockResolvedValue({ count: 0 }),
+    deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
+  }
   const transaction = vi.fn(async (operations: unknown[]) => operations)
   return {
     db: {
       group,
       groupMember,
+      readingPlan,
+      planEnrollment,
       $transaction: transaction,
       ...extra,
     } as unknown as GroupsDb,
     group,
     groupMember,
+    readingPlan,
+    planEnrollment,
     transaction,
   }
 }
@@ -202,6 +211,43 @@ describe("joinGroup", () => {
       error: "full",
     })
     expect(groupMember.create).not.toHaveBeenCalled()
+  })
+})
+
+describe("plans of the group", () => {
+  it("makes a new member follow the plans of the group", async () => {
+    const { db, group, groupMember, readingPlan, planEnrollment } = fake({})
+    group.findUnique.mockResolvedValue({ id: "g1", _count: { members: 3 } })
+    groupMember.count.mockResolvedValue(0)
+    readingPlan.findMany.mockResolvedValue([{ id: "p1" }, { id: "p2" }])
+    await joinGroup(db, "u1", "ABCDEFGH")
+    expect(planEnrollment.createMany).toHaveBeenCalledWith({
+      data: [
+        { planId: "p1", userId: "u1" },
+        { planId: "p2", userId: "u1" },
+      ],
+      skipDuplicates: true,
+    })
+  })
+
+  it("does not enroll somebody who was already in the group", async () => {
+    const { db, group, planEnrollment } = fake({ u1: "MEMBER" })
+    group.findUnique.mockResolvedValue({ id: "g1", _count: { members: 3 } })
+    await joinGroup(db, "u1", "ABCDEFGH")
+    expect(planEnrollment.createMany).not.toHaveBeenCalled()
+  })
+
+  it("stops a removed member, or one who leaves, from following them", async () => {
+    const removed = fake({ a: "ADMIN", m: "MEMBER" })
+    await removeMember(removed.db, "a", "g1", "m")
+    expect(removed.planEnrollment.deleteMany).toHaveBeenCalledWith({
+      where: { userId: "m", plan: { groupId: "g1" } },
+    })
+    const left = fake({ m: "MEMBER", o: "OWNER" })
+    await leaveGroup(left.db, "m", "g1")
+    expect(left.planEnrollment.deleteMany).toHaveBeenCalledWith({
+      where: { userId: "m", plan: { groupId: "g1" } },
+    })
   })
 })
 

@@ -6,6 +6,7 @@ import { z } from "zod"
 import { groupInputSchema, groupRoles } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
+import { copyGroupPlan } from "@/server/services/group-plans"
 import {
   createGroup,
   deleteGroup,
@@ -86,6 +87,21 @@ export async function setMemberRoleAction(
   return run((userId) =>
     setMemberRole(prisma, userId, groupId, memberId, parsed.data)
   )
+}
+
+/** Copies a plan of a group into the personal plans of the signed-in member. */
+export async function copyGroupPlanAction(planId: string) {
+  if (!idSchema.safeParse(planId).success) return { error: "invalid" as const }
+  const user = await requireUser()
+  try {
+    const result = await copyGroupPlan(prisma, user.id, planId)
+    if (!result.ok) return { error: result.error }
+    revalidatePath("/[locale]/plans", "layout")
+    return result
+  } catch (error) {
+    console.error("Copying a group plan failed", error)
+    return { error: "unexpected" as const }
+  }
 }
 
 export async function deleteGroupAction(groupId: string) {

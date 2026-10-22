@@ -5,6 +5,7 @@ import { randomUUID } from "node:crypto"
 import { z } from "zod"
 
 import {
+  canManageMembers,
   generatePlan,
   planCatchUp,
   PlanGenerationError,
@@ -49,16 +50,23 @@ export function fromDbDate(date: Date): IsoDate {
 /** A one-year plan has about 400 to 1,500 readings: allow a slow network. */
 const CREATE_TIMEOUT_MS = 20_000
 
+/** The group a plan is for, and who is in it, to enroll them all. */
+export type PlanGroup = { id: string; memberIds: readonly string[] }
+
 /**
  * Generates a plan and stores it, with its days and readings, in a single
- * transaction (4 queries whatever its length), then enrolls its owner.
+ * transaction (4 queries whatever its length), then enrolls its owner, or all
+ * the members when it is a plan for a group (it then has one common calendar:
+ * only the FREE strategy applies). The caller checks that the owner may create
+ * plans for the group.
  * Throws a PlanGenerationError when the request cannot produce a plan.
  */
 export async function createPlan(
   db: PlansDb,
   userId: string,
   request: ParsedNewPlan,
-  locale: Locale
+  locale: Locale,
+  group?: PlanGroup
 ): Promise<{ id: string }> {
   const { title, templateKey, tracks, input } = resolveNewPlan(request, locale)
   const generated = generatePlan(input)
@@ -102,11 +110,16 @@ export async function createPlan(
           totalDays: generated.days.length,
           totalVerses: generated.totalVerses,
           totalReadings: readingRows.length,
+          ...(group ? { groupId: group.id, catchUpStrategy: "FREE" } : {}),
         },
       })
       await tx.planDay.createMany({ data: dayRows })
       await tx.planReading.createMany({ data: readingRows })
-      await tx.planEnrollment.create({ data: { planId, userId } })
+      await tx.planEnrollment.createMany({
+        data: (group ? [...new Set([userId, ...group.memberIds])] : [userId]).map(
+          (member) => ({ planId, userId: member })
+        ),
+      })
     },
     { timeout: CREATE_TIMEOUT_MS }
   )
@@ -123,6 +136,8 @@ export type PlanSummary = {
   status: PlanEnrollmentStatus
   completedReadings: number
   totalReadings: number
+  /** The group the plan is for, if any. */
+  group: { id: string; name: string } | null
 }
 
 /**
@@ -152,6 +167,7 @@ export async function listPlans(
           endDate: true,
           totalDays: true,
           totalReadings: true,
+          group: { select: { id: true, name: true } },
         },
       },
     },
@@ -166,6 +182,7 @@ export async function listPlans(
     status,
     completedReadings: _count.progress,
     totalReadings: plan.totalReadings,
+    group: plan.group,
   }))
 }
 
@@ -190,6 +207,8 @@ export type PlanDetail = PlanSummary & {
   enrollmentId: string
   /** Whether the user created the plan (and may change its settings). */
   isOwner: boolean
+  /** Whether the user may delete it: its author, or who manages its group. */
+  canManage: boolean
   catchUpStrategy: CatchUpStrategy
   activeWeekdays: Weekday[]
   totalVerses: number
@@ -289,6 +308,13 @@ export async function getPlan(
           templateKey: true,
           ownerId: true,
           catchUpStrategy: true,
+          group: {
+            select: {
+              id: true,
+              name: true,
+              members: { where: { userId }, select: { role: true } },
+            },
+          },
           startDate: true,
           endDate: true,
           activeWeekdays: true,
@@ -313,6 +339,12 @@ export async function getPlan(
     id: plan.id,
     enrollmentId: enrollment.id,
     isOwner: plan.ownerId === userId,
+    canManage:
+      plan.ownerId === userId ||
+      (plan.group?.members[0]
+        ? canManageMembers(plan.group.members[0].role)
+        : false),
+    group: plan.group && { id: plan.group.id, name: plan.group.name },
     catchUpStrategy: plan.catchUpStrategy,
     title: plan.title,
     templateKey: plan.templateKey,
@@ -379,6 +411,8 @@ export type TodayPlan = {
   trackNames: (Record<Locale, string> | null)[]
   completedReadings: number
   totalReadings: number
+  /** The group the plan is for, if any. */
+  group: { id: string; name: string } | null
   /** The reading day of today, or else the next one; null once the plan is over. */
   day: PlanDetailDay | null
   /** Whether `day` is today. */
@@ -409,6 +443,7 @@ export async function getTodayPlans(
           tracks: true,
           totalReadings: true,
           catchUpStrategy: true,
+          group: { select: { id: true, name: true } },
           days: {
             where: { date: { gte: toDbDate(today) } },
             orderBy: { date: "asc" },
@@ -434,6 +469,7 @@ export async function getTodayPlans(
     return {
       lateReadings: late[index]!,
       catchUpStrategy: plan.catchUpStrategy,
+      group: plan.group,
       id: plan.id,
       title: plan.title,
       trackNames: parseTrackNames(plan.tracks),
@@ -464,18 +500,39 @@ export async function setPlanStatus(
 
 /**
  * Deletes a plan owned by the user, with its days and everyone's progress.
- * Someone who only follows the plan leaves it instead. Returns false when
- * the user neither owns nor follows the plan.
+ * Someone who only follows the plan leaves it instead. A plan of a group is
+ * deleted by the people who manage the group (not only its author), and a
+ * member cannot leave it (they archive it for themselves): the plan is the
+ * group's. Returns false when the user neither owns nor follows the plan.
  */
 export async function deletePlan(
   db: PlansDb,
   userId: string,
   planId: string
 ): Promise<boolean> {
-  const deleted = await db.readingPlan.deleteMany({
-    where: { id: planId, ownerId: userId },
+  const plan = await db.readingPlan.findUnique({
+    where: { id: planId },
+    select: {
+      ownerId: true,
+      group: {
+        select: {
+          members: {
+            where: { userId },
+            select: { role: true },
+          },
+        },
+      },
+    },
   })
-  if (deleted.count > 0) return true
+  if (!plan) return false
+  const role = plan.group?.members[0]?.role
+  const manages = role ? canManageMembers(role) : false
+  if (plan.ownerId === userId || manages) {
+    await db.readingPlan.delete({ where: { id: planId } })
+    return true
+  }
+  // A plan of a group is not left, only archived.
+  if (plan.group) return false
   const left = await db.planEnrollment.deleteMany({
     where: { planId, userId },
   })
