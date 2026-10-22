@@ -13,6 +13,7 @@ import {
   type RenderedEmail,
 } from "@workspace/notifications"
 
+import { nameOrFromEmail } from "./display-name"
 import { getRequestLocale } from "./locale"
 
 /** Google OAuth credentials, when GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are set. */
@@ -101,10 +102,18 @@ export function createAuth({
     databaseHooks: {
       user: {
         create: {
-          // New accounts speak the language they signed up in.
-          before: async (user, ctx) => ({
-            data: { ...user, locale: getRequestLocale(ctx?.request) },
-          }),
+          // New accounts speak the language they signed up in, and always
+          // have a name: an e-mail link only gives the address.
+          before: async (user, ctx) => {
+            const locale = getRequestLocale(ctx?.request)
+            return {
+              data: {
+                ...user,
+                name: nameOrFromEmail(user.name, user.email, locale),
+                locale,
+              },
+            }
+          },
         },
       },
     },
