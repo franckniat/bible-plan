@@ -4,10 +4,13 @@ import { notFound } from "next/navigation"
 import { getLocale, getTranslations } from "next-intl/server"
 import { z } from "zod"
 
+import { canManageMembers } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
+import { GroupPlans } from "@/components/groups/group-plans"
 import { GroupView } from "@/components/groups/group-view"
 import { Link } from "@/i18n/navigation"
+import { listGroupPlans } from "@/server/services/group-plans"
 import { getGroup } from "@/server/services/groups"
 import { requireUser } from "@/server/session"
 
@@ -28,6 +31,7 @@ export default async function GroupPage({
   const group = await getGroup(prisma, user.id, id)
   if (!group) notFound()
 
+  const plans = (await listGroupPlans(prisma, user.id, id)) ?? []
   const t = await getTranslations("Groups")
   const locale = await getLocale()
   const formatDate = new Intl.DateTimeFormat(locale, {
@@ -52,6 +56,12 @@ export default async function GroupPage({
           )}
         </div>
       </div>
+      <GroupPlans
+        groupId={group.id}
+        plans={plans}
+        currentUserId={user.id}
+        canCreate={canManageMembers(group.role)}
+      />
       <GroupView
         currentUserId={user.id}
         group={{

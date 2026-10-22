@@ -15,8 +15,21 @@ import {
   type PlanGenerationErrorCode,
 } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
-import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 
 import { toPlanInput, type WizardState } from "@/components/plans/wizard/state"
 import { formatIsoDate } from "@/lib/dates"
@@ -46,12 +59,17 @@ export function PreviewStep({
   state,
   result,
   readingWpm,
+  groups,
   onTitleChange,
+  onGroupChange,
 }: {
   state: WizardState
   result: PlanPreview
   readingWpm: number
+  /** The groups the person manages: a plan can be for one of them. */
+  groups: { id: string; name: string }[]
   onTitleChange: (title: string) => void
+  onGroupChange: (groupId: string | null) => void
 }) {
   const t = useTranslations("PlanWizard.preview")
   const locale = useLocale() as Locale
@@ -104,6 +122,42 @@ export function PreviewStep({
           <FieldError id="plan-title-error">{t("titleRequired")}</FieldError>
         )}
       </Field>
+
+      {groups.length > 0 && (
+        <Field>
+          <FieldLabel htmlFor="plan-group">{t("forWhom.label")}</FieldLabel>
+          <Select
+            items={[
+              { value: "me", label: t("forWhom.me") },
+              ...groups.map((group) => ({
+                value: group.id,
+                label: group.name,
+              })),
+            ]}
+            value={state.groupId ?? "me"}
+            onValueChange={(value) =>
+              onGroupChange(value && value !== "me" ? value : null)
+            }
+          >
+            <SelectTrigger id="plan-group" className="w-full sm:max-w-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="me">{t("forWhom.me")}</SelectItem>
+                {groups.map((group) => (
+                  <SelectItem key={group.id} value={group.id}>
+                    {group.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <FieldDescription>
+            {state.groupId ? t("forWhom.groupHint") : t("forWhom.meHint")}
+          </FieldDescription>
+        </Field>
+      )}
 
       <dl className="grid gap-3 sm:grid-cols-3">
         {[

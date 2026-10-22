@@ -45,6 +45,10 @@ type PlanWizardProps = {
   readingWpm: number
   /** Template chosen beforehand (e.g. from the templates page). */
   initialTemplateKey?: string | null
+  /** The groups the person manages, to make a plan for one of them. */
+  groups?: { id: string; name: string }[]
+  /** A group chosen beforehand (e.g. from the page of the group). */
+  initialGroupId?: string | null
 }
 
 /** Whether the user can leave a step. */
@@ -75,11 +79,17 @@ export function PlanWizard({
   today,
   readingWpm,
   initialTemplateKey,
+  groups = [],
+  initialGroupId = null,
 }: PlanWizardProps) {
   const t = useTranslations("PlanWizard")
   const locale = useLocale() as Locale
   const [state, setState] = useState(() =>
-    initialWizardState({ today, templateKey: initialTemplateKey })
+    initialWizardState({
+      today,
+      templateKey: initialTemplateKey,
+      groupId: initialGroupId,
+    })
   )
   const steps = getSteps(state.type)
   // A template chosen beforehand skips the first step.
@@ -166,7 +176,9 @@ export function PlanWizard({
         state={state}
         result={preview}
         readingWpm={readingWpm}
+        groups={groups}
         onTitleChange={(title) => update({ title })}
+        onGroupChange={(groupId) => update({ groupId })}
       />
     ),
   }

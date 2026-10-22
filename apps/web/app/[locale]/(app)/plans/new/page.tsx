@@ -2,10 +2,12 @@ import type { Metadata } from "next"
 import { hasLocale } from "next-intl"
 import { getTranslations } from "next-intl/server"
 
-import { getPlanTemplate, getToday } from "@workspace/core"
+import { canManageMembers, getPlanTemplate, getToday } from "@workspace/core"
+import { prisma } from "@workspace/db"
 
 import { PlanWizard } from "@/components/plans/wizard/plan-wizard"
 import { routing } from "@/i18n/routing"
+import { listGroups } from "@/server/services/groups"
 import { requireUser } from "@/server/session"
 
 export async function generateMetadata({
@@ -23,9 +25,18 @@ export default async function NewPlanPage({
   const user = await requireUser()
   const t = await getTranslations("PlanWizard")
   // ?template=<key> comes from the templates page.
-  const { template } = await searchParams
+  const { template, group } = await searchParams
   const templateKey =
     typeof template === "string" && getPlanTemplate(template) ? template : null
+  // A plan can be made for a group the person manages (?group=<id> comes from
+  // the page of the group).
+  const groups = (await listGroups(prisma, user.id))
+    .filter((summary) => canManageMembers(summary.role))
+    .map(({ id, name }) => ({ id, name }))
+  const groupId =
+    typeof group === "string" && groups.some((item) => item.id === group)
+      ? group
+      : null
 
   return (
     <div className="flex flex-col gap-8">
@@ -39,6 +50,8 @@ export default async function NewPlanPage({
         today={getToday(user.timezone)}
         readingWpm={user.readingWpm}
         initialTemplateKey={templateKey}
+        groups={groups}
+        initialGroupId={groupId}
       />
     </div>
   )

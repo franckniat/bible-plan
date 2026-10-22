@@ -2,6 +2,7 @@ import {
   BarChart3,
   Flower2,
   Library,
+  MessageCircle,
   NotebookPen,
   Plus,
   Users,
@@ -11,6 +12,7 @@ import { getLocale, getTranslations } from "next-intl/server"
 
 import { computeStreak, getToday, type Locale } from "@workspace/core"
 import { prisma } from "@workspace/db"
+import { Badge } from "@workspace/ui/components/badge"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -36,13 +38,14 @@ async function TodayPlanCard({ plan }: { plan: TodayPlan }) {
   return (
     <li className="flex flex-col gap-4 rounded-3xl bg-white/85 p-5 ring-1 ring-brand-night/10 dark:bg-neutral-900/85 dark:ring-white/10">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 className="font-heading text-lg font-semibold">
+        <h2 className="flex flex-wrap items-center gap-2 font-heading text-lg font-semibold">
           <Link
             href={`/plans/${plan.id}`}
             className="underline-offset-4 hover:underline"
           >
             {plan.title}
           </Link>
+          {plan.group && <Badge variant="outline">{plan.group.name}</Badge>}
         </h2>
         <p className="text-xs text-brand-night/60 dark:text-neutral-100/60">
           {t("progress", {
@@ -81,6 +84,15 @@ async function TodayPlanCard({ plan }: { plan: TodayPlan }) {
           <ReadingChecklist
             readings={toChecklist(day, plan.trackNames, locale)}
           />
+          {plan.group && (
+            <Link
+              href={`/plans/${plan.id}/days/${day.day}`}
+              className="flex w-fit items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 hover:underline"
+            >
+              <MessageCircle aria-hidden className="size-3.5" />
+              {t("discussion", { group: plan.group.name })}
+            </Link>
+          )}
           {plan.isToday && done && (
             <p
               role="status"

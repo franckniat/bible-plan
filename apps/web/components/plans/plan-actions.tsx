@@ -6,6 +6,7 @@ import { useState, useTransition } from "react"
 
 import { Button } from "@workspace/ui/components/button"
 
+import { ConfirmDialog } from "@/components/confirm-dialog"
 import { deletePlanAction, setPlanStatusAction } from "@/server/actions/plans"
 
 type Status = "ACTIVE" | "PAUSED" | "ARCHIVED"
@@ -14,13 +15,15 @@ type Status = "ACTIVE" | "PAUSED" | "ARCHIVED"
 export function PlanActions({
   planId,
   status,
+  canDelete = true,
 }: {
   planId: string
   status: Status
+  /** False for a member who only follows a plan of a group. */
+  canDelete?: boolean
 }) {
   const t = useTranslations("PlanDetail.actions")
   const [pending, startTransition] = useTransition()
-  const [confirming, setConfirming] = useState(false)
   const [failed, setFailed] = useState(false)
 
   function run(action: () => Promise<{ ok: boolean }>) {
@@ -82,48 +85,26 @@ export function PlanActions({
             {t("archive")}
           </Button>
         )}
-        {!confirming && (
-          <Button
-            variant="ghost"
-            disabled={pending}
-            onClick={() => setConfirming(true)}
-            className="text-destructive hover:text-destructive"
-          >
-            <Trash2 />
-            {t("delete")}
-          </Button>
+        {canDelete && (
+          <ConfirmDialog
+            trigger={
+              <Button
+                variant="ghost"
+                disabled={pending}
+                className="text-destructive hover:text-destructive"
+              >
+                <Trash2 />
+                {t("delete")}
+              </Button>
+            }
+            title={t("delete")}
+            description={t("deleteQuestion")}
+            confirmLabel={t("deleteConfirm")}
+            cancelLabel={t("cancel")}
+            onConfirm={() => run(() => deletePlanAction(planId))}
+          />
         )}
       </div>
-
-      {confirming && (
-        <div
-          role="alertdialog"
-          aria-labelledby="delete-question"
-          className="flex flex-col gap-3 rounded-2xl bg-destructive/10 p-4"
-        >
-          <p id="delete-question" className="text-sm">
-            {t("deleteQuestion")}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant="destructive"
-              disabled={pending}
-              onClick={() => run(() => deletePlanAction(planId))}
-            >
-              <Trash2 />
-              {t("deleteConfirm")}
-            </Button>
-            <Button
-              variant="ghost"
-              disabled={pending}
-              onClick={() => setConfirming(false)}
-              autoFocus
-            >
-              {t("cancel")}
-            </Button>
-          </div>
-        </div>
-      )}
 
       {failed && (
         <p role="alert" className="text-sm text-destructive">

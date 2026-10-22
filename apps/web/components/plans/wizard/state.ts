@@ -38,6 +38,8 @@ export type WizardState = {
   /** Whether the user changed the pace; until then it follows the selection. */
   paceEdited: boolean
   title: string
+  /** The group the plan is for; null for a personal plan. */
+  groupId: string | null
 }
 
 /** Steps of each kind of plan; templates bring their own passages. */
@@ -50,9 +52,11 @@ export function getSteps(type: WizardType | null): WizardStep[] {
 export function initialWizardState({
   today,
   templateKey,
+  groupId = null,
 }: {
   today: IsoDate
   templateKey?: string | null
+  groupId?: string | null
 }): WizardState {
   const template = templateKey ? getPlanTemplate(templateKey) : undefined
   return {
@@ -64,6 +68,7 @@ export function initialWizardState({
     pace: { mode: "days", days: template?.days ?? 30 },
     paceEdited: false,
     title: "",
+    groupId,
   }
 }
 
@@ -149,12 +154,14 @@ export function suggestTitle(state: WizardState, locale: Locale): string {
 /** The request sent to the server to create the plan. */
 export function toNewPlan(state: WizardState): NewPlan | null {
   const { title, startDate, activeWeekdays, pace } = state
+  const groupId = state.groupId ?? undefined
   if (state.type === "template") {
     return state.templateKey
       ? {
           source: "template",
           templateKey: state.templateKey,
           title: title.trim() || undefined,
+          groupId,
           startDate,
           activeWeekdays,
           pace,
@@ -165,6 +172,7 @@ export function toNewPlan(state: WizardState): NewPlan | null {
     source: "custom",
     title,
     passages: state.passages,
+    groupId,
     startDate,
     activeWeekdays,
     pace,

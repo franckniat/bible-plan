@@ -231,7 +231,8 @@
         "notes": "My notes",
         "stats": "Statistics",
         "groups": "My groups"
-      }
+      },
+      "discussion": "Discussion of the group {group}"
     },
     "home": "Today — Bible Plan",
     "nav": {
@@ -672,7 +673,13 @@
         "too_long": "This plan would last more than ten years: choose a shorter length or more time per day.",
         "invalid": "This plan cannot be computed: check the previous steps."
       },
-      "titleRequired": "Give your plan a name to create it."
+      "titleRequired": "Give your plan a name to create it.",
+      "forWhom": {
+        "label": "For whom?",
+        "me": "Only for me",
+        "meHint": "A personal plan that only you follow.",
+        "groupHint": "Every member of the group will follow this plan, on the same calendar. Each can then copy it to their own plans."
+      }
     },
     "create": {
       "submit": "Create the plan",
@@ -682,7 +689,8 @@
         "no_active_days": "No reading day between these dates: move the end date or add days.",
         "too_long": "This plan would last more than ten years: choose a shorter length or more time per day.",
         "invalid": "Some details are not valid: check the previous steps.",
-        "unexpected": "The plan could not be created. Please try again."
+        "unexpected": "The plan could not be created. Please try again.",
+        "group_forbidden": "You do not manage this group: only its owner and administrators can create a plan for it."
       }
     },
     "range": {
@@ -790,7 +798,8 @@
       "saved": "Choice saved.",
       "failed": "The choice could not be saved. Please try again."
     },
-    "late": "Waiting"
+    "late": "Waiting",
+    "discussion": "Group discussion"
   },
   "CatchUp": {
     "late": "{count, plural, one {One reading is waiting} other {# readings are waiting}} in this plan. No worries, pick up at your own pace.",
@@ -1251,6 +1260,59 @@
       "limit": "You have reached the limit of {max} groups.",
       "full": "This group is full.",
       "ownerMustHandOver": "First hand ownership of the group over to another member.",
+      "unexpected": "Something went wrong. Try again in a moment."
+    },
+    "plans": {
+      "title": "Group reading plans",
+      "create": "Create a plan for the group",
+      "copy": "Copy to my plans",
+      "copyError": "The plan could not be copied. Try again in a moment.",
+      "open": "Open the plan",
+      "dates": "From {start} to {end} · {days, plural, one {# day} other {# days}}",
+      "progressTitle": "Members’ progress",
+      "memberProgress": "Progress of {name}",
+      "you": "(you)",
+      "readings": "{done} / {total} readings",
+      "showAll": "Show all {count} members",
+      "showFewer": "Show fewer",
+      "empty": {
+        "title": "No plan for this group",
+        "manager": "Create a plan: every member will follow it, on the same calendar.",
+        "member": "The people who manage the group can create a plan for everyone to follow."
+      }
+    }
+  },
+  "Comments": {
+    "backToPlan": "Back to {title}",
+    "readingsTitle": "Today’s readings",
+    "discussionTitle": "Group discussion",
+    "day": "Day {day} of {total}",
+    "cancel": "Cancel",
+    "delete": {
+      "label": "Delete the comment by {name}",
+      "title": "Delete this comment?",
+      "description": "The replies attached to it will be deleted with it. This cannot be undone.",
+      "confirm": "Delete"
+    },
+    "new": {
+      "label": "Your comment",
+      "placeholder": "What you took from it, a question, some encouragement…",
+      "submit": "Post"
+    },
+    "reply": {
+      "button": "Reply",
+      "placeholder": "Your reply",
+      "label": "Reply to {name}",
+      "submit": "Reply"
+    },
+    "empty": {
+      "title": "No comments yet",
+      "description": "Be the first to share what this reading inspires in you."
+    },
+    "errors": {
+      "invalid": "Write a message (2,000 characters at most).",
+      "notFound": "This discussion no longer exists or is not accessible.",
+      "forbidden": "You cannot delete this comment.",
       "unexpected": "Something went wrong. Try again in a moment."
     }
   }

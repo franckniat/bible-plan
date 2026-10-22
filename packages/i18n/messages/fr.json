@@ -231,7 +231,8 @@
         "notes": "Mes notes",
         "stats": "Statistiques",
         "groups": "Mes groupes"
-      }
+      },
+      "discussion": "Discussion du groupe {group}"
     },
     "home": "Aujourd’hui — Bible Plan",
     "nav": {
@@ -672,7 +673,13 @@
         "too_long": "Ce plan dépasserait dix ans : choisissez une durée plus courte ou plus de temps par jour.",
         "invalid": "Ce plan ne peut pas être calculé : vérifiez les étapes précédentes."
       },
-      "titleRequired": "Donnez un nom à votre plan pour le créer."
+      "titleRequired": "Donnez un nom à votre plan pour le créer.",
+      "forWhom": {
+        "label": "Pour qui ?",
+        "me": "Pour moi seul",
+        "meHint": "Un plan personnel, que vous seul suivez.",
+        "groupHint": "Tous les membres du groupe suivront ce plan, avec le même calendrier. Chacun peut ensuite le copier dans ses plans."
+      }
     },
     "create": {
       "submit": "Créer le plan",
@@ -682,7 +689,8 @@
         "no_active_days": "Aucun jour de lecture entre ces dates : avancez la date de fin ou ajoutez des jours.",
         "too_long": "Ce plan dépasserait dix ans : choisissez une durée plus courte ou plus de temps par jour.",
         "invalid": "Certaines informations ne sont pas valides : vérifiez les étapes précédentes.",
-        "unexpected": "Le plan n’a pas pu être créé. Veuillez réessayer."
+        "unexpected": "Le plan n’a pas pu être créé. Veuillez réessayer.",
+        "group_forbidden": "Vous ne gérez pas ce groupe : seuls le propriétaire et les administrateurs peuvent créer un plan pour lui."
       }
     },
     "range": {
@@ -790,7 +798,8 @@
       "saved": "Choix enregistré.",
       "failed": "Le choix n’a pas pu être enregistré. Veuillez réessayer."
     },
-    "late": "En attente"
+    "late": "En attente",
+    "discussion": "Discussion du groupe"
   },
   "CatchUp": {
     "late": "{count, plural, one {Une lecture vous attend} other {# lectures vous attendent}} dans ce plan. Pas de souci, reprenez à votre rythme.",
@@ -1251,6 +1260,59 @@
       "limit": "Vous avez atteint la limite de {max} groupes.",
       "full": "Ce groupe est complet.",
       "ownerMustHandOver": "Transférez d’abord la propriété du groupe à un autre membre.",
+      "unexpected": "Une erreur est survenue. Réessayez dans un instant."
+    },
+    "plans": {
+      "title": "Plans de lecture du groupe",
+      "create": "Créer un plan pour le groupe",
+      "copy": "Copier dans mes plans",
+      "copyError": "Le plan n’a pas pu être copié. Réessayez dans un instant.",
+      "open": "Ouvrir le plan",
+      "dates": "Du {start} au {end} · {days, plural, one {# jour} other {# jours}}",
+      "progressTitle": "Avancement des membres",
+      "memberProgress": "Avancement de {name}",
+      "you": "(vous)",
+      "readings": "{done} / {total} lectures",
+      "showAll": "Voir les {count} membres",
+      "showFewer": "Réduire la liste",
+      "empty": {
+        "title": "Aucun plan pour ce groupe",
+        "manager": "Créez un plan : tous les membres le suivront, avec le même calendrier.",
+        "member": "Les personnes qui gèrent le groupe peuvent créer un plan que tous suivront."
+      }
+    }
+  },
+  "Comments": {
+    "backToPlan": "Retour à {title}",
+    "readingsTitle": "Lectures du jour",
+    "discussionTitle": "Discussion du groupe",
+    "day": "Jour {day} sur {total}",
+    "cancel": "Annuler",
+    "delete": {
+      "label": "Supprimer le commentaire de {name}",
+      "title": "Supprimer ce commentaire ?",
+      "description": "Les réponses qui lui sont attachées seront supprimées avec lui. Cette action est définitive.",
+      "confirm": "Supprimer"
+    },
+    "new": {
+      "label": "Votre commentaire",
+      "placeholder": "Ce que vous avez retenu, une question, un encouragement…",
+      "submit": "Publier"
+    },
+    "reply": {
+      "button": "Répondre",
+      "placeholder": "Votre réponse",
+      "label": "Répondre à {name}",
+      "submit": "Répondre"
+    },
+    "empty": {
+      "title": "Pas encore de commentaire",
+      "description": "Soyez le premier à partager ce que cette lecture vous inspire."
+    },
+    "errors": {
+      "invalid": "Écrivez un message (2 000 caractères au plus).",
+      "notFound": "Cette discussion n’existe plus ou n’est pas accessible.",
+      "forbidden": "Vous ne pouvez pas supprimer ce commentaire.",
       "unexpected": "Une erreur est survenue. Réessayez dans un instant."
     }
   }

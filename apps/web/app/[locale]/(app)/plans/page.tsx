@@ -64,6 +64,7 @@ async function PlanCard({
           </Link>
         </h2>
         <div className="flex gap-2">
+          {plan.group && <Badge variant="outline">{plan.group.name}</Badge>}
           {completed && <Badge>{t("completed")}</Badge>}
           {plan.status !== "ACTIVE" && (
             <Badge variant="secondary">

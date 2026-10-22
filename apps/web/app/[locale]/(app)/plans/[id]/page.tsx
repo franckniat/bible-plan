@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, MessageCircle } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { getLocale, getTranslations } from "next-intl/server"
@@ -138,8 +138,9 @@ export default async function PlanPage({
     plan.status === "ARCHIVED" ? 0 : getOverdueReadings(schedule, today).length
   const hints =
     late > 0 ? await catchUpHints(plan, schedule, today, locale) : {}
-  // The chosen way first; only the owner can change the calendar.
-  const options = !plan.isOwner
+  // The chosen way first; only the owner can change the calendar, and not that
+  // of a group (common to all its members).
+  const options = !plan.isOwner || plan.group
     ? []
     : plan.catchUpStrategy === "REDISTRIBUTE"
       ? (["REDISTRIBUTE", "SHIFT"] as const)
@@ -168,6 +169,11 @@ export default async function PlanPage({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <h1 className="font-heading text-3xl font-semibold">{plan.title}</h1>
           <div className="flex gap-2">
+            {plan.group && (
+              <Badge variant="outline">
+                <Link href={`/groups/${plan.group.id}`}>{plan.group.name}</Link>
+              </Badge>
+            )}
             {completed && <Badge>{tPlans("completed")}</Badge>}
             {plan.status !== "ACTIVE" && (
               <Badge variant="secondary">
@@ -221,7 +227,11 @@ export default async function PlanPage({
             options={[...options]}
           />
         )}
-        <PlanActions planId={plan.id} status={plan.status} />
+        <PlanActions
+          planId={plan.id}
+          status={plan.status}
+          canDelete={plan.canManage || !plan.group}
+        />
       </div>
 
       <PlanSchedule
@@ -281,10 +291,25 @@ export default async function PlanPage({
                                   : t("day", { day: day.day })}
                             </span>
                           </div>
-                          <ReadingChecklist
-                            readings={toChecklist(day, plan.trackNames, locale)}
-                            className="flex-1"
-                          />
+                          <div className="flex flex-1 flex-col gap-2">
+                            <ReadingChecklist
+                              readings={toChecklist(
+                                day,
+                                plan.trackNames,
+                                locale
+                              )}
+                              className="flex-1"
+                            />
+                            {plan.group && (
+                              <Link
+                                href={`/plans/${plan.id}/days/${day.day}`}
+                                className="flex w-fit items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 hover:underline"
+                              >
+                                <MessageCircle aria-hidden className="size-3.5" />
+                                {t("discussion")}
+                              </Link>
+                            )}
+                          </div>
                         </li>
                       )
                     })}
@@ -313,7 +338,7 @@ export default async function PlanPage({
         }
       />
 
-      {plan.isOwner && (
+      {plan.isOwner && !plan.group && (
         <section className="rounded-3xl bg-white/85 p-5 ring-1 ring-brand-night/10 sm:p-6 dark:bg-neutral-900/85 dark:ring-white/10">
           <CatchUpSetting planId={plan.id} strategy={plan.catchUpStrategy} />
         </section>
