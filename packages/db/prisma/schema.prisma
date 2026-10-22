@@ -73,6 +73,7 @@ model User {
   meditationNotes    MeditationNote[]
   activityDays       ActivityDay[]
   groupMemberships   GroupMember[]
+  readingComments    ReadingComment[]
   pushDevices        PushDevice[]
 
   locale       String  @default("fr")
@@ -173,22 +174,28 @@ model ReadingPlan {
   totalReadings   Int             @default(0)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+  /// The group the plan is for, if any: every member follows it, on one common
+  /// calendar (only the FREE strategy applies). Deleting the group deletes it.
+  groupId         String?
+  group           Group?          @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   days        PlanDay[]
   enrollments PlanEnrollment[]
 
   @@index([ownerId])
+  @@index([groupId])
 }
 
 model PlanDay {
-  id        String        @id @default(uuid(7))
+  id        String           @id @default(uuid(7))
   planId    String
-  plan      ReadingPlan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  plan      ReadingPlan      @relation(fields: [planId], references: [id], onDelete: Cascade)
   /// 1 for the first reading day.
   dayNumber Int
-  date      DateTime      @db.Date
+  date      DateTime         @db.Date
   verses    Int
   readings  PlanReading[]
+  comments  ReadingComment[]
 
   @@unique([planId, dayNumber])
   @@index([planId, date])
@@ -534,6 +541,7 @@ model Group {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   members     GroupMember[]
+  plans       ReadingPlan[]
 }
 
 model GroupMember {
@@ -547,4 +555,22 @@ model GroupMember {
 
   @@unique([groupId, userId])
   @@index([userId])
+}
+
+/// A message of the discussion about the readings of a day of a group plan.
+/// Replies hang from a top-level comment (one level, not a tree).
+model ReadingComment {
+  id        String           @id @default(uuid(7))
+  dayId     String
+  day       PlanDay          @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    ReadingComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   ReadingComment[] @relation("CommentReplies")
+  body      String
+  createdAt DateTime         @default(now())
+
+  @@index([dayId, createdAt])
+  @@index([parentId])
 }
