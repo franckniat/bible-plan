@@ -969,7 +969,11 @@
       "answeredOn": "Date it was answered",
       "answerNote": "Circumstances of the answer",
       "answerPlaceholder": "How did God answer? (optional)",
-      "passagesHint": "Choose a book, a chapter and verses, then add the passage."
+      "passagesHint": "Choose a book, a chapter and verses, then add the passage.",
+      "group": "Share with a group",
+      "private": "Private, only for me",
+      "privateHint": "Only you can see this request.",
+      "groupHint": "The members of the group will see the title, the details, the category and the verses. They will never see the answer note or your journal."
     },
     "empty": {
       "ACTIVE": {
@@ -1007,7 +1011,8 @@
     "deleteDialog": {
       "title": "Delete this request?",
       "description": "“{title}” and its history will be deleted. This cannot be undone."
-    }
+    },
+    "sharedWith": "Shared with {group}"
   },
   "Notes": {
     "title": "Meditation notes",
@@ -1279,6 +1284,22 @@
         "title": "No plan for this group",
         "manager": "Create a plan: every member will follow it, on the same calendar.",
         "member": "The people who manage the group can create a plan for everyone to follow."
+      }
+    },
+    "prayers": {
+      "title": "Group prayer requests",
+      "description": "What members chose to share with the group. Private requests never show here.",
+      "by": "Shared by {name}",
+      "byYou": "Shared by you",
+      "answered": "Answered",
+      "answeredOn": "answered on {date}",
+      "pray": "I’m praying for you",
+      "praying": "I’m praying for you ✓",
+      "count": "{count, plural, =0 {Nobody is praying for this request yet} one {# person is praying for this request} other {# people are praying for this request}}",
+      "error": "The action could not be saved. Try again in a moment.",
+      "empty": {
+        "title": "No shared requests yet",
+        "description": "In the prayer journal, choose this group when you create or edit a request to share it with its members."
       }
     }
   },

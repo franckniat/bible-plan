@@ -8,9 +8,11 @@ import { canManageMembers } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
 import { GroupPlans } from "@/components/groups/group-plans"
+import { GroupPrayers } from "@/components/groups/group-prayers"
 import { GroupView } from "@/components/groups/group-view"
 import { Link } from "@/i18n/navigation"
 import { listGroupPlans } from "@/server/services/group-plans"
+import { listGroupPrayers } from "@/server/services/group-prayers"
 import { getGroup } from "@/server/services/groups"
 import { requireUser } from "@/server/session"
 
@@ -32,6 +34,7 @@ export default async function GroupPage({
   if (!group) notFound()
 
   const plans = (await listGroupPlans(prisma, user.id, id)) ?? []
+  const prayers = (await listGroupPrayers(prisma, user.id, id)) ?? []
   const t = await getTranslations("Groups")
   const locale = await getLocale()
   const formatDate = new Intl.DateTimeFormat(locale, {
@@ -62,6 +65,7 @@ export default async function GroupPage({
         currentUserId={user.id}
         canCreate={canManageMembers(group.role)}
       />
+      <GroupPrayers prayers={prayers} currentUserId={user.id} />
       <GroupView
         currentUserId={user.id}
         group={{

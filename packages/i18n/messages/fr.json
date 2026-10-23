@@ -969,7 +969,11 @@
       "answeredOn": "Date de l’exaucement",
       "answerNote": "Circonstances de l’exaucement",
       "answerPlaceholder": "Comment Dieu a-t-il répondu ? (facultatif)",
-      "passagesHint": "Choisissez un livre, un chapitre et des versets, puis ajoutez le passage."
+      "passagesHint": "Choisissez un livre, un chapitre et des versets, puis ajoutez le passage.",
+      "group": "Partager avec un groupe",
+      "private": "Privé, que pour moi",
+      "privateHint": "Seul vous voyez ce sujet.",
+      "groupHint": "Les membres du groupe verront le titre, les détails, la catégorie et les versets. Ils ne verront jamais la note d’exaucement ni votre journal."
     },
     "empty": {
       "ACTIVE": {
@@ -1007,7 +1011,8 @@
     "deleteDialog": {
       "title": "Supprimer ce sujet ?",
       "description": "« {title} » et son historique seront supprimés. Cette action est définitive."
-    }
+    },
+    "sharedWith": "Partagé avec {group}"
   },
   "Notes": {
     "title": "Notes de méditation",
@@ -1279,6 +1284,22 @@
         "title": "Aucun plan pour ce groupe",
         "manager": "Créez un plan : tous les membres le suivront, avec le même calendrier.",
         "member": "Les personnes qui gèrent le groupe peuvent créer un plan que tous suivront."
+      }
+    },
+    "prayers": {
+      "title": "Sujets de prière du groupe",
+      "description": "Ce que les membres ont choisi de partager avec le groupe. Les sujets privés ne s’affichent jamais ici.",
+      "by": "Partagé par {name}",
+      "byYou": "Partagé par vous",
+      "answered": "Exaucé",
+      "answeredOn": "exaucé le {date}",
+      "pray": "Je prie pour toi",
+      "praying": "Je prie pour toi ✓",
+      "count": "{count, plural, =0 {Personne ne prie encore pour ce sujet} one {# personne prie pour ce sujet} other {# personnes prient pour ce sujet}}",
+      "error": "L’action n’a pas pu être enregistrée. Réessayez dans un instant.",
+      "empty": {
+        "title": "Aucun sujet partagé pour l’instant",
+        "description": "Dans le journal de prière, choisissez ce groupe en créant ou en modifiant un sujet pour le partager avec ses membres."
       }
     }
   },

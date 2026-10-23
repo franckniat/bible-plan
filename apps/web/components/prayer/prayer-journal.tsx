@@ -10,6 +10,7 @@ import {
   PencilIcon,
   PlusIcon,
   SparklesIcon,
+  UsersIcon,
   XIcon,
 } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
@@ -95,6 +96,8 @@ export type PrayerView = {
   lastPrayed: string | null
   answeredOn: IsoDate | null
   answerNote: string | null
+  /** The group it is shared with; null when it is private. */
+  group: { id: string; name: string } | null
 }
 
 type Draft = {
@@ -103,6 +106,8 @@ type Draft = {
   category: PrayerCategory
   startedOn: IsoDate
   passages: string[]
+  /** The id of the group it is shared with; null for a private request. */
+  groupId: string | null
 }
 
 type AnswerDraft = { answeredOn: IsoDate; answerNote: string }
@@ -111,12 +116,15 @@ export function PrayerJournal({
   prayers,
   status,
   total,
+  groups,
   today,
 }: {
   prayers: PrayerView[]
   status: PrayerStatus
   /** Requests of the account, all statuses, for the limit. */
   total: number
+  /** The groups of the person: a request can be shared with one of them. */
+  groups: { id: string; name: string }[]
   /** The day of the user. */
   today: IsoDate
 }) {
@@ -149,6 +157,7 @@ export function PrayerJournal({
     category: "PERSONAL",
     startedOn: today,
     passages: [],
+    groupId: null,
   }
 
   return (
@@ -168,6 +177,7 @@ export function PrayerJournal({
             <CardContent>
               <PrayerForm
                 initial={emptyDraft}
+                groups={groups}
                 today={today}
                 pending={pending}
                 onCancel={() => setEditing(null)}
@@ -238,7 +248,9 @@ export function PrayerJournal({
                         category: prayer.category,
                         startedOn: prayer.startedOn,
                         passages: prayer.passages,
+                        groupId: prayer.group?.id ?? null,
                       }}
+                      groups={groups}
                       today={today}
                       pending={pending}
                       onCancel={() => setEditing(null)}
@@ -354,6 +366,12 @@ function PrayerCard({
         <CardTitle className="flex flex-wrap items-center gap-x-3 gap-y-1 font-heading text-xl">
           {prayer.title}
           <Badge variant="secondary">{t(`categories.${prayer.category}`)}</Badge>
+          {prayer.group && (
+            <Badge variant="outline">
+              <UsersIcon data-icon="inline-start" />
+              {t("sharedWith", { group: prayer.group.name })}
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
@@ -554,12 +572,14 @@ function AnswerForm({
 
 function PrayerForm({
   initial,
+  groups,
   today,
   pending,
   onSave,
   onCancel,
 }: {
   initial: Draft
+  groups: { id: string; name: string }[]
   today: IsoDate
   pending: boolean
   onSave: (draft: Draft) => void
@@ -666,6 +686,45 @@ function PrayerForm({
             </Select>
           </Field>
         </div>
+
+        {groups.length > 0 && (
+          <Field>
+            <FieldLabel htmlFor={`${id}-group`}>{t("fields.group")}</FieldLabel>
+            <Select
+              items={[
+                { value: "private", label: t("fields.private") },
+                ...groups.map((group) => ({
+                  value: group.id,
+                  label: group.name,
+                })),
+              ]}
+              value={draft.groupId ?? "private"}
+              onValueChange={(value) =>
+                setDraft({
+                  ...draft,
+                  groupId: value && value !== "private" ? value : null,
+                })
+              }
+            >
+              <SelectTrigger id={`${id}-group`} className="w-full sm:max-w-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="private">{t("fields.private")}</SelectItem>
+                  {groups.map((group) => (
+                    <SelectItem key={group.id} value={group.id}>
+                      {group.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <FieldDescription>
+              {draft.groupId ? t("fields.groupHint") : t("fields.privateHint")}
+            </FieldDescription>
+          </Field>
+        )}
 
         <FieldSet>
           <FieldLegend variant="label">{t("fields.passages")}</FieldLegend>

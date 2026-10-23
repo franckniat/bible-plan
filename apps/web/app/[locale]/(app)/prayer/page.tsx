@@ -19,6 +19,7 @@ import {
 } from "@/components/prayer/prayer-journal"
 import { Link } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
+import { listGroups } from "@/server/services/groups"
 import { countPrayers, listPrayers } from "@/server/services/prayers"
 import { requireUser } from "@/server/session"
 
@@ -52,9 +53,10 @@ export default async function PrayerPage({
 
   const t = await getTranslations("Prayer")
   const locale = await getLocale()
-  const [prayers, counts] = await Promise.all([
+  const [prayers, counts, groups] = await Promise.all([
     listPrayers(prisma, user.id, status, category),
     countPrayers(prisma, user.id),
+    listGroups(prisma, user.id),
   ])
   // In the day of the user, like the rest of the app.
   const formatDate = new Intl.DateTimeFormat(locale, {
@@ -78,6 +80,7 @@ export default async function PrayerPage({
       ? prayer.answeredOn.toISOString().slice(0, 10)
       : null,
     answerNote: prayer.answerNote,
+    group: prayer.group,
   }))
   const total = counts.ACTIVE + counts.ANSWERED + counts.ARCHIVED
 
@@ -143,6 +146,7 @@ export default async function PrayerPage({
         prayers={views}
         status={status}
         total={total}
+        groups={groups.map(({ id, name }) => ({ id, name }))}
         today={getToday(user.timezone)}
       />
     </div>
