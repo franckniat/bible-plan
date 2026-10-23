@@ -8,7 +8,7 @@ import { TermsFr } from "@/content/legal/terms.fr"
 
 const terms: LegalDocument = {
   kind: "terms",
-  updatedAt: new Date("2026-10-10T00:00:00Z"),
+  updatedAt: new Date("2026-10-23T00:00:00Z"),
   content: { fr: TermsFr, en: TermsEn },
 }
 

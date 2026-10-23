@@ -8,7 +8,7 @@ import { PrivacyFr } from "@/content/legal/privacy.fr"
 
 const privacy: LegalDocument = {
   kind: "privacy",
-  updatedAt: new Date("2026-10-10T00:00:00Z"),
+  updatedAt: new Date("2026-10-23T00:00:00Z"),
   content: { fr: PrivacyFr, en: PrivacyEn },
 }
 
