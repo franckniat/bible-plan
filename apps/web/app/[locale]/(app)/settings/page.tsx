@@ -10,6 +10,7 @@ import { localeSchema, defaultLocale, type Locale } from "@workspace/core"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { AccountData } from "@/components/settings/account-data"
 import { BibleVersionSetting } from "@/components/settings/bible-version-setting"
 import { ProfileForm } from "@/components/settings/profile-form"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -114,6 +115,14 @@ export default async function SettingsPage() {
           <Bell />
           {t("reminders.manage")}
         </Link>
+      </SettingsSection>
+
+      <SettingsSection
+        id="data"
+        title={t("data.title")}
+        description={t("data.description")}
+      >
+        <AccountData locale={locale} />
       </SettingsSection>
 
       <SettingsSection

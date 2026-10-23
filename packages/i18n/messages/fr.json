@@ -265,7 +265,8 @@
       "signUp": "Créer un compte",
       "verifyEmail": "Confirmation de l’email",
       "forgotPassword": "Mot de passe oublié",
-      "resetPassword": "Nouveau mot de passe"
+      "resetPassword": "Nouveau mot de passe",
+      "consent": "Consentement"
     },
     "fields": {
       "name": "Prénom",
@@ -426,6 +427,24 @@
       "title": "Rappels",
       "description": "Une invitation à l’heure de votre choix pour lire, prier ou méditer.",
       "manage": "Gérer mes rappels"
+    },
+    "data": {
+      "title": "Mes données",
+      "description": "Récupérez tout ce que Bible Plan garde sur vous, ou supprimez votre compte.",
+      "exportHint": "Un fichier JSON avec votre profil, vos plans et votre progression, vos rappels, votre journal de prière, vos notes de méditation, vos groupes et vos commentaires.",
+      "export": "Télécharger mes données",
+      "deleteHint": "La suppression est définitive : votre compte et tout ce que vous avez écrit sont effacés, et ne peuvent pas être récupérés.",
+      "delete": "Supprimer mon compte",
+      "confirmTitle": "Supprimer votre compte00a0?",
+      "confirmDescription": "Votre profil, vos plans, votre journal de prière, vos notes, vos rappels et vos commentaires seront effacés définitivement. Vos sujets de prière partagés disparaîtront des groupes.",
+      "confirmLabel": "Pour confirmer, saisissez votre adresse email",
+      "cancel": "Annuler",
+      "confirm": "Supprimer définitivement",
+      "errors": {
+        "mismatch": "Cette adresse ne correspond pas à celle de votre compte.",
+        "ownsGroup": "Vous êtes propriétaire d’un groupe qui a d’autres membres. Transmettez-le à quelqu’un d’autre, ou retirez les membres, avant de supprimer votre compte.",
+        "unexpected": "Le compte n’a pas pu être supprimé. Réessayez dans un instant."
+      }
     }
   },
   "Reminders": {
@@ -1335,6 +1354,16 @@
       "notFound": "Cette discussion n’existe plus ou n’est pas accessible.",
       "forbidden": "Vous ne pouvez pas supprimer ce commentaire.",
       "unexpected": "Une erreur est survenue. Réessayez dans un instant."
+    }
+  },
+  "Consent": {
+    "title": "Avant de commencer",
+    "description": "Bible Plan a besoin de votre accord pour enregistrer vos données.",
+    "label": "J’ai lu la <privacy>politique de confidentialité</privacy> et les <terms>conditions d’utilisation</terms>. Je consens à ce que Bible Plan enregistre mes données, y compris mon journal de prière et mes notes, qui peuvent révéler mes convictions religieuses. Je peux retirer mon consentement à tout moment en supprimant mon compte.",
+    "submit": "Accepter et continuer",
+    "errors": {
+      "required": "Cochez la case pour continuer.",
+      "unexpected": "Votre accord n’a pas pu être enregistré. Réessayez dans un instant."
     }
   }
 }

@@ -265,7 +265,8 @@
       "signUp": "Create an account",
       "verifyEmail": "Email confirmation",
       "forgotPassword": "Forgot password",
-      "resetPassword": "New password"
+      "resetPassword": "New password",
+      "consent": "Consent"
     },
     "fields": {
       "name": "First name",
@@ -426,6 +427,24 @@
       "title": "Reminders",
       "description": "An invitation at the time you choose to read, pray or meditate.",
       "manage": "Manage my reminders"
+    },
+    "data": {
+      "title": "My data",
+      "description": "Get everything Bible Plan keeps about you, or delete your account.",
+      "exportHint": "A JSON file with your profile, your plans and progress, your reminders, your prayer journal, your meditation notes, your groups and your comments.",
+      "export": "Download my data",
+      "deleteHint": "Deletion is final: your account and everything you wrote are erased and cannot be recovered.",
+      "delete": "Delete my account",
+      "confirmTitle": "Delete your account?",
+      "confirmDescription": "Your profile, plans, prayer journal, notes, reminders and comments will be erased for good. Your shared prayer requests will disappear from the groups.",
+      "confirmLabel": "To confirm, type your email address",
+      "cancel": "Cancel",
+      "confirm": "Delete for good",
+      "errors": {
+        "mismatch": "This address does not match the one of your account.",
+        "ownsGroup": "You own a group that has other members. Hand it over to someone else, or remove the members, before deleting your account.",
+        "unexpected": "The account could not be deleted. Try again in a moment."
+      }
     }
   },
   "Reminders": {
@@ -1335,6 +1354,16 @@
       "notFound": "This discussion no longer exists or is not accessible.",
       "forbidden": "You cannot delete this comment.",
       "unexpected": "Something went wrong. Try again in a moment."
+    }
+  },
+  "Consent": {
+    "title": "Before you start",
+    "description": "Bible Plan needs your agreement to store your data.",
+    "label": "I have read the <privacy>privacy policy</privacy> and the <terms>terms of use</terms>. I consent to Bible Plan storing my data, including my prayer journal and my notes, which can reveal my religious beliefs. I can withdraw my consent at any time by deleting my account.",
+    "submit": "Accept and continue",
+    "errors": {
+      "required": "Tick the box to continue.",
+      "unexpected": "Your agreement could not be saved. Try again in a moment."
     }
   }
 }

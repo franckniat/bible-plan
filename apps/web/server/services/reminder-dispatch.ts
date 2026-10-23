@@ -11,6 +11,23 @@ import type { PrismaClient } from "@workspace/db"
 import { createNotification } from "@/server/services/notifications"
 import type { ReminderContent } from "@/server/services/reminder-content"
 
+/** How long a delivery is kept: only its recent past prevents a double send. */
+export const deliveryRetentionDays = 30
+
+/** Deletes the deliveries older than the retention period. */
+export async function purgeOldDeliveries(
+  db: Pick<PrismaClient, "reminderDelivery">,
+  now = new Date()
+): Promise<number> {
+  const limit = new Date(
+    now.getTime() - deliveryRetentionDays * 24 * 60 * 60 * 1000
+  )
+  const { count } = await db.reminderDelivery.deleteMany({
+    where: { sentAt: { lt: limit } },
+  })
+  return count
+}
+
 export type DispatchDb = Pick<
   PrismaClient,
   "reminder" | "reminderDelivery" | "notification"

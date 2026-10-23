@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 
 type AuthPage =
-  "signIn" | "signUp" | "verifyEmail" | "forgotPassword" | "resetPassword"
+  "signIn" | "signUp" | "consent" | "verifyEmail" | "forgotPassword" | "resetPassword"
 
 /** `<title>` of an authentication page ("Connexion · Bible Plan"). */
 export async function getAuthMetadata(

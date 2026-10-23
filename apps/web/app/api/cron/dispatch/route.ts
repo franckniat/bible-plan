@@ -7,6 +7,7 @@ import { getReminderContent } from "@/server/reminder-message"
 import {
   defaultBatchSize,
   dispatchDueReminders,
+  purgeOldDeliveries,
   type DispatchResult,
 } from "@/server/services/reminder-dispatch"
 import { purgeOldNotifications } from "@/server/services/notifications"
@@ -52,5 +53,6 @@ export async function POST(request: Request) {
   }
 
   const purged = await purgeOldNotifications(prisma, now)
-  return Response.json({ ...total, purged })
+  const purgedDeliveries = await purgeOldDeliveries(prisma, now)
+  return Response.json({ ...total, purged, purgedDeliveries })
 }

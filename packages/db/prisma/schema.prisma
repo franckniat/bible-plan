@@ -82,6 +82,11 @@ model User {
   readingWpm   Int     @default(180)
   bibleVersion String?
 
+  /// When the person accepted the privacy policy and terms (consent, including
+  /// to the sensitive data of the prayer journal), and which version.
+  termsAcceptedAt DateTime?
+  termsVersion    String?
+
   @@unique([email])
   @@map("user")
 }

@@ -16,6 +16,7 @@ export const protectedSections = [
   "/stats",
   "/notifications",
   "/settings",
+  "/consent",
 ] as const
 
 /** The locale of a protected path (e.g. "/fr/plans/42" → "fr"), or null. */

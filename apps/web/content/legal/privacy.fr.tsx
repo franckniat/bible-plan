@@ -210,6 +210,9 @@ export function PrivacyFr() {
           suppression.
         </li>
         <li>
+          L’historique technique des envois de rappels est effacé après 30 jours.
+        </li>
+        <li>
           Les sessions de connexion expirent d’elles-mêmes ; les liens de
           connexion et de vérification sont valables peu de temps.
         </li>
@@ -291,12 +294,12 @@ export function PrivacyFr() {
         Vous pouvez à tout moment demander l’accès à vos données, leur
         correction, leur suppression, leur export dans un format lisible,
         limiter ou vous opposer à leur traitement, ou retirer votre
-        consentement. Vous pouvez déjà modifier votre profil et supprimer vos
-        sujets de prière, notes, plans et commentaires depuis l’application.
-        Pour le reste, y compris la suppression complète de votre compte et de
-        tout ce qui s’y rattache, contactez le responsable du projet (
-        <ContactLink />) depuis l’adresse email de votre compte. Nous répondons
-        sous un mois.
+        consentement. Depuis les Réglages de l’application, vous pouvez{" "}
+        <strong>télécharger toutes vos données</strong> (fichier JSON) et{" "}
+        <strong>supprimer votre compte</strong>, ce qui efface définitivement
+        tout ce qui s’y rattache. Pour toute autre demande, contactez le
+        responsable du projet (<ContactLink />) depuis l’adresse email de votre
+        compte. Nous répondons sous un mois.
       </p>
       <p>
         Si vous estimez que vos droits ne sont pas respectés, vous pouvez vous

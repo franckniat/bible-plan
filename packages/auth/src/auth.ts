@@ -97,6 +97,9 @@ export function createAuth({
         },
         // Preferred Bible version, chosen once the reader exists.
         bibleVersion: { type: "string", required: false, input: false },
+        // Consent to the privacy policy and terms (see the consent page).
+        termsAcceptedAt: { type: "date", required: false, input: false },
+        termsVersion: { type: "string", required: false, input: false },
       },
     },
     databaseHooks: {

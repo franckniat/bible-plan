@@ -196,6 +196,9 @@ export function PrivacyEn() {
           is deleted.
         </li>
         <li>
+          The technical history of reminder deliveries is erased after 30 days.
+        </li>
+        <li>
           Sign-in sessions expire by themselves; sign-in and verification links
           are valid for a short time.
         </li>
@@ -269,12 +272,12 @@ export function PrivacyEn() {
       <p>
         At any time, you can ask to access, correct or delete your data, to
         receive a copy in a readable format, to restrict or object to its
-        processing, or to withdraw your consent. You can already edit your
-        profile and delete your prayer requests, notes, plans and comments from
-        the app. For the rest, including deleting your whole account and
-        everything attached to it, contact the project maintainer (
-        <ContactLink />) from the email address of your account. We reply within
-        one month.
+        processing, or to withdraw your consent. From the app’s Settings, you can{" "}
+        <strong>download all your data</strong> (JSON file) and{" "}
+        <strong>delete your account</strong>, which permanently erases
+        everything attached to it. For any other request, contact the project
+        maintainer (<ContactLink />) from the email address of your account. We
+        reply within one month.
       </p>
       <p>
         If you believe your rights are not respected, you can contact the data
