@@ -73,6 +73,7 @@ model User {
   meditationNotes    MeditationNote[]
   activityDays       ActivityDay[]
   groupMemberships   GroupMember[]
+  prayerSupports     PrayerSupport[]
   readingComments    ReadingComment[]
   pushDevices        PushDevice[]
 
@@ -414,29 +415,35 @@ enum PrayerStatus {
 }
 
 model PrayerRequest {
-  id           String         @id @default(uuid(7))
+  id           String          @id @default(uuid(7))
   userId       String
-  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   title        String
   details      String?
-  category     PrayerCategory @default(PERSONAL)
-  status       PrayerStatus   @default(ACTIVE)
+  category     PrayerCategory  @default(PERSONAL)
+  status       PrayerStatus    @default(ACTIVE)
   /// The day the person started praying for it (a calendar date).
-  startedOn    DateTime       @default(now()) @db.Date
+  startedOn    DateTime        @default(now()) @db.Date
   /// Passages that go with the prayer, as passage slugs ("Ps.51.1-4").
-  passages     String[]       @default([])
+  passages     String[]        @default([])
   /// The last time the person said "I prayed"; null until the first time.
   lastPrayedAt DateTime?
-  prayerCount  Int            @default(0)
+  prayerCount  Int             @default(0)
   /// The day it was answered, chosen by the person (a calendar date).
-  answeredOn   DateTime?      @db.Date
+  answeredOn   DateTime?       @db.Date
   /// What happened: the circumstances of the answer.
   answerNote   String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
   logs         PrayerLog[]
+  /// The group it is shared with: null keeps it private to its owner. Its
+  /// answer note is never shared. If the group goes, the request is private again.
+  groupId      String?
+  group        Group?          @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  supports     PrayerSupport[]
 
   @@index([userId, status, updatedAt])
+  @@index([groupId, status])
 }
 
 /// One "I prayed", kept so that streaks and statistics can count prayer days.
@@ -532,16 +539,17 @@ enum GroupRole {
 }
 
 model Group {
-  id          String        @id @default(uuid(7))
+  id          String          @id @default(uuid(7))
   name        String
   description String?
   /// What a person types or follows to join (random, easy to read aloud).
   /// Changing it cancels the links already given out.
-  inviteCode  String        @unique
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  inviteCode  String          @unique
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   members     GroupMember[]
   plans       ReadingPlan[]
+  prayers     PrayerRequest[]
 }
 
 model GroupMember {
@@ -573,4 +581,17 @@ model ReadingComment {
 
   @@index([dayId, createdAt])
   @@index([parentId])
+}
+
+/// "I am praying for you": one person supporting one shared prayer request.
+/// Taken back by tapping again (the row is deleted).
+model PrayerSupport {
+  id        String        @id @default(uuid(7))
+  requestId String
+  request   PrayerRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+
+  @@unique([requestId, userId])
 }
