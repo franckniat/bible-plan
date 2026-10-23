@@ -43,6 +43,7 @@ function fake(members: Record<string, Role>, extra: Record<string, unknown> = {}
     update: vi.fn().mockResolvedValue({}),
     delete: vi.fn().mockResolvedValue({}),
   }
+  const prayerRequest = { updateMany: vi.fn().mockResolvedValue({ count: 0 }) }
   const readingPlan = { findMany: vi.fn().mockResolvedValue([]) }
   const planEnrollment = {
     createMany: vi.fn().mockResolvedValue({ count: 0 }),
@@ -55,6 +56,7 @@ function fake(members: Record<string, Role>, extra: Record<string, unknown> = {}
       groupMember,
       readingPlan,
       planEnrollment,
+      prayerRequest,
       $transaction: transaction,
       ...extra,
     } as unknown as GroupsDb,
@@ -62,6 +64,7 @@ function fake(members: Record<string, Role>, extra: Record<string, unknown> = {}
     groupMember,
     readingPlan,
     planEnrollment,
+    prayerRequest,
     transaction,
   }
 }
@@ -247,6 +250,23 @@ describe("plans of the group", () => {
     await leaveGroup(left.db, "m", "g1")
     expect(left.planEnrollment.deleteMany).toHaveBeenCalledWith({
       where: { userId: "m", plan: { groupId: "g1" } },
+    })
+  })
+})
+
+describe("prayer requests shared with the group", () => {
+  it("makes them private again when their author leaves or is removed", async () => {
+    const removed = fake({ a: "ADMIN", m: "MEMBER" })
+    await removeMember(removed.db, "a", "g1", "m")
+    expect(removed.prayerRequest.updateMany).toHaveBeenCalledWith({
+      where: { userId: "m", groupId: "g1" },
+      data: { groupId: null },
+    })
+    const left = fake({ m: "MEMBER", o: "OWNER" })
+    await leaveGroup(left.db, "m", "g1")
+    expect(left.prayerRequest.updateMany).toHaveBeenCalledWith({
+      where: { userId: "m", groupId: "g1" },
+      data: { groupId: null },
     })
   })
 })

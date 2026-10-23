@@ -34,6 +34,8 @@ export type PrayerListItem = {
   answeredOn: Date | null
   answerNote: string | null
   createdAt: Date
+  /** The group it is shared with, if any. */
+  group: { id: string; name: string } | null
 }
 
 /** A calendar date as stored in a date column. */
@@ -54,6 +56,7 @@ const select = {
   answeredOn: true,
   answerNote: true,
   createdAt: true,
+  group: { select: { id: true, name: true } },
 } as const
 
 /**

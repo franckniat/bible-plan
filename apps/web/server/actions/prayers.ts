@@ -11,6 +11,7 @@ import {
 import { prisma } from "@workspace/db"
 
 import { recordActivity } from "@/server/services/activity"
+import { canShareWith } from "@/server/services/group-prayers"
 import {
   createPrayer,
   deletePrayer,
@@ -55,7 +56,13 @@ export async function savePrayerAction(
   const parsed = prayerRequestInputSchema.safeParse(request)
   const validId = id === null || idSchema.safeParse(id).success
   if (!parsed.success || !validId) return { error: "invalid" }
-  const today = getToday((await requireUser()).timezone)
+  const user = await requireUser()
+  const today = getToday(user.timezone)
+  // A request is only shared with a group the person is in.
+  const groupId = parsed.data.groupId
+  if (groupId && !(await canShareWith(prisma, user.id, groupId))) {
+    return { error: "notFound" }
+  }
   return run((userId) =>
     id === null
       ? createPrayer(prisma, userId, parsed.data, today)

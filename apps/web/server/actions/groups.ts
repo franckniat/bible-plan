@@ -6,6 +6,7 @@ import { z } from "zod"
 import { groupInputSchema, groupRoles } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
+import { togglePraying } from "@/server/services/group-prayers"
 import { copyGroupPlan } from "@/server/services/group-plans"
 import {
   createGroup,
@@ -100,6 +101,23 @@ export async function copyGroupPlanAction(planId: string) {
     return result
   } catch (error) {
     console.error("Copying a group plan failed", error)
+    return { error: "unexpected" as const }
+  }
+}
+
+/** "I am praying for you" on a request shared with one of the person's groups. */
+export async function togglePrayingAction(requestId: string) {
+  if (!idSchema.safeParse(requestId).success) {
+    return { error: "invalid" as const }
+  }
+  const user = await requireUser()
+  try {
+    const result = await togglePraying(prisma, user.id, requestId)
+    if (!result.ok) return { error: result.error }
+    revalidatePath("/[locale]/groups", "layout")
+    return result
+  } catch (error) {
+    console.error("Praying for a request failed", error)
     return { error: "unexpected" as const }
   }
 }

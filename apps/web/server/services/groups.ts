@@ -22,6 +22,7 @@ export type GroupsDb = Pick<
   | "groupMember"
   | "readingPlan"
   | "planEnrollment"
+  | "prayerRequest"
   | "$transaction"
 >
 
@@ -293,14 +294,22 @@ export async function enrollInGroupPlans(
   })
 }
 
-/** Stops a person from following the plans of a group, once they are not in it. */
+/**
+ * What a person leaves behind when they are no longer in a group: they stop
+ * following its plans, and the prayer requests they had shared with it are
+ * private again (nobody there can see them any more).
+ */
 async function leaveGroupPlans(
-  db: Pick<PrismaClient, "planEnrollment">,
+  db: Pick<PrismaClient, "planEnrollment" | "prayerRequest">,
   groupId: string,
   userId: string
 ): Promise<void> {
   await db.planEnrollment.deleteMany({
     where: { userId, plan: { groupId } },
+  })
+  await db.prayerRequest.updateMany({
+    where: { userId, groupId },
+    data: { groupId: null },
   })
 }
 
@@ -328,7 +337,7 @@ export async function regenerateInviteCode(
 
 /** Removes a member, if the role of the actor allows it. */
 export async function removeMember(
-  db: Pick<PrismaClient, "groupMember" | "planEnrollment">,
+  db: Pick<PrismaClient, "groupMember" | "planEnrollment" | "prayerRequest">,
   actorId: string,
   groupId: string,
   memberId: string
@@ -352,7 +361,10 @@ export async function removeMember(
  * the group: they hand it over first (or delete it); alone, leaving deletes it.
  */
 export async function leaveGroup(
-  db: Pick<PrismaClient, "group" | "groupMember" | "planEnrollment">,
+  db: Pick<
+    PrismaClient,
+    "group" | "groupMember" | "planEnrollment" | "prayerRequest"
+  >,
   userId: string,
   groupId: string
 ): Outcome {

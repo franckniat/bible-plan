@@ -51,6 +51,11 @@ export const prayerRequestInputSchema = z.object({
     )
     .max(maxPrayerPassages)
     .default([]),
+  /**
+   * The group the request is shared with; null keeps it private, and when left
+   * out it stays as it was. The caller checks that the person is in the group.
+   */
+  groupId: z.uuid().nullable().optional(),
 })
 export type PrayerRequestInput = z.infer<typeof prayerRequestInputSchema>
 
