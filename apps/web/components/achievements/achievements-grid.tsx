@@ -58,6 +58,12 @@ function ProgressBar({
   )
 }
 
+/** Badges with levels first: the single "first time" ones come last. */
+const sortedBadges = [...badges].sort(
+  (a, b) =>
+    Number(a.thresholds.length === 1) - Number(b.thresholds.length === 1)
+)
+
 /** Badges and trophies: what is earned, and how far the next level is. */
 export async function AchievementsGrid({
   earned,
@@ -80,7 +86,7 @@ export async function AchievementsGrid({
           {t("badges")}
         </h2>
         <ul className="grid gap-3 sm:grid-cols-2">
-          {badges.map((badge) => {
+          {sortedBadges.map((badge) => {
             const thresholds: readonly number[] = badge.thresholds
             const got = best.get(badge.key)
             const level = (got?.level ?? 0) as 0 | AchievementLevel
@@ -108,7 +114,9 @@ export async function AchievementsGrid({
                     )}
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    {level === levels ? t("complete") : description}
+                    {level === levels && levels > 1
+                      ? t("complete")
+                      : description}
                   </p>
                   {next !== undefined && (
                     <ProgressBar
