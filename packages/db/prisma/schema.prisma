@@ -76,6 +76,7 @@ model User {
   prayerSupports     PrayerSupport[]
   readingComments    ReadingComment[]
   pushDevices        PushDevice[]
+  achievements       Achievement[]
 
   locale       String  @default("fr")
   timezone     String?
@@ -531,6 +532,26 @@ model ActivityDay {
   prayerSeconds     Int      @default(0)
 
   @@unique([userId, day])
+}
+
+// ─── Achievements ───────────────────────────────────────────────────────────
+// Badges (with levels) and trophies earned, derived from what the person did
+// by evaluateAchievements (@workspace/core). Private, never removed once
+// earned; level is 1 (bronze), 2 (silver) or 3 (gold), 1 for a trophy.
+
+model Achievement {
+  id         String   @id @default(uuid(7))
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key        String
+  level      Int
+  /// The day it was earned, in the time zone of the person.
+  unlockedAt DateTime @db.Date
+  /// When the application recorded it.
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, key, level])
+  @@index([userId])
 }
 
 // ─── Groups ─────────────────────────────────────────────────────────────────
