@@ -6,6 +6,7 @@ import { bookPassage, chaptersPassage } from "../bible/passage"
 import { addDays } from "../plans/dates"
 import type { IsoDate } from "../schemas/common"
 import {
+  achievementProgress,
   evaluateAchievements,
   type AchievementHistory,
   type UnlockedAchievement,
@@ -265,5 +266,33 @@ describe("evaluateAchievements (properties)", () => {
         expect(new Set(keys).size).toBe(keys.length)
       })
     )
+  })
+})
+
+describe("achievementProgress", () => {
+  it("shows the present situation, not what was once earned", () => {
+    const progress = achievementProgress(
+      { ...empty, prayers: [...days(7), "2026-06-01"] },
+      "2026-06-01"
+    )
+    // The streak of 7 broke long ago: only today counts now.
+    expect(progress.fidelity.value).toBe(1)
+    expect(progress.prayer.value).toBe(8)
+  })
+
+  it("counts the books of a trophy already read", () => {
+    const progress = achievementProgress(
+      {
+        ...empty,
+        readings: [
+          { day: "2026-05-01", passage: bookPassage("Matt") },
+          { day: "2026-05-02", passage: bookPassage("Mark") },
+        ],
+      },
+      "2026-05-02"
+    )
+    expect(progress.gospels).toEqual({ value: 2, target: 4 })
+    expect(progress.psalms).toEqual({ value: 0, target: 1 })
+    expect(progress.books.value).toBe(2)
   })
 })

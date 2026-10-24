@@ -1,6 +1,7 @@
 import { bookIds, type BookId } from "../bible/books"
 import { chapterSteps, type Passage } from "../bible/passage"
 import { getChapterCount, getVerseCount } from "../bible/verse-counts"
+import { computeStreak } from "../activity/streak"
 import { addDays, daysBetween } from "../plans/dates"
 import type { IsoDate } from "../schemas/common"
 import {
@@ -177,4 +178,66 @@ export function evaluateAchievements(
   trophy("regularity-year", regularityReached(activeDays))
 
   return unlocked
+}
+
+export type AchievementProgress = {
+  /** Where the person stands now (current streak, count, books read…). */
+  value: number
+  /** What a trophy asks for; null for a badge (see its thresholds). */
+  target: number | null
+}
+
+/**
+ * Where a person stands for every achievement, to show how far the next
+ * level is. `value` is the present situation (a streak that broke starts
+ * again from zero), while what was earned stays in the unlocked list.
+ */
+export function achievementProgress(
+  history: AchievementHistory,
+  today: IsoDate
+): Record<AchievementKey, AchievementProgress> {
+  const completions = bookCompletions(history.readings)
+  const activeDays = [
+    ...history.readings.map((reading) => reading.day),
+    ...history.prayers,
+    ...history.meditations,
+    ...history.prayerTimes,
+  ]
+  const metric: Record<BadgeMetric, number> = {
+    firstReading: history.readings.length,
+    firstPrayer: history.prayers.length,
+    firstMeditation: history.meditations.length,
+    streak: computeStreak(activeDays, today).current,
+    prayers: history.prayers.length,
+    meditations: history.meditations.length,
+    prayerTimes: history.prayerTimes.length,
+    books: completions.size,
+    notes: history.notes.length,
+  }
+
+  const progress = {} as Record<AchievementKey, AchievementProgress>
+  for (const badge of badges) {
+    progress[badge.key] = { value: metric[badge.metric], target: null }
+  }
+
+  const windowStart = addDays(today, -(regularityWindow - 1))
+  const inWindow = new Set(
+    activeDays.filter((day) => day >= windowStart && day <= today)
+  )
+  progress["plan-completed"] = {
+    value: Math.min(history.completedPlans.length, 1),
+    target: 1,
+  }
+  for (const key of ["psalms", "gospels", "new-testament", "bible"] as const) {
+    const needed = trophyBooks[key](bookIds)
+    progress[key] = {
+      value: needed.filter((book) => completions.has(book)).length,
+      target: needed.length,
+    }
+  }
+  progress["regularity-year"] = {
+    value: Math.min(inWindow.size, regularityDays),
+    target: regularityDays,
+  }
+  return progress
 }
