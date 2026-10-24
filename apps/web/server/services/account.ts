@@ -21,6 +21,7 @@ export type AccountDb = Pick<
   | "group"
   | "readingComment"
   | "prayerSupport"
+  | "achievement"
   | "waitlistEntry"
 >
 
@@ -64,6 +65,7 @@ export async function exportUserData(db: AccountDb, userId: string) {
     groups,
     comments,
     prayerSupports,
+    achievements,
   ] = await Promise.all([
     db.user.findUnique({
       where: { id: userId },
@@ -118,6 +120,10 @@ export async function exportUserData(db: AccountDb, userId: string) {
     }),
     db.readingComment.findMany({ where: { userId } }),
     db.prayerSupport.findMany({ where: { userId } }),
+    db.achievement.findMany({
+      where: { userId },
+      select: { key: true, level: true, unlockedAt: true },
+    }),
   ])
 
   return {
@@ -137,6 +143,7 @@ export async function exportUserData(db: AccountDb, userId: string) {
     groups,
     comments,
     prayerSupports,
+    achievements,
   }
 }
 
