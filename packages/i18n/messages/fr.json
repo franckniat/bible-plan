@@ -86,6 +86,21 @@
         "title": "Un calendrier clair",
         "description": "Ce qui est lu, ce qui est en retard : le plan s’adapte quand vous le décalez.",
         "alt": "Écran du calendrier d’un plan de lecture"
+      },
+      "prayer": {
+        "title": "Un journal de prière",
+        "description": "Vos sujets, les moments où vous avez prié et ce qui a été exaucé, privés tant que vous ne les partagez pas.",
+        "alt": "Écran du journal de prière avec un sujet partagé avec un groupe"
+      },
+      "groups": {
+        "title": "Lire ensemble",
+        "description": "Un plan commun, l’avancement de chacun et des sujets de prière partagés avec votre groupe.",
+        "alt": "Écran d’un groupe avec son plan de lecture et l’avancement des membres"
+      },
+      "achievements": {
+        "title": "Des trophées pour la régularité",
+        "description": "Des badges bronze, argent et or pour la fidélité, sans classement : vous seul les voyez.",
+        "alt": "Écran des trophées avec des badges et leur progression"
       }
     },
     "waitlist": {

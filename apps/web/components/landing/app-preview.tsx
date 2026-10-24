@@ -4,7 +4,14 @@ import { PhoneFrame } from "@/components/landing/phone-frame"
 import { landingImage } from "@/lib/landing-images"
 
 // The reading screen with highlights is the one of the opening section.
-const screens = ["today", "compare", "calendar"] as const
+const screens = [
+  "today",
+  "compare",
+  "calendar",
+  "prayer",
+  "groups",
+  "achievements",
+] as const
 
 /** Screenshots of the web app, one phone per feature. */
 export async function AppPreview() {
@@ -28,7 +35,7 @@ export async function AppPreview() {
           {t("subtitle")}
         </p>
       </div>
-      <ul className="grid gap-12 sm:grid-cols-3 sm:gap-8">
+      <ul className="grid gap-12 sm:grid-cols-3 sm:gap-x-8 sm:gap-y-16">
         {screens.map((screen) => (
           <li key={screen} className="flex flex-col items-center gap-6">
             <PhoneFrame

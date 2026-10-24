@@ -86,6 +86,21 @@
         "title": "A clear calendar",
         "description": "What is read, what is late: the plan adapts when you shift it.",
         "alt": "Reading plan calendar screen"
+      },
+      "prayer": {
+        "title": "A prayer journal",
+        "description": "Your requests, the times you prayed and what was answered, private unless you share them.",
+        "alt": "Prayer journal screen with a request shared with a group"
+      },
+      "groups": {
+        "title": "Read together",
+        "description": "A shared plan, everyone’s progress and prayer requests shared with your group.",
+        "alt": "Group screen with its reading plan and the progress of its members"
+      },
+      "achievements": {
+        "title": "Trophies for regularity",
+        "description": "Bronze, silver and gold badges for faithfulness, with no ranking: only you can see them.",
+        "alt": "Achievements screen with badges and their progress"
       }
     },
     "waitlist": {

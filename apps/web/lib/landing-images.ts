@@ -6,7 +6,14 @@
  */
 const folder = "/landing/v2"
 
-export type LandingScreen = "today" | "reader" | "compare" | "calendar"
+export type LandingScreen =
+  | "today"
+  | "reader"
+  | "compare"
+  | "calendar"
+  | "prayer"
+  | "groups"
+  | "achievements"
 
 export function landingImage(locale: string, screen: LandingScreen): string {
   return `${folder}/${locale}-${screen}.jpg`
