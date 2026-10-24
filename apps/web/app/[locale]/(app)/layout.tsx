@@ -3,6 +3,7 @@ import type { ReactNode } from "react"
 
 import { getLocale } from "next-intl/server"
 
+import { AchievementCelebration } from "@/components/achievements/achievement-celebration"
 import { AppShell } from "@/components/app/app-shell"
 import { redirect } from "@/i18n/navigation"
 import { needsConsent } from "@/server/services/account"
@@ -18,5 +19,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   if (needsConsent(user)) {
     return redirect({ href: "/consent", locale: await getLocale() })
   }
-  return <AppShell user={user}>{children}</AppShell>
+  return (
+    <AppShell user={user}>
+      {children}
+      <AchievementCelebration userId={user.id} />
+    </AppShell>
+  )
 }
