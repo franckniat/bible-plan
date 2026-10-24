@@ -1,11 +1,14 @@
 import "server-only"
 
 import {
+  achievementProgress,
   evaluateAchievements,
   getToday,
   isBookId,
   type AchievementHistory,
   type IsoDate,
+  type AchievementKey,
+  type AchievementProgress,
   type UnlockedAchievement,
 } from "@workspace/core"
 import type { PrismaClient } from "@workspace/db"
@@ -135,10 +138,11 @@ export async function loadAchievementHistory(
 export async function syncAchievements(
   db: AchievementsDb,
   userId: string,
-  timeZone: string | null
+  timeZone: string | null,
+  history?: AchievementHistory
 ): Promise<UnlockedAchievement[]> {
   const earned = evaluateAchievements(
-    await loadAchievementHistory(db, userId, timeZone)
+    history ?? (await loadAchievementHistory(db, userId, timeZone))
   )
   if (earned.length === 0) return []
 
@@ -191,4 +195,24 @@ export async function listAchievements(db: AchievementsDb, userId: string) {
     level: row.level,
     unlockedAt: row.unlockedAt.toISOString().slice(0, 10) as IsoDate,
   }))
+}
+
+/**
+ * What the achievements page shows: the achievements earned (catching up the
+ * ones not yet recorded, which is how accounts older than the feature get
+ * theirs) and where the person stands for each.
+ */
+export async function getAchievementsOverview(
+  db: AchievementsDb,
+  userId: string,
+  timeZone: string | null
+) {
+  const history = await loadAchievementHistory(db, userId, timeZone)
+  await syncAchievements(db, userId, timeZone, history).catch((error) =>
+    console.error("Updating achievements failed", error)
+  )
+  const earned = await listAchievements(db, userId)
+  const progress: Record<AchievementKey, AchievementProgress> =
+    achievementProgress(history, getToday(timeZone))
+  return { earned, progress }
 }

@@ -14,6 +14,7 @@ export const protectedSections = [
   "/groups",
   "/join",
   "/stats",
+  "/achievements",
   "/notifications",
   "/settings",
   "/consent",

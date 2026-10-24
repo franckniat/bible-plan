@@ -10,6 +10,7 @@ import { localeSchema, defaultLocale, type Locale } from "@workspace/core"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { AchievementsPreview } from "@/components/achievements/achievements-preview"
 import { AccountData } from "@/components/settings/account-data"
 import { BibleVersionSetting } from "@/components/settings/bible-version-setting"
 import { ProfileForm } from "@/components/settings/profile-form"
@@ -59,6 +60,7 @@ function SettingsSection({
 export default async function SettingsPage() {
   const user = await requireUser()
   const t = await getTranslations("Settings")
+  const tA = await getTranslations("Achievements")
   const locale = (await getLocale()) as Locale
 
   return (
@@ -98,6 +100,14 @@ export default async function SettingsPage() {
               : defaultBibleVersion(locale)
           }
         />
+      </SettingsSection>
+
+      <SettingsSection
+        id="achievements"
+        title={tA("preview.title")}
+        description={tA("preview.description")}
+      >
+        <AchievementsPreview userId={user.id} />
       </SettingsSection>
 
       <SettingsSection
