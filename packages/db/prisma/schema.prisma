@@ -321,6 +321,7 @@ model ReminderDelivery {
 
 enum NotificationType {
   REMINDER
+  ACHIEVEMENT
 }
 
 model Notification {
@@ -549,6 +550,9 @@ model Achievement {
   unlockedAt DateTime @db.Date
   /// When the application recorded it.
   createdAt  DateTime @default(now())
+  /// When the person was shown the celebration; null until then. Achievements
+  /// caught up for an old activity are recorded as already seen.
+  seenAt     DateTime?
 
   @@unique([userId, key, level])
   @@index([userId])
