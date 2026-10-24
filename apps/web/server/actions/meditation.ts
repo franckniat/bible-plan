@@ -51,7 +51,7 @@ export async function saveMeditationSessionAction(
         ? { prayers: 1, prayerSeconds: parsed.data.durationSeconds }
         : { meditationSeconds: parsed.data.durationSeconds }
     ).catch((error) => console.error("Recording activity failed", error))
-    after(() => syncAchievementsQuietly(prisma, user.id, user.timezone ?? null))
+    after(() => syncAchievementsQuietly(prisma, user))
     revalidatePath("/[locale]", "layout")
     return { ok: true, sessionId }
   } catch (error) {
@@ -83,7 +83,7 @@ export async function saveNoteAction(
       const result = await createNote(prisma, user.id, input)
       if (!result.ok) return { error: result.error }
       after(() =>
-        syncAchievementsQuietly(prisma, user.id, user.timezone ?? null)
+        syncAchievementsQuietly(prisma, user)
       )
       revalidatePath("/[locale]/notes", "page")
       return { ok: true, id: result.id }

@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest"
 
+vi.mock("next-intl/server", () => ({
+  getTranslations: async () => (key: string, values?: { name?: string }) =>
+    values?.name ? `${key}:${values.name}` : key,
+}))
+
 import {
   loadAchievementHistory,
   syncAchievements,
@@ -18,6 +23,7 @@ function fakeDb(overrides: Record<string, unknown> = {}) {
     meditationSession: { findMany: vi.fn().mockResolvedValue([]) },
     meditationNote: { findMany: vi.fn().mockResolvedValue([]) },
     planEnrollment: { findMany: vi.fn().mockResolvedValue([]) },
+    notification: { create: vi.fn().mockResolvedValue({ id: "n1" }) },
     ...overrides,
   }
 }
@@ -123,6 +129,8 @@ describe("syncAchievements", () => {
           key: "prayer",
           level: 1,
           unlockedAt: new Date("2026-10-01T00:00:00.000Z"),
+          // Old activity caught up: not celebrated again.
+          seenAt: expect.any(Date),
         },
       ],
       skipDuplicates: true,
@@ -145,8 +153,44 @@ describe("syncAchievements", () => {
     const db = fakeDb()
     db.prayerLog.findMany.mockRejectedValue(new Error("down"))
     const log = vi.spyOn(console, "error").mockImplementation(() => undefined)
-    expect(await syncAchievementsQuietly(asDb(db), "u", "UTC")).toEqual([])
+    expect(
+      await syncAchievementsQuietly(asDb(db), { id: "u", locale: "fr" })
+    ).toEqual([])
     expect(log).toHaveBeenCalled()
     log.mockRestore()
+  })
+
+  it("celebrates and notifies what is earned today, never old activity", async () => {
+    const db = fakeDb()
+    db.prayerLog.findMany.mockResolvedValue([{ prayedAt: new Date() }])
+    const fresh = await syncAchievementsQuietly(asDb(db), {
+      id: "u",
+      timezone: "UTC",
+      locale: "en",
+    })
+    expect(fresh.map((a) => a.key)).toEqual(["first-prayer"])
+    expect(db.achievement.createMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: [expect.objectContaining({ key: "first-prayer", seenAt: null })],
+      })
+    )
+    expect(db.notification.create).toHaveBeenCalledTimes(1)
+    expect(db.notification.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          userId: "u",
+          type: "ACHIEVEMENT",
+          href: "/achievements",
+        }),
+      })
+    )
+
+    db.notification.create.mockClear()
+    db.prayerLog.findMany.mockResolvedValue([
+      { prayedAt: new Date("2025-01-01T10:00:00Z") },
+    ])
+    db.achievement.findMany.mockResolvedValue([])
+    await syncAchievementsQuietly(asDb(db), { id: "u", locale: "en" })
+    expect(db.notification.create).not.toHaveBeenCalled()
   })
 })

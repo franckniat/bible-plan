@@ -82,7 +82,7 @@ export async function prayedAction(id: string): Promise<PrayerActionResult> {
     await recordActivity(prisma, user.id, getToday(user.timezone), {
       prayers: 1,
     }).catch((error) => console.error("Recording activity failed", error))
-    after(() => syncAchievementsQuietly(prisma, user.id, user.timezone ?? null))
+    after(() => syncAchievementsQuietly(prisma, user))
   }
   return result
 }

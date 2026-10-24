@@ -1452,6 +1452,20 @@
         "name": "A faithful year",
         "description": "Be active 300 days in a year, not necessarily in a row."
       }
+    },
+    "notification": {
+      "badge": "New badge: {name} {level}",
+      "trophy": "New trophy: {name}"
+    },
+    "celebrate": {
+      "title": "Well done!",
+      "badge": "You earned a badge.",
+      "trophy": "You earned a trophy.",
+      "close": "Continue",
+      "share": "Share",
+      "shareText": "{name}, on Bible Plan.",
+      "download": "Save the image",
+      "shareFailed": "Sharing could not be started."
     }
   }
 }

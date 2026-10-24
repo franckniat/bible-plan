@@ -1452,6 +1452,20 @@
         "name": "Une année fidèle",
         "description": "Être actif 300 jours sur une année, pas forcément de suite."
       }
+    },
+    "notification": {
+      "badge": "Nouveau badge : {name} {level}",
+      "trophy": "Nouveau trophée : {name}"
+    },
+    "celebrate": {
+      "title": "Bravo !",
+      "badge": "Vous avez obtenu un badge.",
+      "trophy": "Vous avez obtenu un trophée.",
+      "close": "Continuer",
+      "share": "Partager",
+      "shareText": "{name}, sur Bible Plan.",
+      "download": "Enregistrer l’image",
+      "shareFailed": "Le partage n’a pas pu être lancé."
     }
   }
 }

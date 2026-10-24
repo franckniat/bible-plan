@@ -1,7 +1,14 @@
 import "server-only"
 
+import { getTranslations } from "next-intl/server"
+
 import {
   achievementProgress,
+  addDays,
+  defaultLocale,
+  levelCount,
+  localeSchema,
+  trophyKeys,
   evaluateAchievements,
   getToday,
   isBookId,
@@ -13,6 +20,8 @@ import {
 } from "@workspace/core"
 import type { PrismaClient } from "@workspace/db"
 
+import { createNotification } from "@/server/services/notifications"
+
 export type AchievementsDb = Pick<
   PrismaClient,
   | "achievement"
@@ -21,6 +30,7 @@ export type AchievementsDb = Pick<
   | "meditationSession"
   | "meditationNote"
   | "planEnrollment"
+  | "notification"
 >
 
 /** A calendar date as stored in a DATE column (midnight UTC). */
@@ -129,6 +139,50 @@ export async function loadAchievementHistory(
   }
 }
 
+/** Earned today or yesterday: worth a celebration and a notification. */
+function isRecent(day: IsoDate, today: IsoDate): boolean {
+  return day >= addDays(today, -1)
+}
+
+/** At most this many notifications for one action (never a burst). */
+const maxNotifications = 3
+
+/** Tells the person about what they just earned, in their language. */
+async function notifyAchievements(
+  db: AchievementsDb,
+  userId: string,
+  locale: string,
+  timeZone: string | null,
+  fresh: readonly UnlockedAchievement[]
+): Promise<void> {
+  const today = getToday(timeZone)
+  const recent = fresh
+    .filter((a) => isRecent(a.unlockedAt, today))
+    .slice(0, maxNotifications)
+  if (recent.length === 0) return
+
+  const t = await getTranslations({
+    locale: localeSchema.catch(defaultLocale).parse(locale),
+    namespace: "Achievements",
+  })
+  for (const a of recent) {
+    const name = t(`items.${a.key}.name`)
+    const isTrophy = (trophyKeys as readonly string[]).includes(a.key)
+    const levels = levelCount(a.key)
+    await createNotification(db, {
+      userId,
+      type: "ACHIEVEMENT",
+      title: isTrophy
+        ? t("notification.trophy", { name })
+        : t("notification.badge", {
+            name,
+            level: levels > 1 ? t(`levels.${a.level}`) : "",
+          }).trim(),
+      href: "/achievements",
+    })
+  }
+}
+
 /**
  * Records the achievements earned and not yet recorded, and gives the new
  * ones. Nothing is ever removed: an achievement stays even if the activity
@@ -154,12 +208,17 @@ export async function syncAchievements(
   const fresh = earned.filter((a) => !known.has(`${a.key}:${a.level}`))
   if (fresh.length === 0) return []
 
+  // Celebrated only when earned just now; the ones caught up for an older
+  // activity are recorded as already seen.
+  const today = getToday(timeZone)
+  const now = new Date()
   await db.achievement.createMany({
     data: fresh.map((a) => ({
       userId,
       key: a.key,
       level: a.level,
       unlockedAt: dateOnly(a.unlockedAt),
+      seenAt: isRecent(a.unlockedAt, today) ? null : now,
     })),
     skipDuplicates: true,
   })
@@ -172,11 +231,13 @@ export async function syncAchievements(
  */
 export async function syncAchievementsQuietly(
   db: AchievementsDb,
-  userId: string,
-  timeZone: string | null
+  user: { id: string; timezone?: string | null; locale: string }
 ): Promise<UnlockedAchievement[]> {
+  const timeZone = user.timezone ?? null
   try {
-    return await syncAchievements(db, userId, timeZone)
+    const fresh = await syncAchievements(db, user.id, timeZone)
+    await notifyAchievements(db, user.id, user.locale, timeZone, fresh)
+    return fresh
   } catch (error) {
     console.error("Updating achievements failed", error)
     return []

@@ -106,7 +106,7 @@ export async function setReadingProgressAction(
     // A badge or trophy may be earned; computed after the response.
     if (read) {
       after(() =>
-        syncAchievementsQuietly(prisma, user.id, user.timezone ?? null)
+        syncAchievementsQuietly(prisma, user)
       )
     }
     // Progress shows on Today, the plan list and the plan page.
