@@ -100,15 +100,12 @@ Landing, dons, PostHog, RGPD, accessibilité, e2e, mise en production.
 
 ## M8 — Trophées et badges
 
-Récompenser la régularité (jours, sessions), jamais le volume (minutes, chapitres). Pas de classement, privés par défaut, un badge obtenu n'est jamais retiré. Mêmes règles sur le web et sur le mobile. Détails : [PLAN-MOBILE.md § 3](../apps/mobile/PLAN-MOBILE.md#3-trophées-et-badges-web-et-mobile). Issues à créer. Dépend de #22, #23, #24, #25 ; peut sortir avant ou après le lancement (M7).
+Récompenser la régularité (jours, sessions), jamais le volume (minutes, chapitres). Pas de classement, privés par défaut, un badge obtenu n'est jamais retiré. Mêmes règles sur le web et sur le mobile. Détails : [PLAN-MOBILE.md § 3](../apps/mobile/PLAN-MOBILE.md#3-trophées-et-badges-web-et-mobile). Les livres et grands trophées se comptent à partir des lectures cochées dans les plans. Dépend de #22, #23, #24, #25 ; peut sortir avant ou après le lancement (M7).
 
-- [ ] `@workspace/core/achievements` : catalogue (badges à niveaux bronze / argent / or, trophées) et fonction pure `evaluateAchievements`, tests de propriété et fuseaux horaires.
-- [ ] `packages/db` : modèle `Achievement` (`userId, key, level, unlockedAt`, unique `userId + key + level`) et migration.
-- [ ] Service serveur : évaluation après chaque lecture, prière, session et note ; calcul rétroactif des comptes existants.
-- [ ] `@workspace/i18n` : noms et descriptions FR / EN.
-- [ ] Illustrations SVG des badges et trophées (partagées avec le mobile).
-- [ ] Page Trophées (collection, détail, progression vers le niveau suivant) et aperçu sur le profil.
-- [ ] Notification dans l'app et célébration à l'obtention ; carte image à partager.
+- [#59 Catalogue et évaluation des badges et trophées](https://github.com/franckniat/bible-plan/issues/59) — `@workspace/core/achievements`
+- [#60 Enregistrement et calcul rétroactif des trophées](https://github.com/franckniat/bible-plan/issues/60) — dépend de #59
+- [#61 Page Trophées et illustrations](https://github.com/franckniat/bible-plan/issues/61) — dépend de #59
+- [#62 Célébration, notification et carte à partager](https://github.com/franckniat/bible-plan/issues/62) — dépend de #60, #61
 
 ## Application mobile (M9 à M19)
 
