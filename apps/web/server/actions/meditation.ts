@@ -1,6 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 import { z } from "zod"
 
 import {
@@ -10,6 +11,7 @@ import {
 } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
+import { syncAchievementsQuietly } from "@/server/services/achievements"
 import { recordActivity } from "@/server/services/activity"
 import {
   createNote,
@@ -49,6 +51,7 @@ export async function saveMeditationSessionAction(
         ? { prayers: 1, prayerSeconds: parsed.data.durationSeconds }
         : { meditationSeconds: parsed.data.durationSeconds }
     ).catch((error) => console.error("Recording activity failed", error))
+    after(() => syncAchievementsQuietly(prisma, user.id, user.timezone ?? null))
     revalidatePath("/[locale]", "layout")
     return { ok: true, sessionId }
   } catch (error) {
@@ -70,12 +73,18 @@ export async function saveNoteAction(
   try {
     let input = parsed.data
     // A session that is not the user's is dropped, not trusted.
-    if (input.sessionId && !(await ownsSession(prisma, user.id, input.sessionId))) {
+    if (
+      input.sessionId &&
+      !(await ownsSession(prisma, user.id, input.sessionId))
+    ) {
       input = { ...input, sessionId: null }
     }
     if (id === null) {
       const result = await createNote(prisma, user.id, input)
       if (!result.ok) return { error: result.error }
+      after(() =>
+        syncAchievementsQuietly(prisma, user.id, user.timezone ?? null)
+      )
       revalidatePath("/[locale]/notes", "page")
       return { ok: true, id: result.id }
     }

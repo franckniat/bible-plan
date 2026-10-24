@@ -1,6 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 import { getLocale } from "next-intl/server"
 import { z } from "zod"
 
@@ -17,6 +18,7 @@ import {
 import { prisma } from "@workspace/db"
 
 import { redirect } from "@/i18n/navigation"
+import { syncAchievementsQuietly } from "@/server/services/achievements"
 import { recordActivity } from "@/server/services/activity"
 import { createGroupPlan } from "@/server/services/group-plans"
 import {
@@ -101,6 +103,12 @@ export async function setReadingProgressAction(
     await recordActivity(prisma, user.id, getToday(user.timezone), {
       readings: read ? 1 : -1,
     }).catch((error) => console.error("Recording activity failed", error))
+    // A badge or trophy may be earned; computed after the response.
+    if (read) {
+      after(() =>
+        syncAchievementsQuietly(prisma, user.id, user.timezone ?? null)
+      )
+    }
     // Progress shows on Today, the plan list and the plan page.
     revalidatePath("/[locale]", "layout")
   }

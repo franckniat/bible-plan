@@ -1,6 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 import { z } from "zod"
 
 import {
@@ -10,6 +11,7 @@ import {
 } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
+import { syncAchievementsQuietly } from "@/server/services/achievements"
 import { recordActivity } from "@/server/services/activity"
 import { canShareWith } from "@/server/services/group-prayers"
 import {
@@ -80,6 +82,7 @@ export async function prayedAction(id: string): Promise<PrayerActionResult> {
     await recordActivity(prisma, user.id, getToday(user.timezone), {
       prayers: 1,
     }).catch((error) => console.error("Recording activity failed", error))
+    after(() => syncAchievementsQuietly(prisma, user.id, user.timezone ?? null))
   }
   return result
 }
