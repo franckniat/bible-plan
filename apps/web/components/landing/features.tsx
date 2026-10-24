@@ -1,4 +1,14 @@
-import { BellRing, BookOpenText, CalendarRange, Sun } from "lucide-react"
+import {
+  BellRing,
+  BookOpenText,
+  CalendarRange,
+  Flower2,
+  HandHeart,
+  Medal,
+  ShieldCheck,
+  Sun,
+  Users,
+} from "lucide-react"
 import { getTranslations } from "next-intl/server"
 
 const features = [
@@ -6,6 +16,11 @@ const features = [
   { key: "bible", Icon: BookOpenText },
   { key: "reminders", Icon: BellRing },
   { key: "verse", Icon: Sun },
+  { key: "prayer", Icon: HandHeart },
+  { key: "meditation", Icon: Flower2 },
+  { key: "groups", Icon: Users },
+  { key: "progress", Icon: Medal },
+  { key: "privacy", Icon: ShieldCheck },
 ] as const
 
 /** What the web app already does. */
@@ -28,7 +43,7 @@ export async function Features() {
           {t("subtitle")}
         </p>
       </div>
-      <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {features.map(({ key, Icon }) => (
           <li
             key={key}

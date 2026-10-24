@@ -1,8 +1,8 @@
 {
   "Metadata": {
     "title": "Bible Plan",
-    "description": "Lisez la Bible à votre rythme : plans de lecture, rappels, surbrillance et comparaison de traductions. La version web est disponible, la liste d’attente reste ouverte.",
-    "keywords": "Bible, plan de lecture, lecture quotidienne, verset du jour, Louis Segond, rappels de lecture, méditation, prière"
+    "description": "Lisez la Bible à votre rythme : plans de lecture, rappels, journal de prière, méditation, groupes et trophées. Gratuit et libre, sans compte pour lire.",
+    "keywords": "Bible, plan de lecture, lecture quotidienne, verset du jour, Louis Segond, rappels de lecture, journal de prière, méditation, groupe de lecture, prière"
   },
   "Landing": {
     "header": {
@@ -12,7 +12,7 @@
     "hero": {
       "eyebrow": "La version web est disponible",
       "title": "Lisez la Bible à votre rythme, jour après jour.",
-      "subtitle": "Bible Plan crée un plan de lecture adapté à votre emploi du temps, vous rappelle de lire, et vous laisse surligner, comparer et partager les versets. La version web est déjà prête, gratuite, sans compte pour lire.",
+      "subtitle": "Bible Plan crée un plan de lecture adapté à votre emploi du temps, vous rappelle de lire, et vous accompagne dans la prière et la méditation, seul ou en groupe. La version web est déjà prête, gratuite, sans compte pour lire.",
       "verse": "Ta parole est une lampe à mes pieds, et une lumière sur mon sentier.",
       "verseReference": "Psaume 119:105",
       "counter": "{count, plural, one {# personne déjà inscrite} other {# personnes déjà inscrites}}",
@@ -23,7 +23,7 @@
     },
     "features": {
       "title": "Déjà là, dès aujourd’hui",
-      "subtitle": "Tout ce qu’il faut pour lire avec régularité est ouvert sur la version web.",
+      "subtitle": "Lire, prier et méditer avec régularité : tout est ouvert sur la version web.",
       "plans": {
         "title": "Un plan qui vous ressemble",
         "description": "Toute la Bible en un an, les Évangiles en 30 jours ou 15 minutes par jour : les lectures sont réparties selon vos jours disponibles, et le plan s’adapte si vous prenez du retard."
@@ -39,22 +39,34 @@
       "verse": {
         "title": "Un verset chaque jour",
         "description": "Le verset du jour, illustré selon le moment de la journée, dans la traduction que vous lisez."
+      },
+      "prayer": {
+        "title": "Un journal de prière",
+        "description": "Notez vos sujets, marquez quand vous avez prié, et gardez la trace de ce qui est exaucé. Vos sujets restent privés tant que vous ne choisissez pas de les partager."
+      },
+      "meditation": {
+        "title": "Méditer, prier, noter",
+        "description": "Un minuteur pour vos temps de méditation et de prière, et des notes sur le passage : verset clé, réflexion, mise en pratique."
+      },
+      "groups": {
+        "title": "Lire ensemble",
+        "description": "Invitez votre église, votre cellule ou votre famille : un plan commun, des commentaires sur la lecture du jour et des sujets de prière partagés où chacun peut dire « je prie pour toi »."
+      },
+      "progress": {
+        "title": "Régularité et trophées",
+        "description": "Vos séries, votre calendrier d’activité et des badges qui récompensent la fidélité, jamais la quantité. Sans classement : vous seul les voyez."
+      },
+      "privacy": {
+        "title": "Vos données vous appartiennent",
+        "description": "Gratuit, libre (AGPL) et sans publicité. Téléchargez toutes vos données ou supprimez votre compte quand vous voulez."
       }
     },
     "soon": {
       "title": "Ce qui arrive ensuite",
       "badge": "Bientôt",
-      "prayer": {
-        "title": "Prière et méditation",
-        "description": "Un journal de prière, un minuteur de méditation et des notes sur ce que vous lisez."
-      },
-      "groups": {
-        "title": "Lire ensemble",
-        "description": "Un plan commun avec votre église, votre groupe ou votre famille, et des sujets de prière partagés."
-      },
       "mobile": {
         "title": "Application mobile",
-        "description": "Bible Plan sur iPhone et Android, pour lire et prier où que vous soyez."
+        "description": "Bible Plan sur iPhone et Android, pour lire et prier où que vous soyez, avec un temps de prière sans distraction."
       }
     },
     "preview": {
@@ -78,7 +90,7 @@
     },
     "waitlist": {
       "title": "La liste d’attente reste ouverte",
-      "description": "La version web est déjà prête. Laissez votre email pour être prévenu du lancement et des prochaines nouveautés.",
+      "description": "La version web est déjà prête. Laissez votre email pour être prévenu du lancement de l’application mobile et des prochaines nouveautés.",
       "tryWeb": "Essayer la version web"
     },
     "footer": {

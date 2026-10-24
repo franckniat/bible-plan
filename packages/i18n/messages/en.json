@@ -1,8 +1,8 @@
 {
   "Metadata": {
     "title": "Bible Plan",
-    "description": "Read the Bible at your own pace: reading plans, reminders, highlights and translation comparison. The web app is open, the waitlist is still open.",
-    "keywords": "Bible, reading plan, daily reading, verse of the day, King James, reading reminders, meditation, prayer"
+    "description": "Read the Bible at your own pace: reading plans, reminders, a prayer journal, meditation, groups and trophies. Free and open source, no account needed to read.",
+    "keywords": "Bible, reading plan, daily reading, verse of the day, King James, reading reminders, prayer journal, meditation, reading group, prayer"
   },
   "Landing": {
     "header": {
@@ -12,7 +12,7 @@
     "hero": {
       "eyebrow": "The web app is open",
       "title": "Read the Bible at your own pace, day after day.",
-      "subtitle": "Bible Plan builds a reading plan around your schedule, reminds you to read, and lets you highlight, compare and share verses. The web app is ready now, free, and you can read without an account.",
+      "subtitle": "Bible Plan builds a reading plan that fits your schedule, reminds you to read, and supports your prayer and meditation, alone or in a group. The web version is ready, free, and needs no account to read.",
       "verse": "Thy word is a lamp unto my feet, and a light unto my path.",
       "verseReference": "Psalm 119:105",
       "counter": "{count, plural, one {# person has already signed up} other {# people have already signed up}}",
@@ -22,8 +22,8 @@
       "screenshotAlt": "Bible reading screen with highlighted verses and the selection panel"
     },
     "features": {
-      "title": "Already here, today",
-      "subtitle": "Everything you need to read consistently is open on the web app.",
+      "title": "Already here, starting today",
+      "subtitle": "Reading, praying and meditating with regularity: everything is open on the web version.",
       "plans": {
         "title": "A plan that fits you",
         "description": "The whole Bible in a year, the Gospels in 30 days or 15 minutes a day: readings are spread over the days you have, and the plan adapts if you fall behind."
@@ -39,22 +39,34 @@
       "verse": {
         "title": "A verse every day",
         "description": "The verse of the day, illustrated for the time of day, in the translation you read."
+      },
+      "prayer": {
+        "title": "A prayer journal",
+        "description": "Write down your requests, mark when you prayed, and keep track of what was answered. Your requests stay private unless you choose to share them."
+      },
+      "meditation": {
+        "title": "Meditate, pray, take notes",
+        "description": "A timer for your times of meditation and prayer, and notes on the passage: key verse, reflection, how you will live it."
+      },
+      "groups": {
+        "title": "Read together",
+        "description": "Invite your church, your small group or your family: a shared plan, comments on the reading of the day and shared prayer requests where everyone can say “I’m praying for you”."
+      },
+      "progress": {
+        "title": "Regularity and trophies",
+        "description": "Your streaks, your activity calendar and badges that reward faithfulness, never quantity. No ranking: only you can see them."
+      },
+      "privacy": {
+        "title": "Your data is yours",
+        "description": "Free, open source (AGPL) and ad-free. Download all your data or delete your account whenever you want."
       }
     },
     "soon": {
       "title": "What comes next",
       "badge": "Soon",
-      "prayer": {
-        "title": "Prayer and meditation",
-        "description": "A prayer journal, a meditation timer and notes on what you read."
-      },
-      "groups": {
-        "title": "Read together",
-        "description": "A shared plan with your church, group or family, and shared prayer requests."
-      },
       "mobile": {
         "title": "Mobile app",
-        "description": "Bible Plan on iPhone and Android, to read and pray wherever you are."
+        "description": "Bible Plan on iPhone and Android, to read and pray wherever you are, with a distraction-free prayer time."
       }
     },
     "preview": {
@@ -78,7 +90,7 @@
     },
     "waitlist": {
       "title": "The waitlist is still open",
-      "description": "The web app is already ready. Leave your email to be told about the launch and what comes next.",
+      "description": "The web version is ready. Leave your email to hear about the launch of the mobile app and what comes next.",
       "tryWeb": "Try the web app"
     },
     "footer": {

@@ -1,13 +1,9 @@
-import { HandHeart, Smartphone, Users } from "lucide-react"
+import { Smartphone } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 
 import { Badge } from "@workspace/ui/components/badge"
 
-const upcoming = [
-  { key: "prayer", Icon: HandHeart },
-  { key: "groups", Icon: Users },
-  { key: "mobile", Icon: Smartphone },
-] as const
+const upcoming = [{ key: "mobile", Icon: Smartphone }] as const
 
 /** What is still to come, so the web app is not mistaken for the whole plan. */
 export async function ComingSoon() {
@@ -24,7 +20,7 @@ export async function ComingSoon() {
       >
         {t("title")}
       </h2>
-      <ul className="grid gap-4 sm:grid-cols-3">
+      <ul className="mx-auto grid max-w-xl gap-4">
         {upcoming.map(({ key, Icon }) => (
           <li
             key={key}
