@@ -245,7 +245,8 @@
       "meditate": "Méditation",
       "notes": "Notes",
       "stats": "Statistiques",
-      "groups": "Groupes"
+      "groups": "Groupes",
+      "achievements": "Trophées"
     },
     "account": {
       "signOut": "Se déconnecter",
@@ -1364,6 +1365,93 @@
     "errors": {
       "required": "Cochez la case pour continuer.",
       "unexpected": "Votre accord n’a pas pu être enregistré. Réessayez dans un instant."
+    }
+  },
+  "Achievements": {
+    "title": "Trophées",
+    "description": "Vos badges et vos trophées. Ils récompensent la régularité, jamais la quantité, et vous seul les voyez.",
+    "badges": "Badges",
+    "trophies": "Trophées",
+    "count": "{count, plural, =0 {Aucun obtenu} one {# obtenu} other {# obtenus}}",
+    "levels": {
+      "1": "Bronze",
+      "2": "Argent",
+      "3": "Or",
+      "trophy": "Trophée"
+    },
+    "locked": "À débloquer",
+    "earnedOn": "Obtenu le {date}",
+    "progress": "{value} sur {target}",
+    "complete": "Tous les niveaux sont obtenus.",
+    "levelAria": "{name}, niveau {level}",
+    "empty": "Votre premier badge viendra vite : lisez, priez ou méditez.",
+    "preview": {
+      "title": "Trophées",
+      "description": "Vos derniers badges et trophées obtenus.",
+      "none": "Aucun badge pour l’instant. Le premier arrive dès votre première lecture, prière ou méditation.",
+      "all": "Voir tous les trophées"
+    },
+    "items": {
+      "first-reading": {
+        "name": "Premiers pas de lecture",
+        "description": "Cocher une première lecture dans un plan."
+      },
+      "first-prayer": {
+        "name": "Première prière",
+        "description": "Dire une première prière."
+      },
+      "first-meditation": {
+        "name": "Première méditation",
+        "description": "Terminer une première session de méditation."
+      },
+      "fidelity": {
+        "name": "Fidélité",
+        "description": "Lire, prier ou méditer {count, plural, one {# jour} other {# jours}} de suite."
+      },
+      "prayer": {
+        "name": "Prière",
+        "description": "Dire {count, plural, one {# prière} other {# prières}}."
+      },
+      "meditation": {
+        "name": "Méditation",
+        "description": "Terminer {count, plural, one {# session} other {# sessions}} de méditation."
+      },
+      "prayer-time": {
+        "name": "Temps de prière",
+        "description": "Mener {count, plural, one {# temps de prière} other {# temps de prière}} jusqu’au bout."
+      },
+      "books": {
+        "name": "Livres",
+        "description": "Lire {count, plural, one {un livre} other {# livres}} en entier dans vos plans."
+      },
+      "notes": {
+        "name": "Notes",
+        "description": "Écrire {count, plural, one {# note} other {# notes}} de méditation."
+      },
+      "plan-completed": {
+        "name": "Plan accompli",
+        "description": "Terminer un plan de lecture."
+      },
+      "psalms": {
+        "name": "Les Psaumes",
+        "description": "Lire tous les Psaumes dans vos plans."
+      },
+      "gospels": {
+        "name": "Les Évangiles",
+        "description": "Lire les quatre Évangiles en entier."
+      },
+      "new-testament": {
+        "name": "Le Nouveau Testament",
+        "description": "Lire le Nouveau Testament en entier."
+      },
+      "bible": {
+        "name": "Toute la Bible",
+        "description": "Lire la Bible en entier."
+      },
+      "regularity-year": {
+        "name": "Une année fidèle",
+        "description": "Être actif 300 jours sur une année, pas forcément de suite."
+      }
     }
   }
 }

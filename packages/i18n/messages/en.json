@@ -245,7 +245,8 @@
       "meditate": "Meditation",
       "notes": "Notes",
       "stats": "Statistics",
-      "groups": "Groups"
+      "groups": "Groups",
+      "achievements": "Achievements"
     },
     "account": {
       "signOut": "Sign out",
@@ -1364,6 +1365,93 @@
     "errors": {
       "required": "Tick the box to continue.",
       "unexpected": "Your agreement could not be saved. Try again in a moment."
+    }
+  },
+  "Achievements": {
+    "title": "Achievements",
+    "description": "Your badges and trophies. They reward regularity, never quantity, and only you can see them.",
+    "badges": "Badges",
+    "trophies": "Trophies",
+    "count": "{count, plural, =0 {None earned} one {# earned} other {# earned}}",
+    "levels": {
+      "1": "Bronze",
+      "2": "Silver",
+      "3": "Gold",
+      "trophy": "Trophy"
+    },
+    "locked": "To unlock",
+    "earnedOn": "Earned on {date}",
+    "progress": "{value} of {target}",
+    "complete": "Every level is earned.",
+    "levelAria": "{name}, level {level}",
+    "empty": "Your first one will come quickly: read, pray or meditate.",
+    "preview": {
+      "title": "Achievements",
+      "description": "Your latest badges and trophies.",
+      "none": "No badge yet. The first one comes with your first reading, prayer or meditation.",
+      "all": "See all achievements"
+    },
+    "items": {
+      "first-reading": {
+        "name": "First steps in reading",
+        "description": "Tick a first reading in a plan."
+      },
+      "first-prayer": {
+        "name": "First prayer",
+        "description": "Say a first prayer."
+      },
+      "first-meditation": {
+        "name": "First meditation",
+        "description": "Finish a first meditation session."
+      },
+      "fidelity": {
+        "name": "Faithfulness",
+        "description": "Read, pray or meditate {count, plural, one {# day} other {# days}} in a row."
+      },
+      "prayer": {
+        "name": "Prayer",
+        "description": "Say {count, plural, one {# prayer} other {# prayers}}."
+      },
+      "meditation": {
+        "name": "Meditation",
+        "description": "Finish {count, plural, one {# meditation session} other {# meditation sessions}}."
+      },
+      "prayer-time": {
+        "name": "Prayer time",
+        "description": "Carry {count, plural, one {# prayer time} other {# prayer times}} to the end."
+      },
+      "books": {
+        "name": "Books",
+        "description": "Read {count, plural, one {a book} other {# books}} in full in your plans."
+      },
+      "notes": {
+        "name": "Notes",
+        "description": "Write {count, plural, one {# meditation note} other {# meditation notes}}."
+      },
+      "plan-completed": {
+        "name": "Plan completed",
+        "description": "Finish a reading plan."
+      },
+      "psalms": {
+        "name": "The Psalms",
+        "description": "Read every Psalm in your plans."
+      },
+      "gospels": {
+        "name": "The Gospels",
+        "description": "Read the four Gospels in full."
+      },
+      "new-testament": {
+        "name": "The New Testament",
+        "description": "Read the New Testament in full."
+      },
+      "bible": {
+        "name": "The whole Bible",
+        "description": "Read the whole Bible."
+      },
+      "regularity-year": {
+        "name": "A faithful year",
+        "description": "Be active 300 days in a year, not necessarily in a row."
+      }
     }
   }
 }
