@@ -12,23 +12,23 @@ import { Chip } from "@/components/ui/chip"
 import { ListRow } from "@/components/ui/list-row"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import {
-  bibleVersionIds,
   reminderTimes,
   setPreferences,
   usePreferences,
   type Reminder,
 } from "@/lib/preferences"
+import {
+  bibleVersionIds,
+  bibleVersionNames,
+  bibleVersionOf,
+  setProfile,
+  useProfile,
+} from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { createThemedStyles, useThemedStyles } from "@/theme/themed-styles"
 import { useColors } from "@/theme/use-colors"
 
 const steps = ["language", "pace", "reminder"] as const
-
-/** Names of the bundled versions; proper names, not translated. */
-const bibleVersionNames = {
-  lsg1910: "Louis Segond 1910",
-  kjv: "King James Version",
-} as const
 
 const reminders: Reminder[] = ["morning", "noon", "evening", "none"]
 
@@ -39,12 +39,11 @@ export default function OnboardingScreen() {
   const styles = useThemedStyles(themedStyles)
   const colors = useColors()
   const preferences = usePreferences()
+  const profile = useProfile()
   const [index, setIndex] = useState(0)
   const step = steps[index]!
   const last = index === steps.length - 1
-  // The version of the app's language until one is chosen (as on the web).
-  const bibleVersion =
-    preferences.bibleVersion ?? (locale === "fr" ? "lsg1910" : "kjv")
+  const bibleVersion = bibleVersionOf(profile.bibleVersion, locale)
 
   // A tick on the chosen option, an empty slot (not a chevron) on the others.
   const check = (selected: boolean) =>
@@ -55,7 +54,8 @@ export default function OnboardingScreen() {
     )
 
   const finish = () => {
-    setPreferences({ onboarded: true, bibleVersion })
+    setProfile({ bibleVersion })
+    setPreferences({ onboarded: true })
     router.replace("/today")
   }
 
@@ -86,7 +86,7 @@ export default function OnboardingScreen() {
                   key={code}
                   label={t("LanguageSwitcher.locale", { locale: code })}
                   selected={locale === code}
-                  onPress={() => setPreferences({ locale: code })}
+                  onPress={() => setProfile({ locale: code })}
                 />
               ))}
             </View>
@@ -99,7 +99,7 @@ export default function OnboardingScreen() {
                   key={id}
                   label={bibleVersionNames[id]}
                   selected={bibleVersion === id}
-                  onPress={() => setPreferences({ bibleVersion: id })}
+                  onPress={() => setProfile({ bibleVersion: id })}
                 />
               ))}
             </View>
@@ -123,8 +123,8 @@ export default function OnboardingScreen() {
                     subtitle={t(`Settings.readingSpeeds.${speed}.description`, {
                       wpm: readingSpeeds[speed],
                     })}
-                    trailing={check(preferences.readingSpeed === speed)}
-                    onPress={() => setPreferences({ readingSpeed: speed })}
+                    trailing={check(profile.readingSpeed === speed)}
+                    onPress={() => setProfile({ readingSpeed: speed })}
                     last={i === all.length - 1}
                   />
                 )

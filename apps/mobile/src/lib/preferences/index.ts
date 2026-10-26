@@ -1,13 +1,9 @@
-import { localeSchema, readingSpeeds, type ReadingSpeed } from "@workspace/core"
 import { useSyncExternalStore } from "react"
 import { z } from "zod"
 
 import { storage } from "./storage"
 
 const key = "preferences"
-
-/** Bible versions bundled with the app (see @workspace/bible-data). */
-export const bibleVersionIds = ["lsg1910", "kjv"] as const
 
 /** When the daily reading reminder comes, scheduled with M14's reminders. */
 export const reminderTimes = {
@@ -19,13 +15,6 @@ export const reminderTimes = {
 const preferencesSchema = z.object({
   /** The welcome screens and the onboarding are done. */
   onboarded: z.boolean().catch(false),
-  /** Null follows the phone's language. */
-  locale: localeSchema.nullable().catch(null),
-  /** Null takes the version of the app's language. */
-  bibleVersion: z.enum(bibleVersionIds).nullable().catch(null),
-  readingSpeed: z
-    .enum(Object.keys(readingSpeeds) as [ReadingSpeed, ...ReadingSpeed[]])
-    .catch("normal"),
   reminder: z.enum(["morning", "noon", "evening", "none"]).catch("morning"),
 })
 

@@ -5,16 +5,20 @@ import fr from "@workspace/i18n/messages/fr"
 import type { ReactNode } from "react"
 import { IntlProvider } from "use-intl"
 
-import { usePreferences } from "@/lib/preferences"
-
 import { phoneLocale } from "./locale"
 
 // Both languages are bundled: they are small and the app works offline.
 const messages: Record<Locale, Messages> = { fr, en }
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  // The language chosen in the app, or the phone's.
-  const locale = usePreferences().locale ?? phoneLocale()
+/** The language chosen in the app (the profile's), or else the phone's. */
+export function I18nProvider({
+  locale: chosen,
+  children,
+}: {
+  locale?: Locale | null
+  children: ReactNode
+}) {
+  const locale = chosen ?? phoneLocale()
   return (
     <IntlProvider
       locale={locale}

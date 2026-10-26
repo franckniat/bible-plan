@@ -21,29 +21,22 @@ describe("preferences", () => {
     const { getPreferences } = await load()
     expect(getPreferences()).toEqual({
       onboarded: false,
-      locale: null,
-      bibleVersion: null,
-      readingSpeed: "normal",
       reminder: "morning",
     })
   })
 
   it("keeps what is saved across launches", async () => {
     const first = await load()
-    first.setPreferences({ onboarded: true, locale: "en", reminder: "none" })
+    first.setPreferences({ onboarded: true, reminder: "none" })
     const { getPreferences } = await load()
-    expect(getPreferences()).toMatchObject({
-      onboarded: true,
-      locale: "en",
-      reminder: "none",
-    })
+    expect(getPreferences()).toEqual({ onboarded: true, reminder: "none" })
   })
 
   it("replaces unreadable or unknown values by the defaults", async () => {
-    saved.set("preferences", '{"locale":"de","readingSpeed":"sprint"}')
-    expect((await load()).getPreferences()).toMatchObject({
-      locale: null,
-      readingSpeed: "normal",
+    saved.set("preferences", '{"onboarded":"yes","reminder":"midnight"}')
+    expect((await load()).getPreferences()).toEqual({
+      onboarded: false,
+      reminder: "morning",
     })
     saved.set("preferences", "not json")
     expect((await load()).getPreferences().onboarded).toBe(false)
