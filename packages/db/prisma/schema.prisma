@@ -185,12 +185,15 @@ model ReadingPlan {
   /// calendar (only the FREE strategy applies). Deleting the group deletes it.
   groupId         String?
   group           Group?          @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  /// Server sequence of the last change: the cursor of the mobile sync (set by a trigger).
+  syncVersion     BigInt          @default(dbgenerated("nextval('sync_version_seq'::regclass)"))
 
   days        PlanDay[]
   enrollments PlanEnrollment[]
 
   @@index([ownerId])
   @@index([groupId])
+  @@index([ownerId, syncVersion])
 }
 
 model PlanDay {
@@ -229,18 +232,21 @@ model PlanReading {
 }
 
 model PlanEnrollment {
-  id        String               @id @default(uuid(7))
-  planId    String
-  plan      ReadingPlan          @relation(fields: [planId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status    PlanEnrollmentStatus @default(ACTIVE)
-  createdAt DateTime             @default(now())
-  updatedAt DateTime             @updatedAt
-  progress  ReadingProgress[]
+  id          String               @id @default(uuid(7))
+  planId      String
+  plan        ReadingPlan          @relation(fields: [planId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      PlanEnrollmentStatus @default(ACTIVE)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  progress    ReadingProgress[]
+  /// Server sequence of the last change: the cursor of the mobile sync (set by a trigger).
+  syncVersion BigInt               @default(dbgenerated("nextval('sync_version_seq'::regclass)"))
 
   @@unique([planId, userId])
   @@index([userId, status])
+  @@index([userId, syncVersion])
 }
 
 /// A reading marked as read by an enrollment. Unique, so marking twice is a no-op.
@@ -251,9 +257,13 @@ model ReadingProgress {
   readingId    String
   reading      PlanReading    @relation(fields: [readingId], references: [id], onDelete: Cascade)
   completedAt  DateTime       @default(now())
+  updatedAt    DateTime       @default(now()) @updatedAt
+  /// Server sequence of the last change: the cursor of the mobile sync (set by a trigger).
+  syncVersion  BigInt         @default(dbgenerated("nextval('sync_version_seq'::regclass)"))
 
   @@unique([enrollmentId, readingId])
   @@index([readingId])
+  @@index([enrollmentId, syncVersion])
 }
 
 // ─── Reminders ──────────────────────────────────────────────────────────────
@@ -309,11 +319,14 @@ model Reminder {
   lastRunAt       DateTime?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
+  /// Server sequence of the last change: the cursor of the mobile sync (set by a trigger).
+  syncVersion     BigInt            @default(dbgenerated("nextval('sync_version_seq'::regclass)"))
 
   deliveries ReminderDelivery[]
 
   @@index([enabled, nextRunAt])
   @@index([userId])
+  @@index([userId, syncVersion])
 }
 
 model ReminderDelivery {
@@ -372,20 +385,23 @@ enum HighlightColor {
 }
 
 model Highlight {
-  id        String         @id @default(uuid(7))
-  userId    String
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String         @id @default(uuid(7))
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   /// OSIS book code, e.g. "John".
-  book      String
-  chapter   Int
+  book        String
+  chapter     Int
   /// Verse number in the numbering of the canon.
-  verse     Int
-  color     HighlightColor
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  verse       Int
+  color       HighlightColor
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  /// Server sequence of the last change: the cursor of the mobile sync (set by a trigger).
+  syncVersion BigInt         @default(dbgenerated("nextval('sync_version_seq'::regclass)"))
 
   @@unique([userId, book, chapter, verse])
   @@index([userId, book, chapter])
+  @@index([userId, syncVersion])
 }
 
 // ─── Push devices ───────────────────────────────────────────────────────────
@@ -463,21 +479,28 @@ model PrayerRequest {
   groupId      String?
   group        Group?          @relation(fields: [groupId], references: [id], onDelete: SetNull)
   supports     PrayerSupport[]
+  /// Server sequence of the last change: the cursor of the mobile sync (set by a trigger).
+  syncVersion  BigInt          @default(dbgenerated("nextval('sync_version_seq'::regclass)"))
 
   @@index([userId, status, updatedAt])
   @@index([groupId, status])
+  @@index([userId, syncVersion])
 }
 
 /// One "I prayed", kept so that streaks and statistics can count prayer days.
 model PrayerLog {
-  id        String        @id @default(uuid(7))
-  requestId String
-  request   PrayerRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  userId    String
-  prayedAt  DateTime      @default(now())
+  id          String        @id @default(uuid(7))
+  requestId   String
+  request     PrayerRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  userId      String
+  prayedAt    DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+  /// Server sequence of the last change: the cursor of the mobile sync (set by a trigger).
+  syncVersion BigInt        @default(dbgenerated("nextval('sync_version_seq'::regclass)"))
 
   @@index([userId, prayedAt])
   @@index([requestId])
+  @@index([userId, syncVersion])
 }
 
 // ─── Meditation ─────────────────────────────────────────────────────────────
@@ -503,8 +526,12 @@ model MeditationSession {
   startedAt       DateTime
   createdAt       DateTime         @default(now())
   notes           MeditationNote[]
+  updatedAt       DateTime         @default(now()) @updatedAt
+  /// Server sequence of the last change: the cursor of the mobile sync (set by a trigger).
+  syncVersion     BigInt           @default(dbgenerated("nextval('sync_version_seq'::regclass)"))
 
   @@index([userId, startedAt])
+  @@index([userId, syncVersion])
 }
 
 /// What a person wrote about a passage: the key verse, a reflection and how
@@ -526,9 +553,12 @@ model MeditationNote {
   session     MeditationSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
+  /// Server sequence of the last change: the cursor of the mobile sync (set by a trigger).
+  syncVersion BigInt             @default(dbgenerated("nextval('sync_version_seq'::regclass)"))
 
   @@index([userId, book, updatedAt])
   @@index([userId, updatedAt])
+  @@index([userId, syncVersion])
 }
 
 // ─── Activity ───────────────────────────────────────────────────────────────
@@ -556,21 +586,25 @@ model ActivityDay {
 // earned; level is 1 (bronze), 2 (silver) or 3 (gold), 1 for a trophy.
 
 model Achievement {
-  id         String    @id @default(uuid(7))
-  userId     String
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  key        String
-  level      Int
+  id          String    @id @default(uuid(7))
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key         String
+  level       Int
   /// The day it was earned, in the time zone of the person.
-  unlockedAt DateTime  @db.Date
+  unlockedAt  DateTime  @db.Date
   /// When the application recorded it.
-  createdAt  DateTime  @default(now())
+  createdAt   DateTime  @default(now())
   /// When the person was shown the celebration; null until then. Achievements
   /// caught up for an old activity are recorded as already seen.
-  seenAt     DateTime?
+  seenAt      DateTime?
+  updatedAt   DateTime  @default(now()) @updatedAt
+  /// Server sequence of the last change: the cursor of the mobile sync (set by a trigger).
+  syncVersion BigInt    @default(dbgenerated("nextval('sync_version_seq'::regclass)"))
 
   @@unique([userId, key, level])
   @@index([userId])
+  @@index([userId, syncVersion])
 }
 
 // ─── Groups ─────────────────────────────────────────────────────────────────

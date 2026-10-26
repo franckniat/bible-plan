@@ -126,7 +126,7 @@ Mise en œuvre commune :
 - `POST /api/v1/sync/push` : lot de changements de l'outbox `{ table, id, op: upsert|delete, data, clientUpdatedAt }`. Idempotent (rejouer un lot ne change rien). Réponse : ids acceptés, ids rejetés avec la raison, enregistrements fusionnés renvoyés.
 - `GET /api/v1/sync/pull?cursor=…` : tout ce qui a changé côté serveur depuis le curseur (y compris les suppressions), paginé. Le curseur est une séquence serveur monotone (`syncVersion` bigint), pas une date d'horloge.
 - Cycle : push puis pull, déclenché au démarrage, au retour au premier plan, après une écriture (avec un délai de quelques secondes), au retour du réseau, et en tâche de fond (`expo-background-task`) quand l'OS le permet.
-- Les suppressions sont des **pierres tombales** (`deletedAt`), purgées après 90 jours.
+- Les suppressions sont des **pierres tombales** : une table `SyncTombstone` remplie par des déclencheurs PostgreSQL à chaque suppression (cascades comprises), purgée après 90 jours. Le web garde ses vraies suppressions.
 
 ### Règles de fusion par entité
 
@@ -185,7 +185,7 @@ Chaque phase devient une milestone ; chaque ligne une issue (une tâche = un com
 
 - [ ] Sortir de `apps/web/server/services` la logique pure encore côté serveur vers `@workspace/core` : contenu intelligent des rappels (#21), recalcul de l'activité à partir des événements, reconstruction d'un plan au rattrapage.
 - [ ] `Reminder` : prévenance (`leadMinutes`, 5 par défaut pour la prière), durée du temps de prière (`durationMinutes`), niveau (`focusMode` : `NOTIFY | SOFT | STRICT`). Le web affiche et modifie ces champs, sans les appliquer.
-- [ ] Schéma prêt pour la synchro : `updatedAt`, `deletedAt` et `syncVersion` sur toutes les tables synchronisées ; le serveur accepte un id fourni par le client.
+- [ ] Schéma prêt pour la synchro : `updatedAt` et `syncVersion` sur toutes les tables synchronisées, pierres tombales dans `SyncTombstone` ; le serveur accepte un id fourni par le client.
 - [ ] `ActivityDay` recalculé à partir des événements (plus d'incréments), avec tests sur plusieurs fuseaux.
 - [ ] Package `@workspace/sync` : schémas, règles de fusion, tests de propriété (l'ordre d'arrivée des lots ne change pas le résultat).
 - [ ] *Critère de fin* : le web utilise les mêmes règles ; tous les tests verts.

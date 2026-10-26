@@ -14,7 +14,14 @@ export async function GET() {
 
   const data = await exportUserData(prisma, session.user.id)
   const day = new Date().toISOString().slice(0, 10)
-  return new Response(JSON.stringify(data, null, 2), {
+  // syncVersion (the cursor of the mobile sync) is a bigint, written as text.
+  const json = JSON.stringify(
+    data,
+    (_key, value: unknown) =>
+      typeof value === "bigint" ? value.toString() : value,
+    2
+  )
+  return new Response(json, {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Content-Disposition": `attachment; filename="bible-plan-${day}.json"`,
