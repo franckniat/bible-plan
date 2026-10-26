@@ -162,6 +162,9 @@ importers:
       '@workspace/notifications':
         specifier: workspace:*
         version: link:../../packages/notifications
+      '@workspace/sync':
+        specifier: workspace:*
+        version: link:../../packages/sync
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui

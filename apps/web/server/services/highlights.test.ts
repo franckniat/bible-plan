@@ -85,25 +85,42 @@ describe("setHighlights", () => {
 
 describe("importHighlights", () => {
   it("adds the device's highlights without touching those of the account", async () => {
-    const highlight = { createMany: vi.fn().mockResolvedValue({ count: 1 }) }
+    const highlight = {
+      // The account has already colored John 3:16.
+      findMany: vi
+        .fn()
+        .mockResolvedValue([{ book: "John", chapter: 3, verse: 16 }]),
+      createMany: vi.fn().mockResolvedValue({ count: 1 }),
+    }
     const added = await importHighlights(db(highlight).typed, "user-1", [
       { book: "John", chapter: 3, verse: 16, color: "YELLOW" },
       { book: "Ps", chapter: 23, verse: 1, color: "BLUE" },
     ])
     expect(added).toBe(1)
+    expect(highlight.findMany).toHaveBeenCalledWith({
+      where: { userId: "user-1", book: { in: ["John", "Ps"] } },
+      select: { book: true, chapter: true, verse: true },
+    })
     expect(highlight.createMany).toHaveBeenCalledWith({
       data: [
-        {
-          userId: "user-1",
-          book: "John",
-          chapter: 3,
-          verse: 16,
-          color: "YELLOW",
-        },
         { userId: "user-1", book: "Ps", chapter: 23, verse: 1, color: "BLUE" },
       ],
-      // A verse the account already colored keeps its color.
       skipDuplicates: true,
     })
+  })
+
+  it("writes nothing when the account has every verse already", async () => {
+    const highlight = {
+      findMany: vi
+        .fn()
+        .mockResolvedValue([{ book: "John", chapter: 3, verse: 16 }]),
+      createMany: vi.fn(),
+    }
+    expect(
+      await importHighlights(db(highlight).typed, "user-1", [
+        { book: "John", chapter: 3, verse: 16, color: "YELLOW" },
+      ])
+    ).toBe(0)
+    expect(highlight.createMany).not.toHaveBeenCalled()
   })
 })

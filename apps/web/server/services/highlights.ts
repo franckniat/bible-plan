@@ -2,6 +2,7 @@ import "server-only"
 
 import type { BookId, HighlightColor, HighlightRequest } from "@workspace/core"
 import type { PrismaClient } from "@workspace/db"
+import { adoptHighlights } from "@workspace/sync"
 
 export type HighlightsDb = Pick<PrismaClient, "highlight" | "$transaction">
 
@@ -57,17 +58,27 @@ export async function setHighlights(
 }
 
 /**
- * Takes the highlights made on a device into the account of a user. A verse
- * the account has already colored keeps its color: the device never
- * overwrites. Gives the number added.
+ * Takes the highlights made on a device into the account of a user, with
+ * the adoption rule shared with the mobile sync (@workspace/sync): a verse
+ * the account has already colored keeps its color. Gives the number added.
  */
 export async function importHighlights(
   db: Pick<PrismaClient, "highlight">,
   userId: string,
   highlights: SavedHighlight[]
 ): Promise<number> {
+  const account = await db.highlight.findMany({
+    where: {
+      userId,
+      book: { in: [...new Set(highlights.map((h) => h.book))] },
+    },
+    select: { book: true, chapter: true, verse: true },
+  })
+  const added = adoptHighlights(account, highlights)
+  if (added.length === 0) return 0
   const { count } = await db.highlight.createMany({
-    data: highlights.map((highlight) => ({ ...highlight, userId })),
+    data: added.map((highlight) => ({ ...highlight, userId })),
+    // A verse colored meanwhile from another tab keeps its color too.
     skipDuplicates: true,
   })
   return count

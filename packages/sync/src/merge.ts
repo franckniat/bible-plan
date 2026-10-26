@@ -201,10 +201,13 @@ export function reattachProgress(
  * Adoption of a phone's highlights by an account (#57): a verse the account
  * has already colored keeps its color; the others are added.
  */
-export function adoptHighlights<
-  H extends { book: string; chapter: number; verse: number },
->(account: readonly H[], device: readonly H[]): H[] {
-  const verse = (h: H) => `${h.book}:${h.chapter}:${h.verse}`
+type Verse = { book: string; chapter: number; verse: number }
+
+export function adoptHighlights<H extends Verse>(
+  account: readonly Verse[],
+  device: readonly H[]
+): H[] {
+  const verse = (h: Verse) => `${h.book}:${h.chapter}:${h.verse}`
   const taken = new Set(account.map(verse))
   const added: H[] = []
   for (const highlight of device) {
