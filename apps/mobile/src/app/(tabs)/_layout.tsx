@@ -1,8 +1,16 @@
 import { NativeTabs } from "expo-router/native-tabs"
 
+import { useColors } from "@/theme/use-colors"
+
 export default function TabsLayout() {
+  const colors = useColors()
   return (
-    <NativeTabs>
+    <NativeTabs
+      backgroundColor={colors.background}
+      tintColor={colors.primary}
+      indicatorColor={colors.muted}
+      labelStyle={{ selected: { color: colors.foreground } }}
+    >
       <NativeTabs.Trigger name="today">
         <NativeTabs.Trigger.Label>Aujourd&apos;hui</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="sun.max" md="today" />
