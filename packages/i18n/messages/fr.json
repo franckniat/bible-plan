@@ -568,6 +568,32 @@
         "unavailable": "Les notifications ne sont pas configurées sur le serveur.",
         "failed": "L’envoi a échoué. Réessayez dans un moment."
       }
+    },
+    "prayerTime": {
+      "label": "Faire de ce rappel un temps de prière",
+      "description": "Un moment de prière d’une durée choisie. L’application mobile prévient quelques minutes avant et, si vous le souhaitez, affiche l’écran de prière.",
+      "duration": "Durée",
+      "lead": "Prévenir",
+      "leadNone": "Au moment même",
+      "leadMinutes": "{minutes} min avant",
+      "minutes": "{minutes} min",
+      "focus": "Écran de prière",
+      "focusModes": {
+        "NOTIFY": {
+          "label": "Notification seule",
+          "description": "Un rappel, comme les autres."
+        },
+        "SOFT": {
+          "label": "Doux",
+          "description": "L’écran de prière s’affiche, avec un bouton pour reprendre ce que vous faisiez."
+        },
+        "STRICT": {
+          "label": "Strict",
+          "description": "L’écran de prière reste jusqu’à la fin du temps de prière. Les appels restent toujours possibles."
+        }
+      },
+      "mobileNote": "Ces réglages sont appliqués par l’application mobile ; sur le web, vous recevez le rappel habituel.",
+      "summary": "Temps de prière · {minutes} min · {focus}"
     }
   },
   "Notifications": {

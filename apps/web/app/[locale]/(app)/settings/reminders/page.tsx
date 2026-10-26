@@ -63,6 +63,9 @@ export default async function RemindersPage() {
           weekdays: reminder.weekdays as Weekday[],
           channels: reminder.channels,
           enabled: reminder.enabled,
+          leadMinutes: reminder.leadMinutes,
+          durationMinutes: reminder.durationMinutes,
+          focusMode: reminder.focusMode,
         }))}
         timeZone={user.timezone ?? "UTC"}
         emailEnabled={areEmailRemindersEnabled()}

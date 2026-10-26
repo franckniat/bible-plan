@@ -6,10 +6,13 @@ import { useId, useState, useTransition } from "react"
 
 import {
   allWeekdays,
+  focusModes,
   maxRemindersPerUser,
+  prayerTimeLeadMinutes,
   reminderChannels,
   reminderKinds,
   reminderStepMinutes,
+  type FocusMode,
   type ReminderChannel,
   type ReminderKind,
   type Weekday,
@@ -35,6 +38,10 @@ export type ReminderView = {
   weekdays: Weekday[]
   channels: ReminderChannel[]
   enabled: boolean
+  leadMinutes: number
+  /** Null: a plain reminder, not a prayer time. */
+  durationMinutes: number | null
+  focusMode: FocusMode
 }
 
 type Draft = Omit<ReminderView, "id" | "enabled"> & { enabled: boolean }
@@ -45,7 +52,15 @@ const emptyDraft: Draft = {
   weekdays: [...allWeekdays],
   channels: ["IN_APP"],
   enabled: true,
+  leadMinutes: 0,
+  durationMinutes: null,
+  focusMode: "NOTIFY",
 }
+
+/** Lengths of a prayer time offered, in minutes. */
+const prayerTimeMinutes = [10, 15, 20, 30, 45, 60]
+/** Warnings before a prayer time offered, in minutes. */
+const leadMinutesOptions = [0, 5, 10, 15]
 
 // Monday first, as on a wall calendar in both languages.
 const weekOrder: Weekday[] = [1, 2, 3, 4, 5, 6, 0]
@@ -252,6 +267,14 @@ function ReminderRow({
             .map((channel) => t(`channels.${channel}`))
             .join(", ")}
         </p>
+        {reminder.kind === "PRAYER" && reminder.durationMinutes !== null && (
+          <p className="text-sm text-brand-night/70 dark:text-neutral-100/70">
+            {t("prayerTime.summary", {
+              minutes: reminder.durationMinutes,
+              focus: t(`prayerTime.focusModes.${reminder.focusMode}.label`),
+            })}
+          </p>
+        )}
       </div>
       <div className="flex items-center gap-2">
         <Switch
@@ -384,6 +407,13 @@ function ReminderForm({
         )}
       </fieldset>
 
+      {draft.kind === "PRAYER" && (
+        <PrayerTimeFields
+          draft={draft}
+          onChange={(change) => setDraft({ ...draft, ...change })}
+        />
+      )}
+
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-2 text-sm font-medium">
           {t("fields.channels")}
@@ -443,5 +473,112 @@ function ReminderForm({
         </Button>
       </div>
     </form>
+  )
+}
+
+/** A prayer reminder can become a prayer time, applied by the mobile app. */
+function PrayerTimeFields({
+  draft,
+  onChange,
+}: {
+  draft: Draft
+  onChange: (change: Partial<Draft>) => void
+}) {
+  const t = useTranslations("Reminders.prayerTime")
+  const id = useId()
+  const on = draft.durationMinutes !== null
+  return (
+    <fieldset className="flex flex-col gap-4 rounded-2xl bg-brand-gold/10 p-4">
+      <label className="flex items-start gap-3">
+        <input
+          type="checkbox"
+          className="mt-1 size-4 accent-brand-night dark:accent-brand-gold"
+          checked={on}
+          onChange={() =>
+            onChange(
+              on
+                ? { durationMinutes: null, leadMinutes: 0, focusMode: "NOTIFY" }
+                : { durationMinutes: 15, leadMinutes: prayerTimeLeadMinutes }
+            )
+          }
+        />
+        <span className="flex flex-col gap-1">
+          <span className="font-medium">{t("label")}</span>
+          <span className="text-sm text-brand-night/70 dark:text-neutral-100/70">
+            {t("description")}
+          </span>
+        </span>
+      </label>
+
+      {on && (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor={`${id}-duration`}>{t("duration")}</Label>
+              <select
+                id={`${id}-duration`}
+                value={draft.durationMinutes ?? 15}
+                onChange={(event) =>
+                  onChange({ durationMinutes: Number(event.target.value) })
+                }
+                className="h-10 rounded-lg border border-input bg-transparent px-3"
+              >
+                {prayerTimeMinutes.map((minutes) => (
+                  <option key={minutes} value={minutes}>
+                    {t("minutes", { minutes })}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor={`${id}-lead`}>{t("lead")}</Label>
+              <select
+                id={`${id}-lead`}
+                value={draft.leadMinutes}
+                onChange={(event) =>
+                  onChange({ leadMinutes: Number(event.target.value) })
+                }
+                className="h-10 rounded-lg border border-input bg-transparent px-3"
+              >
+                {leadMinutesOptions.map((minutes) => (
+                  <option key={minutes} value={minutes}>
+                    {minutes === 0
+                      ? t("leadNone")
+                      : t("leadMinutes", { minutes })}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium">{t("focus")}</p>
+            {focusModes.map((mode) => (
+              <label key={mode} className="flex items-start gap-3 text-sm">
+                <input
+                  type="radio"
+                  name={`${id}-focus`}
+                  className="mt-0.5 size-4 accent-brand-night dark:accent-brand-gold"
+                  checked={draft.focusMode === mode}
+                  onChange={() => onChange({ focusMode: mode })}
+                />
+                <span className="flex flex-col">
+                  <span className="font-medium">
+                    {t(`focusModes.${mode}.label`)}
+                  </span>
+                  <span className="text-brand-night/70 dark:text-neutral-100/70">
+                    {t(`focusModes.${mode}.description`)}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+
+          <p className="text-sm text-brand-night/70 dark:text-neutral-100/70">
+            {t("mobileNote")}
+          </p>
+        </>
+      )}
+    </fieldset>
   )
 }

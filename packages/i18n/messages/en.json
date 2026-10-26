@@ -568,6 +568,32 @@
         "unavailable": "Notifications are not set up on the server.",
         "failed": "Sending failed. Try again in a moment."
       }
+    },
+    "prayerTime": {
+      "label": "Make this reminder a prayer time",
+      "description": "A time of prayer of the length you choose. The mobile app warns you a few minutes before and, if you wish, shows the prayer screen.",
+      "duration": "Length",
+      "lead": "Warn me",
+      "leadNone": "At the time itself",
+      "leadMinutes": "{minutes} min before",
+      "minutes": "{minutes} min",
+      "focus": "Prayer screen",
+      "focusModes": {
+        "NOTIFY": {
+          "label": "Notification only",
+          "description": "A reminder like the others."
+        },
+        "SOFT": {
+          "label": "Gentle",
+          "description": "The prayer screen shows, with a button to go back to what you were doing."
+        },
+        "STRICT": {
+          "label": "Strict",
+          "description": "The prayer screen stays until the end of the prayer time. Calls are always possible."
+        }
+      },
+      "mobileNote": "These settings are applied by the mobile app; on the web you get the usual reminder.",
+      "summary": "Prayer time · {minutes} min · {focus}"
     }
   },
   "Notifications": {
