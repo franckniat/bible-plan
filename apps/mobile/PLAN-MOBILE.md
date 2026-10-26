@@ -156,7 +156,7 @@ Mise en œuvre commune :
 
 - **Expo** (SDK stable du moment) + **Expo Router** (routing par fichiers, deep links), **builds de développement EAS** (modules natifs).
 - **expo-sqlite + Drizzle ORM** : schéma typé, migrations embarquées, `useLiveQuery` pour des écrans réactifs.
-- **Styles React Native (`StyleSheet`) et tokens de couleur repris du web** (crème, or, sombre neutre) dans `src/theme`. NativeWind v5 (Tailwind 4) est écarté tant qu'il reste en pré-version ; à reconsidérer quand il sera stable.
+- **Styles React Native (`StyleSheet`) et tokens de couleur repris du web** (crème, or, sombre neutre) dans `src/theme` ; mêmes polices (Lora, Geist) et icônes (lucide) que le web, structure inspirée de l'app mobile d'expense-tracker-237 (Wallo). NativeWind v5 (Tailwind 4) est écarté tant qu'il reste en pré-version ; à reconsidérer quand il sera stable.
 - **TanStack Query** seulement pour ce qui est en ligne par nature (groupes, notifications serveur).
 - **better-auth + `@better-auth/expo`**, session dans `expo-secure-store` ; Google et Apple en natif.
 - **expo-notifications** (local + Expo Push), **expo-keep-awake** et **expo-audio** pour les minuteurs, **expo-background-task** pour la synchro de fond.
@@ -194,7 +194,7 @@ Chaque phase devient une milestone ; chaque ligne une issue (une tâche = un com
 - [ ] `apps/mobile` dans le monorepo pnpm/Turbo (Metro configuré pour le workspace), `turbo dev --filter mobile`.
 - [ ] Builds de développement EAS Android et iOS (nécessaires pour les modules natifs).
 - [ ] **Demander à Apple l'entitlement Family Controls (Distribution)** dès maintenant : la validation prend du temps et conditionne le mode strict sur iOS (M15).
-- [ ] Expo Router : onglets Aujourd'hui, Bible, Prière, Plus ; deep links `/today`, `/read/[passage]`, `/join/[code]`, `/prayer-time`.
+- [ ] Expo Router : onglets du web (Aujourd'hui, Bible, Plans, Prière, Réglages) ; deep links `/today`, `/read/[passage]`, `/join/[code]`, `/prayer-time`.
 - [ ] Tokens de thème clair / sombre repris du web, logo et icônes.
 - [ ] i18n FR / EN (langue du téléphone par défaut).
 - [ ] CI : typecheck, lint, tests.

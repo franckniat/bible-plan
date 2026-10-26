@@ -1,19 +1,21 @@
-import type { AndroidSymbol, SFSymbol } from "expo-symbols"
+import {
+  BookOpen,
+  CalendarCheck,
+  HandHeart,
+  Settings,
+  Sun,
+  type LucideIcon,
+} from "lucide-react-native"
 
-/** The four tabs, shared by the native tab bar and its web version. */
+/** The bottom bar, same order and icons as the web's (app-nav.tsx). */
 export const tabs = [
-  { name: "today", label: "App.nav.today", sf: "sun.max", md: "today" },
-  { name: "bible", label: "App.nav.bible", sf: "book", md: "menu_book" },
-  {
-    name: "prayer",
-    label: "App.nav.prayer",
-    sf: "hands.and.sparkles",
-    md: "volunteer_activism",
-  },
-  { name: "more", label: "Mobile.tabs.more", sf: "ellipsis", md: "more_horiz" },
+  { name: "today", label: "today", icon: Sun },
+  { name: "bible", label: "bible", icon: BookOpen },
+  { name: "plans", label: "plans", icon: CalendarCheck },
+  { name: "prayer", label: "prayer", icon: HandHeart },
+  { name: "settings", label: "settings", icon: Settings },
 ] as const satisfies readonly {
   name: string
   label: string
-  sf: SFSymbol
-  md: AndroidSymbol
+  icon: LucideIcon
 }[]

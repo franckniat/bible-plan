@@ -1,5 +1,4 @@
 import { books, getBookName } from "@workspace/core"
-import { Image, StyleSheet } from "react-native"
 import { useLocale, useTranslations } from "use-intl"
 
 import { Body, Screen } from "@/components/screen"
@@ -11,16 +10,7 @@ export default function TodayScreen() {
   const t = useTranslations()
   const locale = useLocale()
   return (
-    <Screen
-      title={t("App.nav.today")}
-      header={
-        <Image
-          source={require("@/assets/images/splash-icon.png")}
-          style={styles.logo}
-          accessible={false}
-        />
-      }
-    >
+    <Screen title={t("App.nav.today")}>
       <Body>
         {t("Mobile.today.books", {
           count: books.length,
@@ -31,7 +21,3 @@ export default function TodayScreen() {
     </Screen>
   )
 }
-
-const styles = StyleSheet.create({
-  logo: { width: 96, height: 96 },
-})

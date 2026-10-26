@@ -1,27 +1,45 @@
-import { NativeTabs } from "expo-router/native-tabs"
-
+import { Tabs } from "expo-router/js-tabs"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslations } from "use-intl"
 
+import { AppHeader } from "@/components/app-header"
 import { tabs } from "@/components/tabs"
+import { fontFamily } from "@/theme/fonts"
 import { useColors } from "@/theme/use-colors"
 
-/** Native bottom tabs on Android and iOS. */
+/** Bottom tab bar like the web's on phones: the active icon turns gold. */
 export default function TabsLayout() {
   const colors = useColors()
-  const t = useTranslations()
+  const t = useTranslations("App.nav")
+  const bottom = Math.max(useSafeAreaInsets().bottom, 8)
   return (
-    <NativeTabs
-      backgroundColor={colors.background}
-      tintColor={colors.primary}
-      indicatorColor={colors.muted}
-      labelStyle={{ selected: { color: colors.foreground } }}
+    <Tabs
+      screenOptions={{
+        header: () => <AppHeader />,
+        tabBarActiveTintColor: colors.foreground,
+        tabBarInactiveTintColor: colors.mutedForeground,
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopColor: colors.border,
+          height: 58 + bottom,
+          paddingTop: 6,
+          paddingBottom: bottom,
+        },
+        tabBarLabelStyle: { fontFamily: fontFamily.medium, fontSize: 12 },
+      }}
     >
-      {tabs.map((tab) => (
-        <NativeTabs.Trigger key={tab.name} name={tab.name}>
-          <NativeTabs.Trigger.Label>{t(tab.label)}</NativeTabs.Trigger.Label>
-          <NativeTabs.Trigger.Icon sf={tab.sf} md={tab.md} />
-        </NativeTabs.Trigger>
+      {tabs.map(({ name, label, icon: Icon }) => (
+        <Tabs.Screen
+          key={name}
+          name={name}
+          options={{
+            title: t(label),
+            tabBarIcon: ({ focused, color, size }) => (
+              <Icon size={size} color={focused ? colors.accent : color} />
+            ),
+          }}
+        />
       ))}
-    </NativeTabs>
+    </Tabs>
   )
 }

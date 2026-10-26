@@ -1496,9 +1496,6 @@
     }
   },
   "Mobile": {
-    "tabs": {
-      "more": "More"
-    },
     "read": {
       "notFound": "Passage not found",
       "invalid": "The link “{slug}” doesn’t point to a passage."

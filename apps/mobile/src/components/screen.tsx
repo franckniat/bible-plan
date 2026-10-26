@@ -1,46 +1,52 @@
 import type { ReactNode } from "react"
-import { StyleSheet, Text, View } from "react-native"
+import { ScrollView, StyleSheet, Text } from "react-native"
 
+import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
 
-/** A centred screen with a title, used until each screen gets its content. */
+/** A tab's page: a serif title and an optional lead, like the web's pages. */
 export function Screen({
   title,
-  header,
+  description,
   children,
 }: {
   title: string
-  /** Shown above the title, e.g. the logo. */
-  header?: ReactNode
+  description?: string
   children?: ReactNode
 }) {
   const colors = useColors()
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {header}
-      <Text style={[styles.title, { color: colors.foreground }]}>{title}</Text>
+    <ScrollView
+      style={{ backgroundColor: colors.background }}
+      contentContainerStyle={styles.content}
+      contentInsetAdjustmentBehavior="automatic"
+    >
+      <Text
+        accessibilityRole="header"
+        style={[typography.title, { color: colors.foreground }]}
+      >
+        {title}
+      </Text>
+      {description ? <Body>{description}</Body> : null}
       {children}
-    </View>
+    </ScrollView>
   )
 }
 
 export function Body({ children }: { children: ReactNode }) {
   const colors = useColors()
   return (
-    <Text style={[styles.body, { color: colors.mutedForeground }]}>
+    <Text style={[typography.body, { color: colors.mutedForeground }]}>
       {children}
     </Text>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    padding: 24,
+  content: {
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xl,
   },
-  title: { fontSize: 28, fontWeight: "600", textAlign: "center" },
-  body: { fontSize: 16, textAlign: "center" },
 })

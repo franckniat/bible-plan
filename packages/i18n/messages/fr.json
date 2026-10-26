@@ -1496,9 +1496,6 @@
     }
   },
   "Mobile": {
-    "tabs": {
-      "more": "Plus"
-    },
     "read": {
       "notFound": "Passage introuvable",
       "invalid": "Le lien « {slug} » ne désigne aucun passage."
