@@ -11,6 +11,7 @@ import {
   type DispatchResult,
 } from "@/server/services/reminder-dispatch"
 import { purgeOldNotifications } from "@/server/services/notifications"
+import { purgeOldTombstones } from "@/server/services/sync-tombstones"
 
 export const dynamic = "force-dynamic"
 // A run handles a few batches; what is left waits for the next run.
@@ -21,7 +22,7 @@ const maxBatches = 10
 /**
  * Called every 5 minutes by a scheduled GitHub Actions workflow with the
  * CRON_SECRET: delivers the reminders that are due, then tidies old
- * notifications.
+ * notifications, deliveries and sync tombstones.
  */
 export async function POST(request: Request) {
   if (!isAuthorizedCron(request, process.env.CRON_SECRET)) {
@@ -54,5 +55,11 @@ export async function POST(request: Request) {
 
   const purged = await purgeOldNotifications(prisma, now)
   const purgedDeliveries = await purgeOldDeliveries(prisma, now)
-  return Response.json({ ...total, purged, purgedDeliveries })
+  const purgedTombstones = await purgeOldTombstones(prisma, now)
+  return Response.json({
+    ...total,
+    purged,
+    purgedDeliveries,
+    purgedTombstones,
+  })
 }
