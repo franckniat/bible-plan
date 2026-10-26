@@ -22,8 +22,12 @@ const light = {
   muted: "#f5f0e5",
   mutedForeground: "#46576c",
   accent: brand.gold,
+  /** Gold wash for notices and selected rows (web: gold 22%). */
+  accentSoft: "rgba(242, 180, 65, 0.22)",
   destructive: "#e7000b",
+  destructiveSoft: "rgba(231, 0, 11, 0.1)",
   border: "rgba(16, 40, 74, 0.12)",
+  input: "rgba(16, 40, 74, 0.16)",
 }
 
 export type Colors = Record<keyof typeof light, string>
@@ -37,8 +41,11 @@ const dark: Colors = {
   muted: "#262626",
   mutedForeground: "#a1a1a1",
   accent: brand.gold,
+  accentSoft: "rgba(242, 180, 65, 0.16)",
   destructive: "#ff6467",
+  destructiveSoft: "rgba(255, 100, 103, 0.2)",
   border: "rgba(255, 255, 255, 0.1)",
+  input: "rgba(255, 255, 255, 0.15)",
 }
 
 export const colors = { light, dark } as const
