@@ -1,43 +1,10 @@
-/// <reference types="node" />
-
-import { readFileSync } from "node:fs"
-import { join } from "node:path"
-
 import { sql } from "drizzle-orm"
-import { drizzle } from "drizzle-orm/sql-js"
-import initSqlJs from "sql.js"
 import { describe, expect, it } from "vitest"
 
-import { applyMigrations, type MigrationBundle } from "./apply-migrations"
+import { applyMigrations } from "./apply-migrations"
 import * as schema from "./schema"
+import { emptyDatabase, migrationBundle, testDatabase } from "./test-database"
 import type { Database } from "./types"
-
-const folder = join(__dirname, "../../drizzle")
-
-/** The bundle the app ships, read from drizzle/ (Babel inlines it in the app). */
-function bundle(): MigrationBundle {
-  const journal = JSON.parse(
-    readFileSync(join(folder, "meta/_journal.json"), "utf8")
-  ) as MigrationBundle["journal"]
-  const migrations = Object.fromEntries(
-    journal.entries.map((entry) => [
-      `m${entry.idx.toString().padStart(4, "0")}`,
-      readFileSync(join(folder, `${entry.tag}.sql`), "utf8"),
-    ])
-  )
-  return { journal, migrations }
-}
-
-/** The bundle of an older app: its first `count` migrations. */
-function firstMigrations(count: number): MigrationBundle {
-  const all = bundle()
-  return { ...all, journal: { entries: all.journal.entries.slice(0, count) } }
-}
-
-async function emptyDatabase(): Promise<Database> {
-  const SQL = await initSqlJs()
-  return drizzle(new SQL.Database(), { schema })
-}
 
 /** The app's tables, without SQLite's and Drizzle's own. */
 const tables = (db: Database) =>
@@ -50,17 +17,15 @@ const tables = (db: Database) =>
 
 describe("local database migrations", () => {
   it("creates every table of the schema on a new phone", async () => {
-    const db = await emptyDatabase()
-    await applyMigrations(db, bundle())
-    expect(tables(db)).toEqual(["outbox", "profile"])
+    expect(tables(await testDatabase())).toEqual(["outbox", "profile"])
   })
 
   it("brings every older database up to date without losing data", async () => {
-    const count = bundle().journal.entries.length
+    const count = migrationBundle().journal.entries.length
     for (let from = 1; from <= count; from++) {
       // A phone that had the app with the first `from` migrations.
       const db = await emptyDatabase()
-      await applyMigrations(db, firstMigrations(from))
+      await applyMigrations(db, migrationBundle(from))
       db.insert(schema.profile)
         .values({
           id: "local",
@@ -71,16 +36,15 @@ describe("local database migrations", () => {
         })
         .run()
 
-      await applyMigrations(db, bundle())
+      await applyMigrations(db, migrationBundle())
 
       expect(db.select().from(schema.profile).all()).toHaveLength(1)
     }
   })
 
   it("changes nothing when the app starts again", async () => {
-    const db = await emptyDatabase()
-    await applyMigrations(db, bundle())
-    await applyMigrations(db, bundle())
+    const db = await testDatabase()
+    await applyMigrations(db, migrationBundle())
     expect(tables(db)).toEqual(["outbox", "profile"])
   })
 })
