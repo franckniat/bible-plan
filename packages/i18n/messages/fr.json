@@ -1494,5 +1494,26 @@
       "download": "Enregistrer l’image",
       "shareFailed": "Le partage n’a pas pu être lancé."
     }
+  },
+  "Mobile": {
+    "tabs": {
+      "more": "Plus"
+    },
+    "read": {
+      "notFound": "Passage introuvable",
+      "invalid": "Le lien « {slug} » ne désigne aucun passage."
+    },
+    "join": {
+      "title": "Invitation",
+      "invalidTitle": "Invitation invalide",
+      "invalid": "Le code « {code} » n’est pas un code d’invitation.",
+      "soon": "Les groupes arrivent bientôt dans l’application."
+    },
+    "prayerTime": {
+      "title": "Temps de prière"
+    },
+    "today": {
+      "books": "{count} livres · {first} → {last}"
+    }
   }
 }

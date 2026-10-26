@@ -1,5 +1,7 @@
 import { Tabs } from "expo-router/js-tabs"
 
+import { useTranslations } from "use-intl"
+
 import { tabs } from "@/components/tabs"
 import { useColors } from "@/theme/use-colors"
 
@@ -9,6 +11,7 @@ import { useColors } from "@/theme/use-colors"
  */
 export default function TabsLayout() {
   const colors = useColors()
+  const t = useTranslations()
   return (
     <Tabs
       screenOptions={{
@@ -27,7 +30,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           key={tab.name}
           name={tab.name}
-          options={{ title: tab.label }}
+          options={{ title: t(tab.label) }}
         />
       ))}
     </Tabs>

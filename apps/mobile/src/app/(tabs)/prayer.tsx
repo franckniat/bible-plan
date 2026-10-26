@@ -1,5 +1,8 @@
+import { useTranslations } from "use-intl"
+
 import { Screen } from "@/components/screen"
 
 export default function PrayerScreen() {
-  return <Screen title="Prière" />
+  const t = useTranslations()
+  return <Screen title={t("App.nav.prayer")} />
 }

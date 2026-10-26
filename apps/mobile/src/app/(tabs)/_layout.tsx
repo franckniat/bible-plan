@@ -1,11 +1,14 @@
 import { NativeTabs } from "expo-router/native-tabs"
 
+import { useTranslations } from "use-intl"
+
 import { tabs } from "@/components/tabs"
 import { useColors } from "@/theme/use-colors"
 
 /** Native bottom tabs on Android and iOS. */
 export default function TabsLayout() {
   const colors = useColors()
+  const t = useTranslations()
   return (
     <NativeTabs
       backgroundColor={colors.background}
@@ -15,7 +18,7 @@ export default function TabsLayout() {
     >
       {tabs.map((tab) => (
         <NativeTabs.Trigger key={tab.name} name={tab.name}>
-          <NativeTabs.Trigger.Label>{tab.label}</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Label>{t(tab.label)}</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon sf={tab.sf} md={tab.md} />
         </NativeTabs.Trigger>
       ))}

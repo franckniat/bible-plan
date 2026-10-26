@@ -1,5 +1,8 @@
+import { useTranslations } from "use-intl"
+
 import { Screen } from "@/components/screen"
 
 export default function BibleScreen() {
-  return <Screen title="Bible" />
+  const t = useTranslations()
+  return <Screen title={t("App.nav.bible")} />
 }

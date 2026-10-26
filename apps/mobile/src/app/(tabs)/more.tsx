@@ -1,5 +1,8 @@
+import { useTranslations } from "use-intl"
+
 import { Screen } from "@/components/screen"
 
 export default function MoreScreen() {
-  return <Screen title="Plus" />
+  const t = useTranslations()
+  return <Screen title={t("Mobile.tabs.more")} />
 }

@@ -1494,5 +1494,26 @@
       "download": "Save the image",
       "shareFailed": "Sharing could not be started."
     }
+  },
+  "Mobile": {
+    "tabs": {
+      "more": "More"
+    },
+    "read": {
+      "notFound": "Passage not found",
+      "invalid": "The link “{slug}” doesn’t point to a passage."
+    },
+    "join": {
+      "title": "Invitation",
+      "invalidTitle": "Invalid invitation",
+      "invalid": "“{code}” isn’t an invitation code.",
+      "soon": "Groups are coming to the app soon."
+    },
+    "prayerTime": {
+      "title": "Prayer time"
+    },
+    "today": {
+      "books": "{count} books · {first} → {last}"
+    }
   }
 }
