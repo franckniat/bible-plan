@@ -1588,6 +1588,13 @@
     "database": {
       "errorTitle": "Something went wrong",
       "error": "The app’s data could not be prepared. Close the app and open it again; if it happens again, write to us."
+    },
+    "settings": {
+      "reading": "Reading",
+      "app": "App",
+      "phoneLanguage": "Phone language ({language})",
+      "developer": "Development",
+      "uiKit": "Component gallery"
     }
   }
 }

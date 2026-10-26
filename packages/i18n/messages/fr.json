@@ -1588,6 +1588,13 @@
     "database": {
       "errorTitle": "Un problème est survenu",
       "error": "Les données de l’application n’ont pas pu être préparées. Fermez l’application et rouvrez-la ; si cela recommence, écrivez-nous."
+    },
+    "settings": {
+      "reading": "Lecture",
+      "app": "Application",
+      "phoneLanguage": "Langue du téléphone ({language})",
+      "developer": "Développement",
+      "uiKit": "Galerie des composants"
     }
   }
 }
