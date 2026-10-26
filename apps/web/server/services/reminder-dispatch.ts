@@ -3,13 +3,13 @@ import "server-only"
 import {
   nextReminderRun,
   type ReminderChannel,
+  type ReminderContent,
   type ReminderKind,
   type Weekday,
 } from "@workspace/core"
 import type { PrismaClient } from "@workspace/db"
 
 import { createNotification } from "@/server/services/notifications"
-import type { ReminderContent } from "@/server/services/reminder-content"
 
 /** How long a delivery is kept: only its recent past prevents a double send. */
 export const deliveryRetentionDays = 30

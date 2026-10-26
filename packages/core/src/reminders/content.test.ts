@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest"
 
-import { parseReference, type Passage } from "@workspace/core"
-
 import {
   pickReminderTopics,
   reminderContent,
   remainingReadings,
   type ContentTranslator,
-} from "./reminder-content"
-import type { TodayPlan } from "./plans"
+  type ReminderPlan,
+} from "./content"
+import { parseReference } from "../bible/parse"
+import type { Passage } from "../bible/passage"
 
 const passage = (reference: string): Passage => parseReference(reference)![0]!
 
@@ -22,31 +22,19 @@ const t: ContentTranslator = (key, values) =>
 
 function plan(
   readings: { id: string; reference: string; done: boolean }[],
-  overrides: Partial<TodayPlan> = {}
-): TodayPlan {
+  overrides: Partial<ReminderPlan> = {}
+): ReminderPlan {
   return {
-    id: "plan-1",
-    title: "Plan",
-    trackNames: [],
-    completedReadings: 0,
-    totalReadings: readings.length,
     isToday: true,
-    lateReadings: 0,
-    catchUpStrategy: "SHIFT",
     day: {
-      date: "2026-10-19",
-      dayNumber: 1,
-      verses: 10,
       readings: readings.map(({ id, reference, done }) => ({
         id,
         passage: passage(reference),
-        verses: 5,
-        track: 0,
         completedAt: done ? new Date() : null,
       })),
     },
     ...overrides,
-  } as TodayPlan
+  }
 }
 
 describe("remainingReadings", () => {
@@ -195,7 +183,14 @@ describe("pickReminderTopics", () => {
 
 describe("prayer reminders", () => {
   const prayer = (topics: string[]) =>
-    reminderContent({ kind: "PRAYER", locale: "fr", plans: [], verse: null, topics, t })
+    reminderContent({
+      kind: "PRAYER",
+      locale: "fr",
+      plans: [],
+      verse: null,
+      topics,
+      t,
+    })
 
   it("names the requests to pray for, and opens the journal", () => {
     expect(prayer(["Pour Marie", "Ma famille"])).toMatchObject({

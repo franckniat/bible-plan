@@ -3,7 +3,15 @@ import "server-only"
 import { hasLocale } from "next-intl"
 import { getTranslations } from "next-intl/server"
 
-import { daysBetween, defaultLocale, getToday } from "@workspace/core"
+import {
+  daysBetween,
+  defaultLocale,
+  getToday,
+  pickReminderTopics,
+  reminderContent,
+  type ContentTranslator,
+  type ReminderContent,
+} from "@workspace/core"
 import { prisma } from "@workspace/db"
 
 import { routing } from "@/i18n/routing"
@@ -11,12 +19,6 @@ import { findVerseOfTheDay } from "@/lib/verse-of-the-day"
 import { getTodayPlans } from "@/server/services/plans"
 import { listPrayerTitles } from "@/server/services/prayers"
 import type { DueReminder } from "@/server/services/reminder-dispatch"
-import {
-  pickReminderTopics,
-  reminderContent,
-  type ContentTranslator,
-  type ReminderContent,
-} from "@/server/services/reminder-content"
 
 /**
  * What a due reminder says, in the language and the day of its owner: the

@@ -1,15 +1,31 @@
-import "server-only"
+import { formatPassage } from "../bible/format"
+import type { Passage } from "../bible/passage"
+import { toPassageSlug } from "../bible/slug"
+import type { Locale } from "../schemas/common"
+import type { ReminderKind } from "./schema"
 
-import {
-  formatPassage,
-  toPassageSlug,
-  type Locale,
-  type Passage,
-  type ReminderKind,
-} from "@workspace/core"
-import type { PushAction } from "@workspace/notifications"
+/** A button of a reminder notification (a push action on the web). */
+export type ReminderAction = {
+  action: string
+  title: string
+  /** A path of the app without the language. */
+  href?: string
+}
 
-import type { TodayPlan } from "@/server/services/plans"
+/**
+ * What a reminder needs of an active plan: its reading day of today (or the
+ * next one) and the readings of that day, read or not.
+ */
+export type ReminderPlan = {
+  isToday: boolean
+  day: {
+    readings: readonly {
+      id: string
+      passage: Passage
+      completedAt: Date | string | null
+    }[]
+  } | null
+}
 
 /** What a reminder says, in the language of the person. */
 export type ReminderContent = {
@@ -18,7 +34,7 @@ export type ReminderContent = {
   /** A path of the app without the language; none: Today. */
   href?: string
   /** Buttons of the push notification (their hrefs have no language either). */
-  actions?: PushAction[]
+  actions?: ReminderAction[]
 }
 
 /** Translates "Reminders.notification" messages. */
@@ -68,7 +84,7 @@ export type RemainingReading = { id: string; passage: Passage }
  * today's.
  */
 export function remainingReadings(
-  plans: readonly TodayPlan[]
+  plans: readonly ReminderPlan[]
 ): RemainingReading[] {
   return plans.flatMap((plan) =>
     plan.isToday && plan.day
@@ -100,7 +116,7 @@ export function reminderContent({
   kind: ReminderKind
   locale: Locale
   /** The active plans with today's readings (reading reminders). */
-  plans: readonly TodayPlan[]
+  plans: readonly ReminderPlan[]
   /** The verse of the day (meditation reminders). */
   verse: Passage | null
   /** The prayer requests picked for today (prayer reminders). */
@@ -148,7 +164,11 @@ export function reminderContent({
         style: "long",
         type: "conjunction",
       }).format(named)
-      return { title, body: t("PRAYER.bodyWith", { topics: list }), href: "/prayer" }
+      return {
+        title,
+        body: t("PRAYER.bodyWith", { topics: list }),
+        href: "/prayer",
+      }
     }
     return { title, body: t("PRAYER.body"), href: "/prayer" }
   }
