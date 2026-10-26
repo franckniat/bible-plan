@@ -6,9 +6,10 @@ import { fontFamily } from "@/theme/fonts"
 import { useColors } from "@/theme/use-colors"
 
 /**
- * Native stack for a tab's root screen (as in expense-tracker-237): on iOS a
- * large title that shrinks into a centred title over a blurred bar while
- * scrolling; Android keeps a regular header.
+ * Native stack of a tab (as in expense-tracker-237). Its root screen has, on
+ * iOS, a large title that shrinks into a centred title over a blurred bar
+ * while scrolling (Android keeps a regular header); the screens opened from
+ * it stack above it with a regular title, the tab bar staying visible.
  */
 export function LargeTitleStack({
   name,
@@ -26,7 +27,6 @@ export function LargeTitleStack({
   return (
     <Stack
       screenOptions={{
-        headerLargeTitle: true,
         headerTransparent: ios,
         headerBlurEffect: ios
           ? dark
@@ -49,7 +49,10 @@ export function LargeTitleStack({
         contentStyle: { backgroundColor: colors.background },
       }}
     >
-      <Stack.Screen name={name} options={{ title, headerRight }} />
+      <Stack.Screen
+        name={name}
+        options={{ title, headerRight, headerLargeTitle: true }}
+      />
     </Stack>
   )
 }
