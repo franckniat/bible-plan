@@ -1,6 +1,7 @@
-import { useTheme } from "expo-router"
 import type { ReactNode } from "react"
 import { StyleSheet, Text, View } from "react-native"
+
+import { useColors } from "@/theme/use-colors"
 
 /** A centred screen with a title, used until each screen gets its content. */
 export function Screen({
@@ -10,18 +11,22 @@ export function Screen({
   title: string
   children?: ReactNode
 }) {
-  const { colors } = useTheme()
+  const colors = useColors()
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+      <Text style={[styles.title, { color: colors.foreground }]}>{title}</Text>
       {children}
     </View>
   )
 }
 
 export function Body({ children }: { children: ReactNode }) {
-  const { colors } = useTheme()
-  return <Text style={[styles.body, { color: colors.text }]}>{children}</Text>
+  const colors = useColors()
+  return (
+    <Text style={[styles.body, { color: colors.mutedForeground }]}>
+      {children}
+    </Text>
+  )
 }
 
 const styles = StyleSheet.create({
