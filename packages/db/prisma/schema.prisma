@@ -276,24 +276,39 @@ enum ReminderChannel {
   EMAIL
 }
 
+/// How a prayer time takes the screen; applied by the mobile app only.
+enum FocusMode {
+  /// A notification, nothing more.
+  NOTIFY
+  /// The prayer screen over other apps, with a button to leave it.
+  SOFT
+  /// The prayer screen until the end of the prayer time.
+  STRICT
+}
+
 model Reminder {
-  id        String            @id @default(uuid(7))
-  userId    String
-  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  kind      ReminderKind
+  id              String            @id @default(uuid(7))
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind            ReminderKind
   /// Local time "HH:mm", in 5-minute steps (the cron runs every 5 minutes).
-  localTime String            @db.VarChar(5)
+  localTime       String            @db.VarChar(5)
   /// IANA time zone the local time is read in, e.g. "Europe/Paris".
-  timezone  String
+  timezone        String
   /// Days of the week the reminder is active, 0 = Sunday.
-  weekdays  Int[]
-  channels  ReminderChannel[]
-  enabled   Boolean           @default(true)
+  weekdays        Int[]
+  channels        ReminderChannel[]
+  enabled         Boolean           @default(true)
+  /// Minutes before localTime the phone warns of a prayer time (0: none).
+  leadMinutes     Int               @default(0)
+  /// Length of a prayer time in minutes; null for a plain reminder.
+  durationMinutes Int?
+  focusMode       FocusMode         @default(NOTIFY)
   /// Next occurrence (UTC); null while the reminder is disabled.
-  nextRunAt DateTime?
-  lastRunAt DateTime?
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  nextRunAt       DateTime?
+  lastRunAt       DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 
   deliveries ReminderDelivery[]
 
@@ -541,15 +556,15 @@ model ActivityDay {
 // earned; level is 1 (bronze), 2 (silver) or 3 (gold), 1 for a trophy.
 
 model Achievement {
-  id         String   @id @default(uuid(7))
+  id         String    @id @default(uuid(7))
   userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   key        String
   level      Int
   /// The day it was earned, in the time zone of the person.
-  unlockedAt DateTime @db.Date
+  unlockedAt DateTime  @db.Date
   /// When the application recorded it.
-  createdAt  DateTime @default(now())
+  createdAt  DateTime  @default(now())
   /// When the person was shown the celebration; null until then. Achievements
   /// caught up for an old activity are recorded as already seen.
   seenAt     DateTime?

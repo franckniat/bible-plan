@@ -19,6 +19,9 @@ const input: ReminderInput = {
   weekdays: [1, 2, 3, 4, 5],
   channels: ["IN_APP", "PUSH", "EMAIL"],
   enabled: true,
+  leadMinutes: 0,
+  durationMinutes: null,
+  focusMode: "NOTIFY",
 }
 // Thursday 2026-01-15, 06:00 in Paris.
 const now = new Date("2026-01-15T05:00:00Z")
@@ -48,6 +51,9 @@ describe("createReminder", () => {
         weekdays: [1, 2, 3, 4, 5],
         channels: ["IN_APP", "PUSH"],
         enabled: true,
+        leadMinutes: 0,
+        durationMinutes: null,
+        focusMode: "NOTIFY",
         nextRunAt: new Date("2026-01-15T06:00:00Z"),
       },
       select: { id: true },

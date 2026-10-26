@@ -24,9 +24,22 @@ type WriteOptions = {
   pushEnabled?: boolean
 }
 
-/** The stored fields of a reminder: the channels the app offers, the next run. */
+/**
+ * The stored fields of a reminder: the channels the app offers, the next run.
+ * The prayer time settings are stored as given; the mobile app applies them.
+ */
 function toData(
-  { kind, localTime, timeZone, weekdays, channels, enabled }: ReminderInput,
+  {
+    kind,
+    localTime,
+    timeZone,
+    weekdays,
+    channels,
+    enabled,
+    leadMinutes,
+    durationMinutes,
+    focusMode,
+  }: ReminderInput,
   { now = new Date(), emailEnabled = false, pushEnabled = false }: WriteOptions
 ) {
   return {
@@ -40,6 +53,9 @@ function toData(
         (pushEnabled || channel !== "PUSH")
     ),
     enabled,
+    leadMinutes,
+    durationMinutes,
+    focusMode,
     // A disabled reminder has no next run, so the cron never picks it up.
     nextRunAt: enabled
       ? nextReminderRun({ localTime, timeZone, weekdays }, now)
