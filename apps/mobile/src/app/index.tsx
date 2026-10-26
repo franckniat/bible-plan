@@ -1,5 +1,8 @@
 import { Redirect } from "expo-router"
 
+import { usePreferences } from "@/lib/preferences"
+
 export default function Index() {
-  return <Redirect href="/today" />
+  const { onboarded } = usePreferences()
+  return <Redirect href={onboarded ? "/today" : "/welcome"} />
 }
