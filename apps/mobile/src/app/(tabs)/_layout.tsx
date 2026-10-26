@@ -2,7 +2,6 @@ import { Tabs } from "expo-router/js-tabs"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslations } from "use-intl"
 
-import { AppHeader } from "@/components/app-header"
 import { tabs } from "@/components/tabs"
 import { fontFamily } from "@/theme/fonts"
 import { useColors } from "@/theme/use-colors"
@@ -15,7 +14,8 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        header: () => <AppHeader />,
+        // Each tab is a stack with its own native large title.
+        headerShown: false,
         tabBarActiveTintColor: colors.foreground,
         tabBarInactiveTintColor: colors.mutedForeground,
         tabBarStyle: {
