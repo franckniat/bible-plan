@@ -5,6 +5,7 @@ import type { PrismaClient } from "@workspace/db"
 
 export type AccountDb = Pick<
   PrismaClient,
+  | "syncTombstone"
   | "user"
   | "account"
   | "readingPlan"
@@ -205,5 +206,8 @@ export async function deleteAccount(
     where: { email: user.email.trim().toLowerCase() },
   })
   await db.user.delete({ where: { id: userId } })
+  // The deletions above left tombstones for the phones of this account,
+  // which is gone: they are of no use to anyone.
+  await db.syncTombstone.deleteMany({ where: { userId } })
   return { ok: true }
 }

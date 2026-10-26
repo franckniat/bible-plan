@@ -46,6 +46,7 @@ function accountDb() {
       update: vi.fn(),
     },
     waitlistEntry: { deleteMany: vi.fn() },
+    syncTombstone: { deleteMany: vi.fn() },
   }
 }
 
@@ -59,6 +60,10 @@ describe("deleteAccount", () => {
       where: { email: "ann@example.com" },
     })
     expect(db.user.delete).toHaveBeenCalledWith({ where: { id: "u1" } })
+    // Its tombstones are of no use once the account is gone.
+    expect(db.syncTombstone.deleteMany).toHaveBeenCalledWith({
+      where: { userId: "u1" },
+    })
   })
 
   it("refuses while the person owns a group with other members", async () => {

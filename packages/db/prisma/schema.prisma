@@ -674,3 +674,22 @@ model PrayerSupport {
 
   @@unique([requestId, userId])
 }
+
+// ─── Mobile sync ────────────────────────────────────────────────────────────
+// A synced record that was deleted, so that the phone drops it too. Written by
+// database triggers on every deletion (cascades included), never by the app;
+// purged after 90 days by the cron.
+
+model SyncTombstone {
+  id          String   @id
+  /// The table of the deleted record, e.g. "PrayerRequest".
+  table       String
+  recordId    String
+  /// The owner of the record, whose devices must drop it.
+  userId      String
+  syncVersion BigInt   @default(dbgenerated("nextval('sync_version_seq'::regclass)"))
+  deletedAt   DateTime @default(now())
+
+  @@index([userId, syncVersion])
+  @@index([deletedAt])
+}
