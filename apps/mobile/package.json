@@ -14,14 +14,17 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "icons": "node scripts/icons.mjs",
-    "check:expo": "expo-doctor"
+    "check:expo": "expo-doctor",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
     "@expo-google-fonts/geist": "^0.4.2",
     "@expo-google-fonts/lora": "^0.4.2",
     "@workspace/core": "workspace:*",
     "@workspace/i18n": "workspace:*",
+    "drizzle-orm": "0.45.4",
     "expo": "~58.0.19",
+    "expo-asset": "~58.0.18",
     "expo-constants": "~58.0.13",
     "expo-font": "~58.0.10",
     "expo-haptics": "~58.0.7",
@@ -41,14 +44,20 @@
     "react-native-screens": "~4.30.0",
     "react-native-svg": "15.16.0",
     "react-native-web": "~0.21.4",
+    "sql.js": "1.14.2",
     "use-intl": "^4.14.9",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/react": "~19.3.0",
+    "@types/sql.js": "^1.4.11",
     "@workspace/eslint-config": "workspace:*",
+    "babel-plugin-inline-import": "^3.0.0",
+    "babel-preset-expo": "^58.0.20",
+    "drizzle-kit": "0.31.11",
     "eslint": "^10",
     "expo-doctor": "^1.21.5",
+    "globals": "^17.12.0",
     "sharp": "^0.35.5",
     "typescript": "~6.0.3",
     "vitest": "catalog:"
