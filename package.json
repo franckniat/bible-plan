@@ -17,7 +17,8 @@
     "db:studio": "pnpm --filter @workspace/db db:studio",
     "db:seed": "pnpm --filter @workspace/db db:seed",
     "db:waitlist:remove": "pnpm --filter @workspace/db waitlist:remove",
-    "email:test": "pnpm --filter @workspace/notifications email:test"
+    "email:test": "pnpm --filter @workspace/notifications email:test",
+    "db:activity:backfill": "pnpm --filter @workspace/db activity:backfill"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",

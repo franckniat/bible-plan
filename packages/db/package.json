@@ -13,7 +13,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
-    "waitlist:remove": "tsx --env-file-if-exists=.env scripts/waitlist-remove.ts"
+    "waitlist:remove": "tsx --env-file-if-exists=.env scripts/waitlist-remove.ts",
+    "activity:backfill": "tsx --env-file-if-exists=.env scripts/activity-backfill.ts"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",
@@ -30,6 +31,7 @@
   },
   "dependencies": {
     "@prisma/adapter-neon": "^7.10.0",
-    "@prisma/client": "^7.10.0"
+    "@prisma/client": "^7.10.0",
+    "@workspace/core": "workspace:*"
   }
 }
