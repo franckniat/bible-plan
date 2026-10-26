@@ -10,6 +10,7 @@ import type { IsoDate, Weekday } from "../schemas/common"
 import {
   getOverdueReadings,
   planCatchUp,
+  rebuildSchedule,
   type CatchUpChanges,
   type ScheduleDay,
 } from "./catch-up"
@@ -63,21 +64,6 @@ function verseKeys(passages: Passage[]): string[] {
     }
     return keys
   })
-}
-
-/** The schedule after applying the changes, as the database would hold it. */
-function apply(days: ScheduleDay[], changes: CatchUpChanges) {
-  const removed = new Set(changes.removeReadings)
-  const moved = new Map(changes.moveDays.map((move) => [move.dayId, move.date]))
-  const kept = days.map((day) => ({
-    date: moved.get(day.id) ?? day.date,
-    readings: day.readings.filter((reading) => !removed.has(reading.id)),
-  }))
-  const added = changes.addDays.map((day) => ({
-    date: day.date,
-    readings: day.readings.map((reading) => ({ ...reading, done: false })),
-  }))
-  return [...kept, ...added]
 }
 
 const genesis = parseReference("Gn 1-30")!
@@ -148,8 +134,8 @@ describe("planCatchUp", () => {
     expect(changes.removeReadings).not.toContain("reading-7-0")
     expect(
       verseKeys(
-        apply(partly, changes)
-          .flatMap((day) => day.readings)
+        rebuildSchedule(partly, changes, () => "new")
+          .days.flatMap((day) => day.readings)
           .map((reading) => reading.passage)
       ).sort()
     ).toEqual(verseKeys(genesis).sort())
@@ -262,7 +248,12 @@ describe("planCatchUp properties", () => {
           for (const reading of done) {
             expect(changes.removeReadings).not.toContain(reading.id)
           }
-          const after = apply(days, changes)
+          let next = 0
+          const after = rebuildSchedule(
+            days,
+            changes,
+            () => `new-${next++}`
+          ).days
           expect(
             verseKeys(
               after.flatMap((day) => day.readings).map((r) => r.passage)
@@ -277,6 +268,19 @@ describe("planCatchUp properties", () => {
             expect(date >= today).toBe(true)
             expect(activeWeekdays.includes(getWeekday(date))).toBe(true)
           }
+          // Every read reading keeps its id and its day.
+          const readIn = new Map(
+            after.flatMap((day) =>
+              day.readings.filter((r) => r.done).map((r) => [r.id, day.id])
+            )
+          )
+          for (const day of days)
+            for (const reading of day.readings.filter((r) => r.done))
+              expect(readIn.get(reading.id)).toBe(day.id)
+          expect(after.map((day) => day.dayNumber)).toEqual(
+            after.map((_, index) => index + 1)
+          )
+          expect(after.at(-1)!.date).toBe(changes.endDate)
           if (strategy === "SHIFT")
             expect(changes.endDate >= endDate).toBe(true)
           else
@@ -288,4 +292,95 @@ describe("planCatchUp properties", () => {
       )
     }
   )
+})
+
+describe("rebuildSchedule", () => {
+  const days = schedule([genesis], {
+    days: 30,
+    // Genesis 1 and 3 read; 2, 4 and 5 late on January 6.
+    done: (day) => day === 1 || day === 3,
+  })
+  const ids = () => {
+    let next = 0
+    return () => `new-${next++}`
+  }
+
+  it("SHIFT moves the days and keeps every id", () => {
+    const changes = planCatchUp("SHIFT", {
+      days,
+      today: "2027-01-06",
+      activeWeekdays: everyDay,
+      endDate: "2027-01-30",
+    })!
+    const rebuilt = rebuildSchedule(days, changes, ids())
+    expect(rebuilt.days.map((day) => day.id)).toEqual(days.map((day) => day.id))
+    expect(rebuilt.days.some((day) => day.created)).toBe(false)
+    expect(rebuilt.removedDayIds).toEqual([])
+    expect(rebuilt.days[1]).toMatchObject({ id: "day-2", date: "2027-01-06" })
+    expect(rebuilt.endDate).toBe(changes.endDate)
+    expect(rebuilt.totalReadings).toBe(30)
+  })
+
+  it("REDISTRIBUTE keeps read readings, adds new days and drops empty ones", () => {
+    const changes = planCatchUp("REDISTRIBUTE", {
+      days,
+      today: "2027-01-06",
+      activeWeekdays: everyDay,
+      endDate: "2027-01-30",
+    })!
+    const rebuilt = rebuildSchedule(days, changes, ids())
+    // Days 1 and 3 keep their read reading; the late days 2, 4 and 5 are
+    // emptied, while the days from January 6 receive the spread readings.
+    expect(rebuilt.days.slice(0, 2).map((day) => day.id)).toEqual([
+      "day-1",
+      "day-3",
+    ])
+    expect(rebuilt.removedDayIds).toEqual(["day-2", "day-4", "day-5"])
+    // Days from January 6 exist already (moved readings join them).
+    expect(rebuilt.days[2]).toMatchObject({ id: "day-6", date: "2027-01-06" })
+    expect(rebuilt.days.every((day) => !day.created)).toBe(true)
+    expect(rebuilt.days.map((day) => day.dayNumber)).toEqual(
+      rebuilt.days.map((_, index) => index + 1)
+    )
+    expect(rebuilt.totalDays).toBe(rebuilt.days.length)
+    expect(rebuilt.days[0]!.verses).toBe(days[0]!.readings[0]!.verses)
+  })
+
+  it("creates a day when no day is left on a new date", () => {
+    const rebuilt = rebuildSchedule(
+      days.slice(0, 2),
+      {
+        moveDays: [],
+        removeReadings: [],
+        addDays: [{ date: "2027-03-01", readings: [days[5]!.readings[0]!] }],
+        endDate: "2027-03-01",
+      },
+      ids()
+    )
+    expect(rebuilt.days.at(-1)).toMatchObject({
+      id: "new-0",
+      date: "2027-03-01",
+      created: true,
+      dayNumber: 3,
+    })
+    expect(rebuilt.days.at(-1)!.readings[0]).toMatchObject({
+      id: "new-1",
+      done: false,
+      created: true,
+    })
+  })
+
+  it("never removes a read reading", () => {
+    const rebuilt = rebuildSchedule(
+      days,
+      {
+        moveDays: [],
+        removeReadings: ["reading-1-0"],
+        addDays: [],
+        endDate: "2027-01-30",
+      },
+      ids()
+    )
+    expect(rebuilt.days[0]!.readings[0]!.id).toBe("reading-1-0")
+  })
 })

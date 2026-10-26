@@ -8,6 +8,7 @@ import {
   canManageMembers,
   generatePlan,
   planCatchUp,
+  rebuildSchedule,
   PlanGenerationError,
   isBookId,
   locales,
@@ -116,9 +117,10 @@ export async function createPlan(
       await tx.planDay.createMany({ data: dayRows })
       await tx.planReading.createMany({ data: readingRows })
       await tx.planEnrollment.createMany({
-        data: (group ? [...new Set([userId, ...group.memberIds])] : [userId]).map(
-          (member) => ({ planId, userId: member })
-        ),
+        data: (group
+          ? [...new Set([userId, ...group.memberIds])]
+          : [userId]
+        ).map((member) => ({ planId, userId: member })),
       })
     },
     { timeout: CREATE_TIMEOUT_MS }
@@ -592,19 +594,17 @@ export async function applyCatchUp(
     throw error
   }
   if (!changes) return { ok: true, changed: false }
-  const { moveDays, removeReadings, addDays } = changes
+  const { moveDays, removeReadings } = changes
 
-  // Existing day of each date once the days are moved: new readings join it.
-  const moved = new Map(moveDays.map((move) => [move.dayId, move.date]))
-  const dayOfDate = new Map<IsoDate, string>()
-  for (const day of days) {
-    const date = moved.get(day.id) ?? day.date
-    if (!dayOfDate.has(date)) dayOfDate.set(date, day.id)
-  }
-  const newDays = addDays
-    .filter((day) => !dayOfDate.has(day.date))
-    .map((day) => ({ id: randomUUID(), date: day.date }))
-  for (const day of newDays) dayOfDate.set(day.date, day.id)
+  // The schedule afterwards, as the phone rebuilds it: new readings join the
+  // day already on their date, or a new day.
+  const rebuilt = rebuildSchedule(days, changes, randomUUID)
+  const newDays = rebuilt.days.filter((day) => day.created)
+  const added = rebuilt.days.flatMap((day) =>
+    day.readings
+      .filter((reading) => reading.created)
+      .map((reading) => ({ dayId: day.id, reading }))
+  )
 
   await db.$transaction(
     async (tx) => {
@@ -641,8 +641,8 @@ export async function applyCatchUp(
           })),
         })
       }
-      if (addDays.length > 0) {
-        const dayIds = addDays.map((day) => dayOfDate.get(day.date)!)
+      if (added.length > 0) {
+        const dayIds = [...new Set(added.map(({ dayId }) => dayId))]
         const last = await tx.planReading.groupBy({
           by: ["dayId"],
           where: { dayId: { in: dayIds } },
@@ -652,12 +652,14 @@ export async function applyCatchUp(
           last.map((row) => [row.dayId, (row._max.position ?? -1) + 1])
         )
         await tx.planReading.createMany({
-          data: addDays.flatMap((day) => {
-            const dayId = dayOfDate.get(day.date)!
-            const start = nextPosition.get(dayId) ?? 0
-            return day.readings.map(({ track, passage, verses }, index) => ({
+          data: added.map(({ dayId, reading }) => {
+            const position = nextPosition.get(dayId) ?? 0
+            nextPosition.set(dayId, position + 1)
+            const { id, track, passage, verses } = reading
+            return {
+              id,
               dayId,
-              position: start + index,
+              position,
               track,
               book: passage.book,
               startChapter: passage.start.chapter,
@@ -665,7 +667,7 @@ export async function applyCatchUp(
               endChapter: passage.end.chapter,
               endVerse: passage.end.verse,
               verses,
-            }))
+            }
           }),
         })
       }

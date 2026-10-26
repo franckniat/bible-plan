@@ -166,3 +166,99 @@ export function planCatchUp(
     ? shift(options)
     : redistribute(options, options.endDate)
 }
+
+/** A day of a plan once caught up, in date order. */
+export type RebuiltDay = {
+  id: string
+  date: IsoDate
+  /** 1 for the first day, in date order. */
+  dayNumber: number
+  /** Verses of its readings. */
+  verses: number
+  /** A day created by the catch-up. */
+  created: boolean
+  /** In reading order: the day's own readings, then the added ones. */
+  readings: (ScheduleReading & { created: boolean })[]
+}
+
+/** A plan's schedule after a catch-up. */
+export type RebuiltSchedule = {
+  days: RebuiltDay[]
+  /** Days left without readings, to delete. */
+  removedDayIds: string[]
+  endDate: IsoDate
+  totalDays: number
+  totalReadings: number
+}
+
+/**
+ * The schedule of a plan once `changes` are applied, as the server stores
+ * it and as the phone rebuilds it offline. Read readings always stay where
+ * they are; added readings join the day already on their date or a new day;
+ * days left empty go and the others are numbered again in date order.
+ * `newId` makes the ids of new days and readings (UUIDv7 on the phone).
+ */
+export function rebuildSchedule(
+  days: readonly ScheduleDay[],
+  changes: CatchUpChanges,
+  newId: () => string
+): RebuiltSchedule {
+  const removed = new Set(changes.removeReadings)
+  const movedTo = new Map(
+    changes.moveDays.map((move) => [move.dayId, move.date])
+  )
+
+  const rebuilt: Omit<RebuiltDay, "dayNumber" | "verses">[] = days.map(
+    (day) => ({
+      id: day.id,
+      date: movedTo.get(day.id) ?? day.date,
+      created: false,
+      readings: day.readings
+        // A read reading is never removed, whatever the changes say.
+        .filter((reading) => reading.done || !removed.has(reading.id))
+        .map((reading) => ({ ...reading, created: false })),
+    })
+  )
+  // New readings join the first day on their date.
+  const dayOfDate = new Map<IsoDate, (typeof rebuilt)[number]>()
+  for (const day of rebuilt) {
+    if (!dayOfDate.has(day.date)) dayOfDate.set(day.date, day)
+  }
+  for (const { date, readings } of changes.addDays) {
+    let day = dayOfDate.get(date)
+    if (!day) {
+      day = { id: newId(), date, created: true, readings: [] }
+      rebuilt.push(day)
+      dayOfDate.set(date, day)
+    }
+    day.readings.push(
+      ...readings.map((reading) => ({
+        ...reading,
+        id: newId(),
+        done: false,
+        created: true,
+      }))
+    )
+  }
+
+  const kept = rebuilt.filter((day) => day.readings.length > 0)
+  // Stable: days on the same date keep their order, as on the server.
+  kept.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0))
+  const result = kept.map((day, index) => ({
+    ...day,
+    dayNumber: index + 1,
+    verses: day.readings.reduce((total, reading) => total + reading.verses, 0),
+  }))
+  return {
+    days: result,
+    removedDayIds: rebuilt
+      .filter((day) => day.readings.length === 0 && !day.created)
+      .map((day) => day.id),
+    endDate: result.at(-1)?.date ?? changes.endDate,
+    totalDays: result.length,
+    totalReadings: result.reduce(
+      (total, day) => total + day.readings.length,
+      0
+    ),
+  }
+}
