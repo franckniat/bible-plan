@@ -1,6 +1,6 @@
 import { readingSpeeds } from "@workspace/core"
 import { router } from "expo-router"
-import { BookOpen, Clock, Gauge, Shapes } from "lucide-react-native"
+import { BookOpen, Clock, Gauge, Languages, Shapes } from "lucide-react-native"
 import { View } from "react-native"
 import { useLocale, useTranslations } from "use-intl"
 
@@ -18,6 +18,7 @@ export default function SettingsScreen() {
   const t = useTranslations()
   const locale = useLocale()
   const profile = useProfile()
+  const language = t("LanguageSwitcher.locale", { locale })
 
   return (
     <TabScreen>
@@ -45,6 +46,16 @@ export default function SettingsScreen() {
 
       <Card title={t("Mobile.settings.app")} padded={false}>
         <View>
+          <ListRow
+            icon={Languages}
+            label={t("Settings.fields.locale")}
+            value={
+              profile.locale
+                ? language
+                : t("Mobile.settings.phoneLanguage", { language })
+            }
+            onPress={() => router.push("/settings/language")}
+          />
           <ListRow
             icon={Clock}
             label={t("Settings.fields.timezone")}
