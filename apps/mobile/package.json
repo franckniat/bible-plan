@@ -12,7 +12,8 @@
     "lint": "eslint --max-warnings 0",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "icons": "node scripts/icons.mjs"
   },
   "dependencies": {
     "@workspace/core": "workspace:*",
@@ -35,6 +36,7 @@
     "@types/react": "~19.3.0",
     "@workspace/eslint-config": "workspace:*",
     "eslint": "^10",
+    "sharp": "^0.35.5",
     "typescript": "~6.0.3",
     "vitest": "catalog:"
   }

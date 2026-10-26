@@ -6,14 +6,18 @@ import { useColors } from "@/theme/use-colors"
 /** A centred screen with a title, used until each screen gets its content. */
 export function Screen({
   title,
+  header,
   children,
 }: {
   title: string
+  /** Shown above the title, e.g. the logo. */
+  header?: ReactNode
   children?: ReactNode
 }) {
   const colors = useColors()
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {header}
       <Text style={[styles.title, { color: colors.foreground }]}>{title}</Text>
       {children}
     </View>
