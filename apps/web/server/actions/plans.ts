@@ -19,7 +19,7 @@ import { prisma } from "@workspace/db"
 
 import { redirect } from "@/i18n/navigation"
 import { syncAchievementsQuietly } from "@/server/services/achievements"
-import { recordActivity } from "@/server/services/activity"
+import { refreshActivity } from "@/server/services/activity"
 import { createGroupPlan } from "@/server/services/group-plans"
 import {
   applyCatchUp,
@@ -100,14 +100,12 @@ export async function setReadingProgressAction(
   const ok = await setReadingProgress(prisma, user.id, readingId, read)
   if (ok) {
     // A reading counts for the streak, in the day of the user.
-    await recordActivity(prisma, user.id, getToday(user.timezone), {
-      readings: read ? 1 : -1,
-    }).catch((error) => console.error("Recording activity failed", error))
+    await refreshActivity(prisma, user.id, user.timezone).catch((error) =>
+      console.error("Recording activity failed", error)
+    )
     // A badge or trophy may be earned; computed after the response.
     if (read) {
-      after(() =>
-        syncAchievementsQuietly(prisma, user)
-      )
+      after(() => syncAchievementsQuietly(prisma, user))
     }
     // Progress shows on Today, the plan list and the plan page.
     revalidatePath("/[locale]", "layout")

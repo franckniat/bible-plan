@@ -5,14 +5,13 @@ import { after } from "next/server"
 import { z } from "zod"
 
 import {
-  getToday,
   meditationNoteInputSchema,
   meditationSessionInputSchema,
 } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
 import { syncAchievementsQuietly } from "@/server/services/achievements"
-import { recordActivity } from "@/server/services/activity"
+import { refreshActivity } from "@/server/services/activity"
 import {
   createNote,
   deleteNote,
@@ -43,14 +42,9 @@ export async function saveMeditationSessionAction(
     const sessionId = await saveMeditationSession(prisma, user.id, parsed.data)
     // A time of prayer counts as a prayer and as time prayed; a meditation as
     // time meditated.
-    await recordActivity(
-      prisma,
-      user.id,
-      getToday(user.timezone),
-      parsed.data.kind === "PRAYER"
-        ? { prayers: 1, prayerSeconds: parsed.data.durationSeconds }
-        : { meditationSeconds: parsed.data.durationSeconds }
-    ).catch((error) => console.error("Recording activity failed", error))
+    await refreshActivity(prisma, user.id, user.timezone).catch((error) =>
+      console.error("Recording activity failed", error)
+    )
     after(() => syncAchievementsQuietly(prisma, user))
     revalidatePath("/[locale]", "layout")
     return { ok: true, sessionId }
@@ -82,9 +76,7 @@ export async function saveNoteAction(
     if (id === null) {
       const result = await createNote(prisma, user.id, input)
       if (!result.ok) return { error: result.error }
-      after(() =>
-        syncAchievementsQuietly(prisma, user)
-      )
+      after(() => syncAchievementsQuietly(prisma, user))
       revalidatePath("/[locale]/notes", "page")
       return { ok: true, id: result.id }
     }

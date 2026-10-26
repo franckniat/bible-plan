@@ -1,25 +1,25 @@
 import "server-only"
 
-import type { IsoDate } from "@workspace/core"
+import {
+  computeActivityDays,
+  type ActivityDayTotals,
+  type IsoDate,
+} from "@workspace/core"
 import type { PrismaClient } from "@workspace/db"
 
 export type ActivityDb = Pick<PrismaClient, "activityDay">
 
-/** What a person did on a day of their own calendar. */
-export type ActivityDelta = {
-  readings?: number
-  prayers?: number
-  meditationSeconds?: number
-  prayerSeconds?: number
-}
+/** What refreshActivity reads and writes. */
+export type ActivityEventsDb = Pick<
+  PrismaClient,
+  | "activityDay"
+  | "readingProgress"
+  | "prayerLog"
+  | "meditationSession"
+  | "$transaction"
+>
 
-export type ActivityEntry = {
-  day: IsoDate
-  readings: number
-  prayers: number
-  meditationSeconds: number
-  prayerSeconds: number
-}
+export type ActivityEntry = ActivityDayTotals
 
 /** A calendar date as stored in a DATE column (midnight UTC). */
 function dateOnly(day: IsoDate): Date {
@@ -27,59 +27,56 @@ function dateOnly(day: IsoDate): Date {
 }
 
 /**
- * Adds to the activity of a day, creating it if needed. A negative number
- * takes back what was counted (a reading ticked off again) and never goes
- * under zero. Activity is a record of what happened, so a failure here must
- * not undo the reading, prayer or session that caused it: callers log it.
+ * Computes the activity of a person again from what they did (readings
+ * ticked off, prayers, timed sessions) and stores it, in their time zone.
+ * Run after each of these changes: the result depends only on the events,
+ * so running it again changes nothing and a reading ticked off again leaves
+ * the day it was read. Activity is a record of what happened, so a failure
+ * here must not undo the change that caused it: callers log it.
  */
-export async function recordActivity(
-  db: ActivityDb,
+export async function refreshActivity(
+  db: ActivityEventsDb,
   userId: string,
-  day: IsoDate,
-  delta: ActivityDelta
+  timeZone: string | null | undefined
 ): Promise<void> {
-  const {
-    readings = 0,
-    prayers = 0,
-    meditationSeconds = 0,
-    prayerSeconds = 0,
-  } = delta
-  const where = { userId_day: { userId, day: dateOnly(day) } }
-
-  if (
-    readings > 0 ||
-    prayers > 0 ||
-    meditationSeconds > 0 ||
-    prayerSeconds > 0
-  ) {
-    await db.activityDay.upsert({
-      where,
-      create: {
+  const [readings, prayers, sessions] = await Promise.all([
+    db.readingProgress.findMany({
+      where: { enrollment: { userId } },
+      select: { completedAt: true },
+    }),
+    db.prayerLog.findMany({ where: { userId }, select: { prayedAt: true } }),
+    db.meditationSession.findMany({
+      where: { userId },
+      select: { kind: true, durationSeconds: true, createdAt: true },
+    }),
+  ])
+  const days = computeActivityDays(
+    [
+      ...readings.map((row) => ({
+        type: "reading" as const,
+        at: row.completedAt,
+      })),
+      ...prayers.map((row) => ({ type: "prayer" as const, at: row.prayedAt })),
+      // A session counts on the day it was saved, at its end.
+      ...sessions.map((row) => ({
+        type: "session" as const,
+        kind: row.kind,
+        seconds: row.durationSeconds,
+        at: row.createdAt,
+      })),
+    ],
+    timeZone
+  )
+  await db.$transaction([
+    db.activityDay.deleteMany({ where: { userId } }),
+    db.activityDay.createMany({
+      data: days.map(({ day, ...totals }) => ({
         userId,
         day: dateOnly(day),
-        readings: Math.max(0, readings),
-        prayers: Math.max(0, prayers),
-        meditationSeconds: Math.max(0, meditationSeconds),
-        prayerSeconds: Math.max(0, prayerSeconds),
-      },
-      update: {
-        ...(readings > 0 ? { readings: { increment: readings } } : {}),
-        ...(prayers > 0 ? { prayers: { increment: prayers } } : {}),
-        ...(meditationSeconds > 0
-          ? { meditationSeconds: { increment: meditationSeconds } }
-          : {}),
-        ...(prayerSeconds > 0
-          ? { prayerSeconds: { increment: prayerSeconds } }
-          : {}),
-      },
-    })
-  }
-  if (readings < 0) {
-    await db.activityDay.updateMany({
-      where: { userId, day: dateOnly(day), readings: { gt: 0 } },
-      data: { readings: { decrement: Math.min(-readings, 1) } },
-    })
-  }
+        ...totals,
+      })),
+    }),
+  ])
 }
 
 const select = {

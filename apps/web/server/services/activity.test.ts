@@ -1,54 +1,63 @@
 import { describe, expect, it, vi } from "vitest"
 
-import type { ActivityDb } from "./activity"
-import { activityTotals, listActivity, recordActivity } from "./activity"
+import type { ActivityDb, ActivityEventsDb } from "./activity"
+import { activityTotals, listActivity, refreshActivity } from "./activity"
 
 const dbOf = (activityDay: Record<string, unknown>) =>
   ({ activityDay }) as unknown as ActivityDb
 
-describe("recordActivity", () => {
-  it("adds to the day of the person, creating it when needed", async () => {
-    const activityDay = { upsert: vi.fn().mockResolvedValue({}) }
-    await recordActivity(dbOf(activityDay), "user-1", "2026-10-20", {
-      prayers: 1,
-      meditationSeconds: 600,
-    })
-    expect(activityDay.upsert).toHaveBeenCalledWith({
-      where: {
-        userId_day: { userId: "user-1", day: new Date("2026-10-20T00:00:00Z") },
-      },
-      create: {
-        userId: "user-1",
-        day: new Date("2026-10-20T00:00:00Z"),
-        readings: 0,
-        prayers: 1,
-        meditationSeconds: 600,
-        prayerSeconds: 0,
-      },
-      update: {
-        prayers: { increment: 1 },
-        meditationSeconds: { increment: 600 },
-      },
-    })
-  })
-
-  it("takes back a reading without going under zero", async () => {
+describe("refreshActivity", () => {
+  it("stores the days computed from the events, in the person's time zone", async () => {
     const activityDay = {
-      upsert: vi.fn(),
-      updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+      deleteMany: vi.fn().mockReturnValue("delete"),
+      createMany: vi.fn().mockReturnValue("create"),
     }
-    await recordActivity(dbOf(activityDay), "user-1", "2026-10-20", {
-      readings: -1,
-    })
-    expect(activityDay.upsert).not.toHaveBeenCalled()
-    expect(activityDay.updateMany).toHaveBeenCalledWith({
-      where: {
-        userId: "user-1",
-        day: new Date("2026-10-20T00:00:00Z"),
-        readings: { gt: 0 },
+    const db = {
+      activityDay,
+      readingProgress: {
+        findMany: vi
+          .fn()
+          .mockResolvedValue([
+            { completedAt: new Date("2026-10-19T23:30:00Z") },
+            { completedAt: new Date("2026-10-20T08:00:00Z") },
+          ]),
       },
-      data: { readings: { decrement: 1 } },
+      prayerLog: {
+        findMany: vi
+          .fn()
+          .mockResolvedValue([{ prayedAt: new Date("2026-10-20T09:00:00Z") }]),
+      },
+      meditationSession: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            kind: "PRAYER",
+            durationSeconds: 900,
+            createdAt: new Date("2026-10-20T10:00:00Z"),
+          },
+        ]),
+      },
+      $transaction: vi.fn().mockResolvedValue([]),
+    } as unknown as ActivityEventsDb
+
+    await refreshActivity(db, "user-1", "Africa/Douala")
+
+    expect(activityDay.deleteMany).toHaveBeenCalledWith({
+      where: { userId: "user-1" },
     })
+    // 23:30 UTC on October 19 is already October 20 in Douala.
+    expect(activityDay.createMany).toHaveBeenCalledWith({
+      data: [
+        {
+          userId: "user-1",
+          day: new Date("2026-10-20T00:00:00Z"),
+          readings: 2,
+          prayers: 2,
+          meditationSeconds: 0,
+          prayerSeconds: 900,
+        },
+      ],
+    })
+    expect(db.$transaction).toHaveBeenCalledWith(["delete", "create"])
   })
 })
 
@@ -72,7 +81,12 @@ describe("listActivity", () => {
       ]),
     }
     expect(
-      await listActivity(dbOf(activityDay), "user-1", "2026-10-01", "2026-10-31")
+      await listActivity(
+        dbOf(activityDay),
+        "user-1",
+        "2026-10-01",
+        "2026-10-31"
+      )
     ).toEqual([
       {
         day: "2026-10-19",

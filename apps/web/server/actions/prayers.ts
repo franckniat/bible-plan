@@ -12,7 +12,7 @@ import {
 import { prisma } from "@workspace/db"
 
 import { syncAchievementsQuietly } from "@/server/services/achievements"
-import { recordActivity } from "@/server/services/activity"
+import { refreshActivity } from "@/server/services/activity"
 import { canShareWith } from "@/server/services/group-prayers"
 import {
   createPrayer,
@@ -79,9 +79,9 @@ export async function prayedAction(id: string): Promise<PrayerActionResult> {
   // A prayer counts for the streak, in the day of the user. The prayer is
   // already saved: a failure here only costs the count.
   if ("ok" in result) {
-    await recordActivity(prisma, user.id, getToday(user.timezone), {
-      prayers: 1,
-    }).catch((error) => console.error("Recording activity failed", error))
+    await refreshActivity(prisma, user.id, user.timezone).catch((error) =>
+      console.error("Recording activity failed", error)
+    )
     after(() => syncAchievementsQuietly(prisma, user))
   }
   return result
