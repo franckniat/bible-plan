@@ -77,7 +77,12 @@ describe("createPrayer", () => {
       create: vi.fn().mockResolvedValue({}),
     }
     expect(
-      await createPrayer(requestDb(prayerRequest), "user-1", input, "2026-10-20")
+      await createPrayer(
+        requestDb(prayerRequest),
+        "user-1",
+        input,
+        "2026-10-20"
+      )
     ).toEqual({ ok: true })
     // Without a start date, the request starts today.
     expect(prayerRequest.create).toHaveBeenCalledWith({
@@ -87,6 +92,24 @@ describe("createPrayer", () => {
         startedOn: new Date("2026-10-20T00:00:00Z"),
       },
     })
+  })
+
+  it("keeps the id the phone made", async () => {
+    const id = "0199f3a2-7c41-7b2e-9f10-3c5d8e6a4b21"
+    const prayerRequest = {
+      count: vi.fn().mockResolvedValue(0),
+      create: vi.fn().mockResolvedValue({}),
+    }
+    await createPrayer(
+      requestDb(prayerRequest),
+      "user-1",
+      input,
+      "2026-10-20",
+      {
+        id,
+      }
+    )
+    expect(prayerRequest.create.mock.calls[0]![0].data.id).toBe(id)
   })
 
   it("starts on the day the person chose", async () => {
@@ -111,7 +134,12 @@ describe("createPrayer", () => {
       create: vi.fn(),
     }
     expect(
-      await createPrayer(requestDb(prayerRequest), "user-1", input, "2026-10-20")
+      await createPrayer(
+        requestDb(prayerRequest),
+        "user-1",
+        input,
+        "2026-10-20"
+      )
     ).toEqual({ ok: false, error: "limit" })
     expect(prayerRequest.create).not.toHaveBeenCalled()
   })
@@ -170,7 +198,9 @@ describe("markPrayed", () => {
 
 describe("changes of a request", () => {
   it("marks an active request answered, on the day chosen, with its circumstances", async () => {
-    const prayerRequest = { updateMany: vi.fn().mockResolvedValue({ count: 1 }) }
+    const prayerRequest = {
+      updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+    }
     expect(
       await markAnswered(
         requestDb(prayerRequest),
@@ -191,7 +221,9 @@ describe("changes of a request", () => {
   })
 
   it("answers today when no day is given, and corrects an answer later", async () => {
-    const prayerRequest = { updateMany: vi.fn().mockResolvedValue({ count: 1 }) }
+    const prayerRequest = {
+      updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+    }
     await markAnswered(
       requestDb(prayerRequest),
       "user-1",
@@ -212,9 +244,16 @@ describe("changes of a request", () => {
   })
 
   it("reports a request that is not the user's as missing", async () => {
-    const prayerRequest = { updateMany: vi.fn().mockResolvedValue({ count: 0 }) }
+    const prayerRequest = {
+      updateMany: vi.fn().mockResolvedValue({ count: 0 }),
+    }
     expect(
-      await setPrayerStatus(requestDb(prayerRequest), "user-1", "p1", "ARCHIVED")
+      await setPrayerStatus(
+        requestDb(prayerRequest),
+        "user-1",
+        "p1",
+        "ARCHIVED"
+      )
     ).toEqual({ ok: false, error: "notFound" })
     expect(prayerRequest.updateMany).toHaveBeenCalledWith({
       where: { id: "p1", userId: "user-1" },
@@ -223,8 +262,12 @@ describe("changes of a request", () => {
   })
 
   it("deletes only the request of the user", async () => {
-    const prayerRequest = { deleteMany: vi.fn().mockResolvedValue({ count: 1 }) }
-    expect(await deletePrayer(requestDb(prayerRequest), "user-1", "p1")).toEqual({
+    const prayerRequest = {
+      deleteMany: vi.fn().mockResolvedValue({ count: 1 }),
+    }
+    expect(
+      await deletePrayer(requestDb(prayerRequest), "user-1", "p1")
+    ).toEqual({
       ok: true,
     })
     expect(prayerRequest.deleteMany).toHaveBeenCalledWith({

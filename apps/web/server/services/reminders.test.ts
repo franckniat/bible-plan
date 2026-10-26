@@ -60,6 +60,16 @@ describe("createReminder", () => {
     })
   })
 
+  it("keeps the id the phone made", async () => {
+    const id = "0199f3a2-7c41-7b2e-9f10-3c5d8e6a4b21"
+    const reminder = {
+      count: vi.fn().mockResolvedValue(0),
+      create: vi.fn().mockResolvedValue({ id }),
+    }
+    await createReminder(db(reminder), "user-1", input, { now, id })
+    expect(reminder.create.mock.calls[0]![0].data.id).toBe(id)
+  })
+
   it("keeps the email channel only when emails are enabled", async () => {
     const reminder = {
       count: vi.fn().mockResolvedValue(0),

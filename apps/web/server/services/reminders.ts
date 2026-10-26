@@ -76,13 +76,20 @@ export async function createReminder(
   db: RemindersDb,
   userId: string,
   input: ReminderInput,
-  options: WriteOptions = {}
+  options: WriteOptions & {
+    /** An id made by the phone (clientIdSchema); the database makes one otherwise. */
+    id?: string
+  } = {}
 ): Promise<ReminderResult<{ id: string }>> {
   const count = await db.reminder.count({ where: { userId } })
   if (count >= maxRemindersPerUser) return { ok: false, error: "limit" }
 
   const { id } = await db.reminder.create({
-    data: { userId, ...toData(input, options) },
+    data: {
+      ...(options.id ? { id: options.id } : {}),
+      userId,
+      ...toData(input, options),
+    },
     select: { id: true },
   })
   return { ok: true, value: { id } }

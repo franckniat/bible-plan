@@ -128,12 +128,19 @@ export async function createPrayer(
   db: Pick<PrismaClient, "prayerRequest">,
   userId: string,
   { startedOn, ...input }: PrayerRequestInput,
-  today: IsoDate
+  today: IsoDate,
+  /** An id made by the phone (clientIdSchema); the database makes one otherwise. */
+  { id }: { id?: string } = {}
 ): Outcome {
   const total = await db.prayerRequest.count({ where: { userId } })
   if (total >= maxPrayerRequestsPerUser) return { ok: false, error: "limit" }
   await db.prayerRequest.create({
-    data: { userId, ...input, startedOn: dateOnly(startedOn ?? today) },
+    data: {
+      ...(id ? { id } : {}),
+      userId,
+      ...input,
+      startedOn: dateOnly(startedOn ?? today),
+    },
   })
   return { ok: true }
 }

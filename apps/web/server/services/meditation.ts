@@ -48,10 +48,13 @@ export const maxNotesPerUser = 5000
 export async function saveMeditationSession(
   db: Pick<PrismaClient, "meditationSession">,
   userId: string,
-  input: MeditationSessionInput
+  input: MeditationSessionInput,
+  /** An id made by the phone (clientIdSchema); the database makes one otherwise. */
+  options: { id?: string } = {}
 ): Promise<string> {
   const { id } = await db.meditationSession.create({
     data: {
+      ...(options.id ? { id: options.id } : {}),
       userId,
       kind: input.kind,
       passage: input.passage,
@@ -138,12 +141,19 @@ function bookOf(passage: string): string {
 export async function createNote(
   db: Pick<PrismaClient, "meditationNote">,
   userId: string,
-  input: MeditationNoteInput
+  input: MeditationNoteInput,
+  /** An id made by the phone (clientIdSchema); the database makes one otherwise. */
+  options: { id?: string } = {}
 ): Promise<{ ok: true; id: string } | { ok: false; error: "limit" }> {
   const total = await db.meditationNote.count({ where: { userId } })
   if (total >= maxNotesPerUser) return { ok: false, error: "limit" }
   const { id } = await db.meditationNote.create({
-    data: { userId, ...input, book: bookOf(input.passage) },
+    data: {
+      ...(options.id ? { id: options.id } : {}),
+      userId,
+      ...input,
+      book: bookOf(input.passage),
+    },
     select: { id: true },
   })
   return { ok: true, id }
@@ -175,6 +185,8 @@ export async function deleteNote(
   userId: string,
   id: string
 ): Outcome {
-  const { count } = await db.meditationNote.deleteMany({ where: { id, userId } })
+  const { count } = await db.meditationNote.deleteMany({
+    where: { id, userId },
+  })
   return count === 1 ? { ok: true } : { ok: false, error: "notFound" }
 }

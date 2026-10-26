@@ -44,6 +44,16 @@ describe("notes", () => {
     })
   })
 
+  it("keeps the id the phone made", async () => {
+    const id = "0199f3a2-7c41-7b2e-9f10-3c5d8e6a4b21"
+    const meditationNote = {
+      count: vi.fn().mockResolvedValue(0),
+      create: vi.fn().mockResolvedValue({ id }),
+    }
+    await createNote(dbOf(meditationNote), "user-1", note, { id })
+    expect(meditationNote.create.mock.calls[0]![0].data.id).toBe(id)
+  })
+
   it("refuses past the limit", async () => {
     const meditationNote = {
       count: vi.fn().mockResolvedValue(maxNotesPerUser),
@@ -57,7 +67,9 @@ describe("notes", () => {
   })
 
   it("changes only a note of the user, and keeps its session", async () => {
-    const meditationNote = { updateMany: vi.fn().mockResolvedValue({ count: 1 }) }
+    const meditationNote = {
+      updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+    }
     await updateNote(dbOf(meditationNote), "user-1", "n1", {
       ...note,
       sessionId: "6f1d1c1e-8f6a-4a0e-9e0a-1f1c3c4d5e6f",
@@ -68,7 +80,9 @@ describe("notes", () => {
   })
 
   it("reports a note that is not the user's as missing", async () => {
-    const meditationNote = { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) }
+    const meditationNote = {
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
+    }
     expect(await deleteNote(dbOf(meditationNote), "user-1", "n1")).toEqual({
       ok: false,
       error: "notFound",

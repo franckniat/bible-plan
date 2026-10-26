@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  clientIdSchema,
   defaultLocale,
   isoDateSchema,
   localeSchema,
@@ -82,6 +83,25 @@ describe("weekdaysSchema", () => {
         weekdaysSchema.safeParse(value).success,
         JSON.stringify(value)
       ).toBe(false)
+    }
+  })
+})
+
+describe("clientIdSchema", () => {
+  it("takes the UUIDv7 a phone makes", () => {
+    expect(
+      clientIdSchema.safeParse("0199f3a2-7c41-7b2e-9f10-3c5d8e6a4b21").success
+    ).toBe(true)
+  })
+
+  it("refuses other UUID versions and anything else", () => {
+    for (const value of [
+      "3f2504e0-4f89-41d3-9a0c-0305e82c3301", // version 4
+      "0199f3a2-7c41-7b2e-9f10",
+      "not-an-id",
+      "",
+    ]) {
+      expect(clientIdSchema.safeParse(value).success).toBe(false)
     }
   })
 })
