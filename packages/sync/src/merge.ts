@@ -114,9 +114,11 @@ function compareWrites(a: RecordVersion, b: RecordVersion): number {
     Math.sign(Date.parse(a.updatedAt) - Date.parse(b.updatedAt)) ||
     // At the same time, a deletion wins: what was removed stays removed.
     Number(a.deleted) - Number(b.deleted) ||
-    // Then the smaller id, then the content: an arbitrary but fixed choice.
+    // Then the smaller id, the content and the time as written: an
+    // arbitrary but fixed choice, so that no two versions are ever equal.
     compare(b.id, a.id) ||
-    compare(JSON.stringify(a.record), JSON.stringify(b.record))
+    compare(JSON.stringify(a.record), JSON.stringify(b.record)) ||
+    compare(a.updatedAt, b.updatedAt)
   )
 }
 
@@ -128,7 +130,9 @@ function compareUnion(a: RecordVersion, b: RecordVersion): number {
   return (
     compare(unlocked(b), unlocked(a)) ||
     compare(b.id, a.id) ||
-    compare(JSON.stringify(a.record), JSON.stringify(b.record))
+    compare(JSON.stringify(a.record), JSON.stringify(b.record)) ||
+    // Two deletions of a badge (or two equal ones): the latest, as written.
+    compare(a.updatedAt, b.updatedAt)
   )
 }
 
