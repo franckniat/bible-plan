@@ -3,7 +3,10 @@ import * as SplashScreen from "expo-splash-screen"
 import { StatusBar } from "expo-status-bar"
 import { useEffect } from "react"
 import { useColorScheme } from "react-native"
+import { useTranslations } from "use-intl"
 
+import { Body, Screen } from "@/components/screen"
+import { useDatabase } from "@/db/migrate"
 import { I18nProvider } from "@/i18n/provider"
 import { usePreferences } from "@/lib/preferences"
 import { navigationTheme } from "@/theme/colors"
@@ -13,14 +16,26 @@ void SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   const fontsReady = useFonts()
+  const database = useDatabase()
+  const ready = fontsReady && (database.ready || database.error !== undefined)
   useEffect(() => {
-    if (fontsReady) void SplashScreen.hideAsync()
-  }, [fontsReady])
-  if (!fontsReady) return null
+    if (ready) void SplashScreen.hideAsync()
+  }, [ready])
+  if (!ready) return null
   return (
     <I18nProvider>
-      <Navigation />
+      {database.error ? <DatabaseError /> : <Navigation />}
     </I18nProvider>
+  )
+}
+
+/** The local database could not be brought up to date: nothing works. */
+function DatabaseError() {
+  const t = useTranslations("Mobile.database")
+  return (
+    <Screen title={t("errorTitle")}>
+      <Body>{t("error")}</Body>
+    </Screen>
   )
 }
 

@@ -1584,6 +1584,10 @@
         "none": "No reminder",
         "at": "Around {time}"
       }
+    },
+    "database": {
+      "errorTitle": "Something went wrong",
+      "error": "The app’s data could not be prepared. Close the app and open it again; if it happens again, write to us."
     }
   }
 }

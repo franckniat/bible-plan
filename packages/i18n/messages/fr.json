@@ -1584,6 +1584,10 @@
         "none": "Pas de rappel",
         "at": "Vers {time}"
       }
+    },
+    "database": {
+      "errorTitle": "Un problème est survenu",
+      "error": "Les données de l’application n’ont pas pu être préparées. Fermez l’application et rouvrez-la ; si cela recommence, écrivez-nous."
     }
   }
 }
