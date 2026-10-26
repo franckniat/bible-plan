@@ -1511,6 +1511,53 @@
     },
     "today": {
       "books": "{count} books · {first} → {last}"
+    },
+    "welcome": {
+      "skip": "Skip",
+      "next": "Next",
+      "start": "Get started",
+      "progress": "Screen {current} of {total}",
+      "slides": {
+        "welcome": {
+          "title": "Welcome to Bible Plan",
+          "body": "Read the Bible at your own pace, day after day."
+        },
+        "plans": {
+          "title": "A plan that fits you",
+          "body": "Pick a plan or make your own: the readings are spread over your days, and the plan adjusts if you fall behind."
+        },
+        "prayer": {
+          "title": "Pray and meditate",
+          "body": "Write down your prayer requests, take time to meditate on the day’s passage, and keep track of answered prayers."
+        },
+        "offline": {
+          "title": "Everything stays on your phone",
+          "body": "No account or connection needed. An account will only back up your data, if you want one."
+        }
+      }
+    },
+    "onboarding": {
+      "progress": "Step {current} of {total}",
+      "back": "Back",
+      "next": "Continue",
+      "finish": "Let’s go",
+      "language": {
+        "title": "Your language",
+        "description": "You can change it in the settings.",
+        "bible": "Your Bible"
+      },
+      "pace": {
+        "title": "Your reading pace"
+      },
+      "reminder": {
+        "title": "A daily reminder?",
+        "description": "A notification at the time you choose, so you don’t forget your reading.",
+        "morning": "In the morning",
+        "noon": "At noon",
+        "evening": "In the evening",
+        "none": "No reminder",
+        "at": "Around {time}"
+      }
     }
   }
 }

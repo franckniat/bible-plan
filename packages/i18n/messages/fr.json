@@ -1511,6 +1511,53 @@
     },
     "today": {
       "books": "{count} livres · {first} → {last}"
+    },
+    "welcome": {
+      "skip": "Passer",
+      "next": "Suivant",
+      "start": "Commencer",
+      "progress": "Écran {current} sur {total}",
+      "slides": {
+        "welcome": {
+          "title": "Bienvenue dans Bible Plan",
+          "body": "Lisez la Bible à votre rythme, jour après jour."
+        },
+        "plans": {
+          "title": "Un plan qui vous ressemble",
+          "body": "Choisissez un plan ou créez le vôtre : les lectures se répartissent sur vos jours, et le plan s’adapte si vous prenez du retard."
+        },
+        "prayer": {
+          "title": "Prier et méditer",
+          "body": "Notez vos sujets de prière, prenez un temps de méditation sur le passage du jour, et gardez la trace de ce qui est exaucé."
+        },
+        "offline": {
+          "title": "Tout reste sur votre téléphone",
+          "body": "Pas besoin de compte ni de connexion. Un compte servira seulement à sauvegarder vos données, si vous le souhaitez."
+        }
+      }
+    },
+    "onboarding": {
+      "progress": "Étape {current} sur {total}",
+      "back": "Retour",
+      "next": "Continuer",
+      "finish": "C’est parti",
+      "language": {
+        "title": "Votre langue",
+        "description": "Vous pourrez la changer dans les réglages.",
+        "bible": "Votre Bible"
+      },
+      "pace": {
+        "title": "Votre rythme de lecture"
+      },
+      "reminder": {
+        "title": "Un rappel chaque jour ?",
+        "description": "Une notification à l’heure choisie, pour ne pas oublier votre lecture.",
+        "morning": "Le matin",
+        "noon": "À midi",
+        "evening": "Le soir",
+        "none": "Pas de rappel",
+        "at": "Vers {time}"
+      }
     }
   }
 }
