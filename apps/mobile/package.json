@@ -49,6 +49,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@types/node": "^20",
     "@types/react": "~19.3.0",
     "@types/sql.js": "^1.4.11",
     "@workspace/eslint-config": "workspace:*",
