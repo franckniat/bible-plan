@@ -36,6 +36,9 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Check the mobile app's Expo dependencies
+        run: pnpm --filter mobile check:expo
+
       - name: Build
         run: pnpm build
         env:

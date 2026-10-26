@@ -13,13 +13,15 @@
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "icons": "node scripts/icons.mjs"
+    "icons": "node scripts/icons.mjs",
+    "check:expo": "expo-doctor"
   },
   "dependencies": {
     "@workspace/core": "workspace:*",
     "@workspace/i18n": "workspace:*",
     "expo": "~58.0.19",
     "expo-constants": "~58.0.13",
+    "expo-font": "~58.0.10",
     "expo-linking": "~58.0.14",
     "expo-localization": "~58.0.5",
     "expo-router": "~58.0.26",
@@ -39,6 +41,7 @@
     "@types/react": "~19.3.0",
     "@workspace/eslint-config": "workspace:*",
     "eslint": "^10",
+    "expo-doctor": "^1.21.5",
     "sharp": "^0.35.5",
     "typescript": "~6.0.3",
     "vitest": "catalog:"
