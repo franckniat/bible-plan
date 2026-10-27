@@ -21,6 +21,7 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  Columns2,
   Copy,
   Share2,
   Type,
@@ -271,6 +272,29 @@ export default function ReadScreen() {
                       `« ${text} »\n${reference} ${abbreviation}`
                     )
                     setCopied(key)
+                  }}
+                />
+                <PanelAction
+                  icon={Columns2}
+                  label={t("Reader.selection.compare")}
+                  onPress={() => {
+                    // The other versions number some verses differently:
+                    // compare the verses of the canon.
+                    const canon = canonVersesOf(
+                      passage.book,
+                      selection.chapter,
+                      selection.verses,
+                      versification
+                    )
+                    router.push({
+                      pathname: "/compare",
+                      params: {
+                        book: passage.book,
+                        chapter: String(selection.chapter),
+                        from: String(canon[0]),
+                        to: String(canon.at(-1)),
+                      },
+                    })
                   }}
                 />
                 <PanelAction
