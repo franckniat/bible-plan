@@ -8,6 +8,13 @@
       "when": 1793056316399,
       "tag": "0000_profile_and_outbox",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1793129494000,
+      "tag": "0001_highlights",
+      "breakpoints": true
     }
   ]
 }

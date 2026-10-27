@@ -1,6 +1,9 @@
 import {
+  canonVersesOf,
+  colorsInVersion,
   getBibleVersion,
   selectionReference,
+  sharedColor,
   toggleVerse,
   type VerseSelection,
 } from "@workspace/bible-data"
@@ -25,10 +28,12 @@ import { useLocale, useTranslations } from "use-intl"
 
 import { usePassage } from "@/bible/use-passage"
 import { ChapterText } from "@/components/bible/chapter-text"
+import { HighlightRow } from "@/components/bible/highlight-row"
 import { SelectionPanel } from "@/components/bible/selection-panel"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { usePreferences } from "@/lib/preferences"
+import { highlightVerses, useHighlights } from "@/repositories/highlights"
 import { bibleVersionOf, useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
@@ -53,6 +58,20 @@ export default function ReadScreen() {
   const pick = (chapter: number, verse: number) =>
     setPicked({ slug, selection: toggleVerse(selection, chapter, verse) })
   const clear = () => setPicked({ slug, selection: null })
+  const book = passage?.book ?? "Gen"
+  const versification = getBibleVersion(version)
+  const highlighted = useHighlights(
+    book,
+    passage
+      ? Array.from(
+          { length: passage.end.chapter - passage.start.chapter + 1 },
+          (_, index) => passage.start.chapter + index
+        )
+      : []
+  )
+  /** The colors of the verses of a chapter, in the version's numbering. */
+  const colorsOf = (chapter: number, verses: readonly number[]) =>
+    colorsInVersion(highlighted, book, chapter, verses, versification)
 
   if (!passage) {
     return (
@@ -120,6 +139,10 @@ export default function ReadScreen() {
                 version={version}
                 verses={verses}
                 look={reader}
+                highlights={colorsOf(
+                  chapter,
+                  verses.map(([number]) => number)
+                )}
                 selected={
                   selection?.chapter === chapter ? selection.verses : []
                 }
@@ -180,7 +203,27 @@ export default function ReadScreen() {
           reference={selectionReference(passage.book, selection, locale)}
           version={getBibleVersion(version).abbreviation}
           onClose={clear}
-        />
+        >
+          <HighlightRow
+            current={sharedColor(
+              colorsOf(selection.chapter, selection.verses),
+              selection.verses
+            )}
+            onPick={(color) =>
+              highlightVerses({
+                book: passage.book,
+                chapter: selection.chapter,
+                verses: canonVersesOf(
+                  passage.book,
+                  selection.chapter,
+                  selection.verses,
+                  versification
+                ),
+                color,
+              })
+            }
+          />
+        </SelectionPanel>
       ) : null}
     </>
   )

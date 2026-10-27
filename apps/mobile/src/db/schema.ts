@@ -1,4 +1,9 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import {
+  integer,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core"
 
 /**
  * The local database: the source of truth of every screen, with or without an
@@ -41,3 +46,24 @@ export const outbox = sqliteTable("outbox", {
   data: text("data"),
   clientUpdatedAt: text("client_updated_at").notNull(),
 })
+
+/**
+ * Highlighted verses, numbered like the canon (synced, @workspace/sync
+ * "highlight"): one color per verse.
+ */
+export const highlights = sqliteTable(
+  "highlights",
+  {
+    id: text("id").primaryKey(),
+    book: text("book").notNull(),
+    chapter: integer("chapter").notNull(),
+    verse: integer("verse").notNull(),
+    color: text("color", {
+      enum: ["YELLOW", "ORANGE", "GREEN", "BLUE", "PURPLE", "PINK"],
+    }).notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("highlights_verse").on(table.book, table.chapter, table.verse),
+  ]
+)
