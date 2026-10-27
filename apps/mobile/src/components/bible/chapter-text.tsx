@@ -1,5 +1,5 @@
 import { displayVerse, type BibleVersionId } from "@workspace/bible-data"
-import { Fragment } from "react"
+import type { HighlightColor } from "@workspace/core"
 import { Text, View } from "react-native"
 
 import type { Verse } from "@/bible/texts"
@@ -13,19 +13,37 @@ export type ReaderLook = Preferences["reader"]
 
 const fontSizes = [16, 18, 21, 24] as const
 
+/** The highlight colors of the web (Tailwind 300), dark text on them. */
+export const highlightBackgrounds: Record<HighlightColor, string> = {
+  YELLOW: "#fde047",
+  ORANGE: "#fdba74",
+  GREEN: "#86efac",
+  BLUE: "#7dd3fc",
+  PURPLE: "#c4b5fd",
+  PINK: "#f9a8d4",
+}
+
 /**
  * Verses in Lora, numbered in gold, flowing or one per line, as on the web:
  * paragraphs and the translators' words in italics (King James Version)
- * through bible-data's displayVerse.
+ * through bible-data's displayVerse. Verses can be tapped to select them,
+ * and show their highlight color.
  */
 export function ChapterText({
   version,
   verses,
   look,
+  highlights = {},
+  selected = [],
+  onPressVerse,
 }: {
   version: BibleVersionId
   verses: readonly Verse[]
   look: ReaderLook
+  /** The color of each highlighted verse, in the version's numbering. */
+  highlights?: Readonly<Record<number, HighlightColor>>
+  selected?: readonly number[]
+  onPressVerse?: (verse: number) => void
 }) {
   const styles = useThemedStyles(themedStyles)
   const fontSize = fontSizes[look.size]
@@ -33,8 +51,21 @@ export function ChapterText({
 
   const verse = ([number, words]: Verse, index: number, flow: boolean) => {
     const { paragraph, segments } = displayVerse(version, words)
+    const color = highlights[number]
+    const isSelected = selected.includes(number)
     return (
-      <Fragment key={number}>
+      <Text
+        key={number}
+        onPress={onPressVerse ? () => onPressVerse(number) : undefined}
+        accessibilityState={onPressVerse ? { selected: isSelected } : undefined}
+        style={[
+          color && {
+            backgroundColor: highlightBackgrounds[color],
+            color: "#0a0a0a",
+          },
+          isSelected && styles.selected,
+        ]}
+      >
         {/* A new paragraph starts on its own line, after text shown above. */}
         {flow && paragraph && index > 0 ? "\n" : null}
         {look.verseNumbers ? (
@@ -48,7 +79,7 @@ export function ChapterText({
           </Text>
         ))}
         {flow ? " " : null}
-      </Fragment>
+      </Text>
     )
   }
 
@@ -74,5 +105,11 @@ const themedStyles = createThemedStyles((colors) => ({
   text: { fontFamily: fontFamily.scripture, color: colors.foreground },
   italic: { fontFamily: fontFamily.scriptureItalic },
   number: { fontFamily: fontFamily.semibold, color: colors.accent },
+  // Selected verses are underlined, as on the web.
+  selected: {
+    textDecorationLine: "underline",
+    textDecorationStyle: "dotted",
+    textDecorationColor: colors.accent,
+  },
   lines: { gap: spacing.sm },
 }))

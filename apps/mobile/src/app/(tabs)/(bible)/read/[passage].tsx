@@ -1,4 +1,10 @@
 import {
+  getBibleVersion,
+  selectionReference,
+  toggleVerse,
+  type VerseSelection,
+} from "@workspace/bible-data"
+import {
   adjacentChapter,
   coversWholeChapters,
   formatPassage,
@@ -14,10 +20,12 @@ import {
   Text,
   View,
 } from "react-native"
+import { useState } from "react"
 import { useLocale, useTranslations } from "use-intl"
 
 import { usePassage } from "@/bible/use-passage"
 import { ChapterText } from "@/components/bible/chapter-text"
+import { SelectionPanel } from "@/components/bible/selection-panel"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { usePreferences } from "@/lib/preferences"
@@ -36,6 +44,15 @@ export default function ReadScreen() {
   const version = bibleVersionOf(profile.bibleVersion, locale)
   const passage = parsePassageSlug(slug)
   const state = usePassage(passage, version)
+  // Verses picked in this passage; another passage starts with none.
+  const [picked, setPicked] = useState<{
+    slug: string
+    selection: VerseSelection | null
+  }>({ slug, selection: null })
+  const selection = picked.slug === slug ? picked.selection : null
+  const pick = (chapter: number, verse: number) =>
+    setPicked({ slug, selection: toggleVerse(selection, chapter, verse) })
+  const clear = () => setPicked({ slug, selection: null })
 
   if (!passage) {
     return (
@@ -99,7 +116,15 @@ export default function ReadScreen() {
                   {t("Reader.chapter", { chapter })}
                 </Text>
               ) : null}
-              <ChapterText version={version} verses={verses} look={reader} />
+              <ChapterText
+                version={version}
+                verses={verses}
+                look={reader}
+                selected={
+                  selection?.chapter === chapter ? selection.verses : []
+                }
+                onPressVerse={(verse) => pick(chapter, verse)}
+              />
             </View>
           ))
         )}
@@ -146,13 +171,24 @@ export default function ReadScreen() {
             ) : null}
           </View>
         ) : null}
+        {/* Room for the panel, so the last verses can be picked too. */}
+        {selection ? <View style={styles.panelRoom} /> : null}
       </TabScreen>
+
+      {selection ? (
+        <SelectionPanel
+          reference={selectionReference(passage.book, selection, locale)}
+          version={getBibleVersion(version).abbreviation}
+          onClose={clear}
+        />
+      ) : null}
     </>
   )
 }
 
 const styles = StyleSheet.create({
   chapter: { gap: spacing.sm },
+  panelRoom: { height: 220 },
   navigation: {
     flexDirection: "row",
     justifyContent: "space-between",
