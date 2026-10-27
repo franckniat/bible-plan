@@ -3,6 +3,7 @@ import {
   colorsInVersion,
   getBibleVersion,
   selectionReference,
+  selectionText,
   sharedColor,
   toggleVerse,
   type VerseSelection,
@@ -15,20 +16,30 @@ import {
   parsePassageSlug,
 } from "@workspace/core"
 import { router, Stack, useLocalSearchParams } from "expo-router"
-import { ChevronLeft, ChevronRight, Type } from "lucide-react-native"
+import * as Clipboard from "expo-clipboard"
+import {
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Share2,
+  Type,
+} from "lucide-react-native"
 import {
   ActivityIndicator,
   Pressable,
+  Share,
   StyleSheet,
   Text,
   View,
 } from "react-native"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useLocale, useTranslations } from "use-intl"
 
 import { usePassage } from "@/bible/use-passage"
 import { ChapterText } from "@/components/bible/chapter-text"
 import { HighlightRow } from "@/components/bible/highlight-row"
+import { PanelAction } from "@/components/bible/panel-action"
 import { SelectionPanel } from "@/components/bible/selection-panel"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
@@ -58,6 +69,13 @@ export default function ReadScreen() {
   const pick = (chapter: number, verse: number) =>
     setPicked({ slug, selection: toggleVerse(selection, chapter, verse) })
   const clear = () => setPicked({ slug, selection: null })
+  // "Copied" shows for the selection it was for, and not for long.
+  const [copied, setCopied] = useState<string | null>(null)
+  useEffect(() => {
+    if (!copied) return
+    const timer = setTimeout(() => setCopied(null), 2500)
+    return () => clearTimeout(timer)
+  }, [copied])
   const book = passage?.book ?? "Gen"
   const versification = getBibleVersion(version)
   const highlighted = useHighlights(
@@ -198,7 +216,7 @@ export default function ReadScreen() {
         {selection ? <View style={styles.panelRoom} /> : null}
       </TabScreen>
 
-      {selection ? (
+      {selection && state.status === "ready" ? (
         <SelectionPanel
           reference={selectionReference(passage.book, selection, locale)}
           version={getBibleVersion(version).abbreviation}
@@ -223,6 +241,51 @@ export default function ReadScreen() {
               })
             }
           />
+          {(() => {
+            // The text as on the web: « … » then the reference and version.
+            const reference = selectionReference(
+              passage.book,
+              selection,
+              locale
+            )
+            const abbreviation = versification.abbreviation
+            const text = selectionText(
+              version,
+              selection,
+              state.text.chapters.find(
+                ({ chapter }) => chapter === selection.chapter
+              )?.verses ?? []
+            )
+            const key = `${selection.chapter}:${selection.verses.join(",")}`
+            return (
+              <>
+                <PanelAction
+                  icon={copied === key ? Check : Copy}
+                  label={
+                    copied === key
+                      ? t("Reader.selection.copied")
+                      : t("Reader.selection.copy")
+                  }
+                  onPress={async () => {
+                    await Clipboard.setStringAsync(
+                      `« ${text} »\n${reference} ${abbreviation}`
+                    )
+                    setCopied(key)
+                  }}
+                />
+                <PanelAction
+                  icon={Share2}
+                  label={t("Reader.selection.share")}
+                  onPress={() =>
+                    void Share.share({
+                      title: `${reference} ${abbreviation}`,
+                      message: `« ${text} » — ${reference} ${abbreviation}`,
+                    })
+                  }
+                />
+              </>
+            )
+          })()}
         </SelectionPanel>
       ) : null}
     </>
@@ -231,7 +294,7 @@ export default function ReadScreen() {
 
 const styles = StyleSheet.create({
   chapter: { gap: spacing.sm },
-  panelRoom: { height: 220 },
+  panelRoom: { height: 400 },
   navigation: {
     flexDirection: "row",
     justifyContent: "space-between",
