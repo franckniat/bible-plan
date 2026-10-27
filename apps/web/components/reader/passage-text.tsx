@@ -12,6 +12,11 @@ import {
   mapPassage,
   type BibleVersionId,
   type PassageText as Text,
+  canonVersesOf,
+  colorsInVersion,
+  sharedColor,
+  toggleVerse,
+  type VerseSelection,
 } from "@workspace/bible-data"
 import {
   chaptersPassage,
@@ -29,8 +34,6 @@ import {
 import { SelectionPanel } from "@/components/reader/selection-panel"
 import { useHighlights } from "@/components/reader/use-highlights"
 import { useRememberedComparison } from "@/components/reader/use-remembered-comparison"
-import { canonVersesOf, colorsInVersion, sharedColor } from "@/lib/highlights"
-import { toggleVerse, type VerseSelection } from "@/lib/verse-selection"
 import type { SavedHighlight } from "@/server/services/highlights"
 
 const fetchChapter = fetchChaptersFrom("/bible", {

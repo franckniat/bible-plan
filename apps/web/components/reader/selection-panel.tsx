@@ -5,44 +5,16 @@ import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useState, type ReactNode } from "react"
 
 import {
-  displayVerse,
   getBibleVersion,
+  selectionHref,
+  selectionReference,
+  selectionText,
   type BibleVersionId,
+  type VerseSelection,
 } from "@workspace/bible-data"
 import type { BookId, Locale } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
-
-import {
-  selectionHref,
-  selectionReference,
-  verseRanges,
-  type VerseSelection,
-} from "@/lib/verse-selection"
-
-/** The text of the selected verses; verses apart are separated by "…". */
-function selectionText(
-  version: BibleVersionId,
-  selection: VerseSelection,
-  verses: [number, string][]
-): string {
-  const text = new Map(
-    verses.map(([number, verse]) => [
-      number,
-      displayVerse(version, verse)
-        .segments.map((segment) => segment.text)
-        .join("")
-        .trim(),
-    ])
-  )
-  return verseRanges(selection.verses)
-    .map(([from, to]) =>
-      Array.from({ length: to - from + 1 }, (_, i) => text.get(from + i) ?? "")
-        .filter(Boolean)
-        .join(" ")
-    )
-    .join(" … ")
-}
 
 /** One action of the panel: an icon, a label, a full-width target. */
 function PanelAction({

@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest"
 
-import { getBibleVersion } from "@workspace/bible-data"
-
 import {
   canonVersesOf,
   colorsInVersion,
@@ -10,6 +8,7 @@ import {
   sharedColor,
   toSavedHighlights,
 } from "./highlights"
+import { getBibleVersion } from "./versions"
 
 const lsg = getBibleVersion("lsg1910")
 

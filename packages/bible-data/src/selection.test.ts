@@ -8,7 +8,7 @@ import {
   selectionReference,
   toggleVerse,
   verseRanges,
-} from "./verse-selection"
+} from "./selection"
 
 describe("toggleVerse", () => {
   it("adds verses, next to each other or not, keeping them sorted", () => {

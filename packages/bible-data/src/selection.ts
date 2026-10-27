@@ -1,4 +1,3 @@
-import { getBibleVersion, type BibleVersionId } from "@workspace/bible-data"
 import {
   chaptersPassage,
   formatPassage,
@@ -8,6 +7,9 @@ import {
   type BookId,
   type Locale,
 } from "@workspace/core"
+
+import { displayVerse } from "./text"
+import { getBibleVersion, type BibleVersionId } from "./versions"
 
 /**
  * Verses picked in one chapter, in the numbering of the version on screen:
@@ -128,4 +130,31 @@ export function selectionHref(
   }
   const slug = toPassageSlug(chaptersPassage(book, chapter))
   return `/read/${slug}?v=${version}&sel=${formatSelectionParam(verses)}`
+}
+
+/**
+ * The text of the selected verses, to copy or share: as shown (no "¶",
+ * no brackets), verses apart separated by "…".
+ */
+export function selectionText(
+  version: BibleVersionId,
+  selection: VerseSelection,
+  verses: readonly (readonly [number, string])[]
+): string {
+  const text = new Map(
+    verses.map(([number, verse]) => [
+      number,
+      displayVerse(version, verse)
+        .segments.map((segment) => segment.text)
+        .join("")
+        .trim(),
+    ])
+  )
+  return verseRanges(selection.verses)
+    .map(([from, to]) =>
+      Array.from({ length: to - from + 1 }, (_, i) => text.get(from + i) ?? "")
+        .filter(Boolean)
+        .join(" ")
+    )
+    .join(" … ")
 }

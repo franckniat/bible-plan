@@ -9,6 +9,7 @@ import {
   displayVerse,
   getBibleVersion,
   type BibleVersionId,
+  selectionReference,
 } from "@workspace/bible-data"
 import type { BookId, Locale } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
@@ -21,7 +22,6 @@ import {
   toggleComparedVersion,
   versesInVersion,
 } from "@/lib/compare"
-import { selectionReference } from "@/lib/verse-selection"
 
 type Column =
   | { version: BibleVersionId; verses: [number, string][] }

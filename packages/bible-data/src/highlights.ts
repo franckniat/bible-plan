@@ -1,6 +1,8 @@
-import { canonVerseOf, type BibleVersion } from "@workspace/bible-data"
 import type { BookId, HighlightColor } from "@workspace/core"
 import { highlightColors } from "@workspace/core"
+
+import { canonVerseOf } from "./versification"
+import type { BibleVersion } from "./versions"
 
 /** Highlights by verse of the canon: "John.3.16" is a color. */
 export type HighlightColors = Record<string, HighlightColor>

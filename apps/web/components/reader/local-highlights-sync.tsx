@@ -2,8 +2,9 @@
 
 import { useEffect } from "react"
 
+import { toSavedHighlights } from "@workspace/bible-data"
+
 import { useRouter } from "@/i18n/navigation"
-import { toSavedHighlights } from "@/lib/highlights"
 import {
   deviceHighlightsKey,
   parseDeviceHighlights,

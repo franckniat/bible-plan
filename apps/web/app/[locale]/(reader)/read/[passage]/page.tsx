@@ -1,8 +1,4 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  NotebookPen,
-} from "lucide-react"
+import { ChevronLeft, ChevronRight, NotebookPen } from "lucide-react"
 import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
@@ -13,6 +9,7 @@ import {
   isBibleVersionId,
   mapPassage,
   isPublicDomainNotice,
+  parseSelectionParam,
 } from "@workspace/bible-data"
 import {
   adjacentChapter,
@@ -39,7 +36,6 @@ import { VersionSwitch } from "@/components/reader/version-switch"
 import { Link, redirect } from "@/i18n/navigation"
 import { bibleVersionCookie, pickBibleVersion } from "@/lib/bible-version"
 import { formatCompareParam, parseCompareParam } from "@/lib/compare"
-import { parseSelectionParam } from "@/lib/verse-selection"
 import { listHighlights } from "@/server/services/highlights"
 import { getReadingForUser } from "@/server/services/plans"
 import { getPassageSnippet } from "@/lib/passage-snippet"

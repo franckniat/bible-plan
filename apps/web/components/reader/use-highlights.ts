@@ -2,13 +2,13 @@
 
 import { useCallback, useState, useSyncExternalStore } from "react"
 
-import type { BookId, HighlightColor } from "@workspace/core"
-
 import {
   highlightKey,
   isHighlightColor,
   type HighlightColors,
-} from "@/lib/highlights"
+} from "@workspace/bible-data"
+import type { BookId, HighlightColor } from "@workspace/core"
+
 import { setHighlightsAction } from "@/server/actions/highlights"
 import type { SavedHighlight } from "@/server/services/highlights"
 
