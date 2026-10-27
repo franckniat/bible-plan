@@ -38,6 +38,11 @@ jobs:
 
       - name: Check the mobile app's Expo dependencies
         run: pnpm --filter mobile check:expo
+        env:
+          # Every Expo patch release would turn CI red until pnpm's minimum
+          # release age lets us take it; the other checks still run, and
+          # `pnpm check:expo` locally still compares versions.
+          EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK: "1"
 
       - name: Build
         run: pnpm build
