@@ -25,7 +25,8 @@ export default function TabsLayout() {
           paddingTop: 6,
           paddingBottom: bottom,
         },
-        tabBarLabelStyle: { fontFamily: fontFamily.medium, fontSize: 12 },
+        // Small labels, as in the tab bars of iOS and Android.
+        tabBarLabelStyle: { fontFamily: fontFamily.medium, fontSize: 10 },
       }}
     >
       {tabs.map(({ name, label, icon: Icon }) => (
@@ -34,8 +35,8 @@ export default function TabsLayout() {
           name={name}
           options={{
             title: t(label),
-            tabBarIcon: ({ focused, color, size }) => (
-              <Icon size={size} color={focused ? colors.accent : color} />
+            tabBarIcon: ({ focused, color }) => (
+              <Icon size={22} color={focused ? colors.accent : color} />
             ),
           }}
         />
