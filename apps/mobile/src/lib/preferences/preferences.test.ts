@@ -22,6 +22,7 @@ describe("preferences", () => {
     expect(getPreferences()).toEqual({
       onboarded: false,
       reminder: "morning",
+      reader: { size: 1, verseNumbers: true, layout: "flow" },
     })
   })
 
@@ -29,12 +30,15 @@ describe("preferences", () => {
     const first = await load()
     first.setPreferences({ onboarded: true, reminder: "none" })
     const { getPreferences } = await load()
-    expect(getPreferences()).toEqual({ onboarded: true, reminder: "none" })
+    expect(getPreferences()).toMatchObject({
+      onboarded: true,
+      reminder: "none",
+    })
   })
 
   it("replaces unreadable or unknown values by the defaults", async () => {
     saved.set("preferences", '{"onboarded":"yes","reminder":"midnight"}')
-    expect((await load()).getPreferences()).toEqual({
+    expect((await load()).getPreferences()).toMatchObject({
       onboarded: false,
       reminder: "morning",
     })

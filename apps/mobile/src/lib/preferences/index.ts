@@ -16,6 +16,14 @@ const preferencesSchema = z.object({
   /** The welcome screens and the onboarding are done. */
   onboarded: z.boolean().catch(false),
   reminder: z.enum(["morning", "noon", "evening", "none"]).catch("morning"),
+  /** How the reader shows the text, on this phone (as on the web). */
+  reader: z
+    .object({
+      size: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
+      verseNumbers: z.boolean(),
+      layout: z.enum(["flow", "lines"]),
+    })
+    .catch({ size: 1, verseNumbers: true, layout: "flow" }),
 })
 
 export type Preferences = z.infer<typeof preferencesSchema>

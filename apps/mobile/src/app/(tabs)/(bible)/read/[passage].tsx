@@ -6,14 +6,21 @@ import {
   parsePassageSlug,
 } from "@workspace/core"
 import { router, Stack, useLocalSearchParams } from "expo-router"
-import { ChevronLeft, ChevronRight } from "lucide-react-native"
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native"
+import { ChevronLeft, ChevronRight, Type } from "lucide-react-native"
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native"
 import { useLocale, useTranslations } from "use-intl"
 
 import { usePassage } from "@/bible/use-passage"
-import { ChapterText, defaultReaderLook } from "@/components/bible/chapter-text"
+import { ChapterText } from "@/components/bible/chapter-text"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
+import { usePreferences } from "@/lib/preferences"
 import { bibleVersionOf, useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
@@ -25,6 +32,7 @@ export default function ReadScreen() {
   const locale = useLocale()
   const colors = useColors()
   const profile = useProfile()
+  const { reader } = usePreferences()
   const version = bibleVersionOf(profile.bibleVersion, locale)
   const passage = parsePassageSlug(slug)
   const state = usePassage(passage, version)
@@ -58,7 +66,21 @@ export default function ReadScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: formatPassage(passage, locale) }} />
+      <Stack.Screen
+        options={{
+          title: formatPassage(passage, locale),
+          headerRight: () => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t("Reader.settings.open")}
+              hitSlop={12}
+              onPress={() => router.push("/read-settings")}
+            >
+              <Type size={22} color={colors.foreground} />
+            </Pressable>
+          ),
+        }}
+      />
       <TabScreen>
         {state.status === "loading" ? (
           <ActivityIndicator
@@ -77,7 +99,7 @@ export default function ReadScreen() {
                   {t("Reader.chapter", { chapter })}
                 </Text>
               ) : null}
-              <ChapterText verses={verses} look={defaultReaderLook} />
+              <ChapterText version={version} verses={verses} look={reader} />
             </View>
           ))
         )}
