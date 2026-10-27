@@ -8,4 +8,7 @@ config.resolver.sourceExts.push("sql")
 // The browser preview runs SQLite with sql.js, a WebAssembly file.
 config.resolver.assetExts.push("wasm")
 
+// The Bible versions of the app, packed by scripts/bible.mjs.
+config.resolver.assetExts.push("bible")
+
 module.exports = config

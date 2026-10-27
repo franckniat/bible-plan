@@ -41,3 +41,6 @@ example
 # generated native folders
 /ios
 /android
+
+# Bible texts packed by scripts/bible.mjs
+/assets/bible/
