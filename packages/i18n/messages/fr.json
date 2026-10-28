@@ -1597,6 +1597,12 @@
       "phoneLanguage": "Langue du téléphone ({language})",
       "developer": "Développement",
       "uiKit": "Galerie des composants"
+    },
+    "versions": {
+      "download": "Autres versions",
+      "downloading": "Téléchargement de {version}…",
+      "failed": "Le téléchargement de {version} a échoué. Vérifiez votre connexion et réessayez.",
+      "note": "À télécharger : environ 4 Mo chacune, lisibles ensuite sans connexion."
     }
   }
 }

@@ -1,8 +1,12 @@
-import { loadPassage, type PassageText } from "@workspace/bible-data"
+import {
+  loadPassage,
+  type BibleVersionId,
+  type PassageText,
+} from "@workspace/bible-data"
 import type { Passage } from "@workspace/core"
 import { useEffect, useState } from "react"
 
-import { readChapter, type BundledVersion } from "./texts"
+import { readChapter } from "./texts"
 
 export type PassageState =
   | { status: "loading" }
@@ -10,12 +14,12 @@ export type PassageState =
   | { status: "ready"; text: PassageText }
 
 /**
- * The text of a passage in a bundled version, offline. Verse numbers follow
+ * The text of a passage in a version on the phone, offline. Verse numbers follow
  * the version (bible-data maps them from the canon).
  */
 export function usePassage(
   passage: Passage | null,
-  version: BundledVersion
+  version: BibleVersionId
 ): PassageState {
   // The result is kept with what it is for: any other passage is loading.
   const [loaded, setLoaded] = useState<{

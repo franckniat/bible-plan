@@ -1,3 +1,4 @@
+import type { BibleVersionId } from "@workspace/bible-data"
 import type { Locale, ReadingSpeed } from "@workspace/core"
 import { eq } from "drizzle-orm"
 
@@ -5,25 +6,20 @@ import { notifyChange, useLocalQuery } from "@/db/changes"
 import { getDatabase } from "@/db/client"
 import { profile } from "@/db/schema"
 import type { Database } from "@/db/types"
+import { readableVersions } from "@/bible/versions"
 import { newId } from "@/lib/ids"
+import { getPreferences } from "@/lib/preferences"
 
-/** Bible versions bundled with the app (see @workspace/bible-data). */
-export const bibleVersionIds = ["lsg1910", "kjv"] as const
-export type BibleVersionId = (typeof bibleVersionIds)[number]
-
-/** Names of the bundled versions; proper names, not translated. */
-export const bibleVersionNames: Record<BibleVersionId, string> = {
-  lsg1910: "Louis Segond 1910",
-  kjv: "King James Version",
-}
-
-/** The version chosen, or the one of the app's language (as on the web). */
+/**
+ * The version chosen, when the phone can read it, or the one of the app's
+ * language (as on the web).
+ */
 export function bibleVersionOf(
   chosen: string | null,
   locale: Locale
 ): BibleVersionId {
   return (
-    bibleVersionIds.find((id) => id === chosen) ??
+    readableVersions(getPreferences().downloaded).find((id) => id === chosen) ??
     (locale === "fr" ? "lsg1910" : "kjv")
   )
 }

@@ -7,11 +7,8 @@ import { useLocale, useTranslations } from "use-intl"
 import { TabScreen } from "@/components/screen"
 import { Card } from "@/components/ui/card"
 import { ListRow } from "@/components/ui/list-row"
-import {
-  bibleVersionNames,
-  bibleVersionOf,
-  useProfile,
-} from "@/repositories/profile"
+import { versionName } from "@/bible/versions"
+import { bibleVersionOf, useProfile } from "@/repositories/profile"
 
 /** The settings of the local profile, without an account. */
 export default function SettingsScreen() {
@@ -27,9 +24,7 @@ export default function SettingsScreen() {
           <ListRow
             icon={BookOpen}
             label={t("Settings.bible.title")}
-            value={
-              bibleVersionNames[bibleVersionOf(profile.bibleVersion, locale)]
-            }
+            value={versionName(bibleVersionOf(profile.bibleVersion, locale))}
             onPress={() => router.push("/settings/bible")}
           />
           <ListRow

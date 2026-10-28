@@ -38,6 +38,7 @@ import { useEffect, useState } from "react"
 import { useLocale, useTranslations } from "use-intl"
 
 import { usePassage } from "@/bible/use-passage"
+import { versionName } from "@/bible/versions"
 import { ChapterText } from "@/components/bible/chapter-text"
 import { HeaderButton } from "@/components/bible/header-button"
 import { HighlightRow } from "@/components/bible/highlight-row"
@@ -48,11 +49,7 @@ import { Button } from "@/components/ui/button"
 import { usePreferences } from "@/lib/preferences"
 import { recordReading } from "@/lib/reading-history"
 import { highlightVerses, useHighlights } from "@/repositories/highlights"
-import {
-  bibleVersionNames,
-  bibleVersionOf,
-  useProfile,
-} from "@/repositories/profile"
+import { bibleVersionOf, useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
 
@@ -156,7 +153,7 @@ export function Reader({
               <HeaderButton
                 label={versification.abbreviation}
                 accessibilityLabel={t("Mobile.read.chooseVersion", {
-                  version: bibleVersionNames[version],
+                  version: versionName(version),
                 })}
                 onPress={() => router.push("/choose-version")}
               />

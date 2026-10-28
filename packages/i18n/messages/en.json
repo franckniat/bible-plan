@@ -1597,6 +1597,12 @@
       "phoneLanguage": "Phone language ({language})",
       "developer": "Development",
       "uiKit": "Component gallery"
+    },
+    "versions": {
+      "download": "Other versions",
+      "downloading": "Downloading {version}…",
+      "failed": "Downloading {version} failed. Check your connection and try again.",
+      "note": "To download: about 4 MB each, then readable offline."
     }
   }
 }

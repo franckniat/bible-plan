@@ -7,6 +7,10 @@ import { ensureProfile, getProfile, updateProfile } from "./profile"
 // The phone's random source is not needed: ids are given.
 vi.mock("@/lib/ids", () => ({ newId: () => "unused" }))
 vi.mock("@/db/client", () => ({ getDatabase: () => undefined }))
+// The preferences are kept by expo-sqlite, which needs the phone.
+vi.mock("@/lib/preferences/storage", () => ({
+  storage: { get: () => null, set: () => {} },
+}))
 
 const deviceId = () => "0199f3a2-7c41-7b2e-9f10-3c5d8e6a4b21"
 const now = new Date("2026-10-27T08:00:00.000Z")

@@ -25,13 +25,15 @@ const nextConfig: NextConfig = {
       },
       {
         // Bible chapters (public/bible): rarely change, cached for a day,
-        // then refreshed in the background.
+        // then refreshed in the background. Public-domain texts, readable
+        // from anywhere (the mobile app's browser preview downloads them).
         source: "/bible/:path*",
         headers: [
           {
             key: "Cache-Control",
             value: "public, max-age=86400, stale-while-revalidate=604800",
           },
+          { key: "Access-Control-Allow-Origin", value: "*" },
         ],
       },
     ]

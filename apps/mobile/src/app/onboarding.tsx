@@ -17,13 +17,8 @@ import {
   usePreferences,
   type Reminder,
 } from "@/lib/preferences"
-import {
-  bibleVersionIds,
-  bibleVersionNames,
-  bibleVersionOf,
-  setProfile,
-  useProfile,
-} from "@/repositories/profile"
+import { bundledVersions, versionName } from "@/bible/versions"
+import { bibleVersionOf, setProfile, useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { createThemedStyles, useThemedStyles } from "@/theme/themed-styles"
 import { useColors } from "@/theme/use-colors"
@@ -94,10 +89,10 @@ export default function OnboardingScreen() {
               {t("Mobile.onboarding.language.bible")}
             </Text>
             <View style={styles.chips}>
-              {bibleVersionIds.map((id) => (
+              {bundledVersions.map((id) => (
                 <Chip
                   key={id}
-                  label={bibleVersionNames[id]}
+                  label={versionName(id)}
                   selected={bibleVersion === id}
                   onPress={() => setProfile({ bibleVersion: id })}
                 />

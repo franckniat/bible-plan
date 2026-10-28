@@ -28,6 +28,8 @@ const preferencesSchema = z.object({
    * The passages read on this phone, the latest first (reading-history.ts):
    * the Bible tab opens on the first.
    */
+  /** The Bible versions downloaded on this phone (bible/downloads.ts). */
+  downloaded: z.array(z.string()).catch([]),
   history: z.array(z.object({ slug: z.string(), at: z.number() })).catch([]),
 })
 
