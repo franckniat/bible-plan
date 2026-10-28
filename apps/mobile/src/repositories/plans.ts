@@ -1,14 +1,17 @@
 import {
   allWeekdays,
   generatePlan,
+  isBookId,
   newPlanSchema,
   resolveNewPlan,
+  type BookId,
   type IsoDate,
   type Locale,
   type NewPlan,
+  type Passage,
 } from "@workspace/core"
 import type { SyncRecord } from "@workspace/sync"
-import { desc, eq, ne } from "drizzle-orm"
+import { and, asc, desc, eq, gte, lte, ne } from "drizzle-orm"
 
 import { useLocalQuery } from "@/db/changes"
 import { getDatabase } from "@/db/client"
@@ -158,4 +161,131 @@ export function usePlans(): PlanSummary[] {
 /** Creates a plan (for screens). */
 export function addPlan(request: NewPlan, locale: Locale): { id: string } {
   return createPlan(getDatabase(), request, locale)
+}
+
+export type PlanReadingView = {
+  id: string
+  track: number
+  passage: Passage
+  verses: number
+}
+
+export type PlanDayView = {
+  id: string
+  day: number
+  date: IsoDate
+  verses: number
+  readings: PlanReadingView[]
+}
+
+/** Names of a plan's tracks (null when unnamed), as stored with it. */
+function trackNamesOf(tracks: unknown): (Record<Locale, string> | null)[] {
+  return Array.isArray(tracks)
+    ? tracks.map((track: { name?: Record<Locale, string> }) =>
+        track && typeof track === "object" && track.name ? track.name : null
+      )
+    : []
+}
+
+/** Days of a plan with their readings, in order (all, or from `from` on). */
+export function planDaysOf(
+  db: Database,
+  planId: string,
+  { from, limit }: { from?: IsoDate; limit?: number } = {}
+): PlanDayView[] {
+  const where = and(
+    eq(planDays.planId, planId),
+    from ? gte(planDays.date, from) : undefined
+  )
+  const days = db
+    .select()
+    .from(planDays)
+    .where(where)
+    .orderBy(asc(planDays.dayNumber))
+    .limit(limit ?? -1)
+    .all()
+  const last = days.at(-1)
+  if (!last) return []
+  // Joined rather than listed by id: a long plan has thousands of days.
+  const readings = db
+    .select({ reading: planReadings })
+    .from(planReadings)
+    .innerJoin(planDays, eq(planDays.id, planReadings.dayId))
+    .where(and(where, lte(planDays.dayNumber, last.dayNumber)))
+    .orderBy(asc(planReadings.position))
+    .all()
+    .map((row) => row.reading)
+  const byDay = new Map<string, typeof readings>()
+  for (const reading of readings) {
+    byDay.set(reading.dayId, [...(byDay.get(reading.dayId) ?? []), reading])
+  }
+  return days.map((day) => ({
+    id: day.id,
+    day: day.dayNumber,
+    date: day.date,
+    verses: day.verses,
+    // Books are written by createPlan from the canon: a stored code is valid.
+    readings: (byDay.get(day.id) ?? [])
+      .filter((reading) => isBookId(reading.book))
+      .map((reading) => ({
+        id: reading.id,
+        track: reading.track,
+        passage: {
+          book: reading.book as BookId,
+          start: { chapter: reading.startChapter, verse: reading.startVerse },
+          end: { chapter: reading.endChapter, verse: reading.endVerse },
+        },
+        verses: reading.verses,
+      })),
+  }))
+}
+
+export type TodayPlan = {
+  id: string
+  title: string
+  trackNames: (Record<Locale, string> | null)[]
+  totalReadings: number
+  /** The reading day of today, or else the next one; null once the plan is over. */
+  day: PlanDayView | null
+  /** Whether `day` is today. */
+  isToday: boolean
+}
+
+/**
+ * Active plans with their readings for `today` (a date in the person's time
+ * zone), or their next reading day when today has none, as on the web.
+ */
+export function todayPlans(db: Database, today: IsoDate): TodayPlan[] {
+  return db
+    .select({
+      id: readingPlans.id,
+      title: readingPlans.title,
+      tracks: readingPlans.tracks,
+      totalReadings: readingPlans.totalReadings,
+    })
+    .from(planEnrollments)
+    .innerJoin(readingPlans, eq(readingPlans.id, planEnrollments.planId))
+    .where(eq(planEnrollments.status, "ACTIVE"))
+    .orderBy(asc(planEnrollments.id))
+    .all()
+    .map((plan) => {
+      const [day] = planDaysOf(db, plan.id, { from: today, limit: 1 })
+      return {
+        id: plan.id,
+        title: plan.title,
+        trackNames: trackNamesOf(plan.tracks),
+        totalReadings: plan.totalReadings,
+        day: day ?? null,
+        isToday: day?.date === today,
+      }
+    })
+}
+
+/** Today's readings of the active plans, kept up to date. */
+export function useTodayPlans(today: IsoDate): TodayPlan[] {
+  return useLocalQuery(
+    ["readingPlan", "planEnrollment"],
+    () => todayPlans(getDatabase(), today),
+    [today]
+  )
 }

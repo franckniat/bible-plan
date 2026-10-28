@@ -15,7 +15,7 @@ import type { Database } from "@/db/types"
 import { bookRange } from "@/lib/book-range"
 import { uuidv7 } from "@/lib/uuid"
 
-import { createPlan, listPlans } from "./plans"
+import { createPlan, listPlans, todayPlans } from "./plans"
 import { readOutbox } from "./write"
 
 vi.mock("@/lib/ids", () => ({ newId: () => "unused" }))
@@ -157,5 +157,39 @@ describe("createPlan", () => {
     ).toThrow(PlanGenerationError)
     expect(listPlans(db)).toEqual([])
     expect(readOutbox(db)).toEqual([])
+  })
+})
+
+describe("todayPlans", () => {
+  const request: NewPlan = {
+    source: "custom",
+    title: "Matthieu",
+    passages: bookRange("Matt", "Matt"),
+    // Monday, Wednesday and Friday.
+    activeWeekdays: [1, 3, 5],
+    startDate: "2026-11-02",
+    pace: { mode: "chaptersPerDay", chapters: 3 },
+  }
+
+  it("gives the readings of today", async () => {
+    const db = await testDatabase()
+    const { id } = createPlan(db, request, "fr", { now, id: ids() })
+    const [plan] = todayPlans(db, "2026-11-04")
+    expect(plan).toMatchObject({ id, title: "Matthieu", isToday: true })
+    expect(plan!.day).toMatchObject({ day: 2, date: "2026-11-04" })
+    // Chapters 4 to 6, read as one passage.
+    expect(plan!.day!.readings).toMatchObject([
+      { passage: { book: "Matt", start: { chapter: 4 }, end: { chapter: 6 } } },
+    ])
+  })
+
+  it("gives the next reading day when today has none, nothing once over", async () => {
+    const db = await testDatabase()
+    createPlan(db, request, "fr", { now, id: ids() })
+    expect(todayPlans(db, "2026-11-03")[0]).toMatchObject({
+      isToday: false,
+      day: { date: "2026-11-04" },
+    })
+    expect(todayPlans(db, "2027-01-01")[0]).toMatchObject({ day: null })
   })
 })

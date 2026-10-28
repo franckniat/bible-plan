@@ -1,23 +1,85 @@
-import { books, getBookName } from "@workspace/core"
-import { useLocale, useTranslations } from "use-intl"
+import { getToday } from "@workspace/core"
+import { router } from "expo-router"
+import { View } from "react-native"
+import { useFormatter, useTranslations } from "use-intl"
 
+import { ReadingRow } from "@/components/plans/reading-row"
 import { Body, TabScreen } from "@/components/screen"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { useTodayPlans, type TodayPlan } from "@/repositories/plans"
+import { useProfile } from "@/repositories/profile"
+import { spacing } from "@/theme/metrics"
 
-const first = books[0]!
-const last = books[books.length - 1]!
-
+/** The readings of the day in each plan followed. */
 export default function TodayScreen() {
-  const t = useTranslations("Mobile.today")
-  const locale = useLocale()
+  const t = useTranslations()
+  const profile = useProfile()
+  const plans = useTodayPlans(getToday(profile.timeZone))
+
+  if (plans.length === 0) {
+    return (
+      <TabScreen>
+        <Card title={t("App.today.empty.title")}>
+          <Body>{t("App.today.empty.description")}</Body>
+          <Button
+            title={t("App.today.empty.create")}
+            onPress={() => router.navigate("/plans")}
+          />
+        </Card>
+      </TabScreen>
+    )
+  }
   return (
     <TabScreen>
-      <Body>
-        {t("books", {
-          count: books.length,
-          first: getBookName(first.id, locale),
-          last: getBookName(last.id, locale),
-        })}
-      </Body>
+      {plans.map((plan) => (
+        <TodayPlanCard key={plan.id} plan={plan} />
+      ))}
     </TabScreen>
+  )
+}
+
+function TodayPlanCard({ plan }: { plan: TodayPlan }) {
+  const t = useTranslations()
+  const format = useFormatter()
+  const { day } = plan
+  const note = !day
+    ? t("App.today.finished")
+    : plan.isToday
+      ? null
+      : t("App.today.next", {
+          date: format.dateTime(new Date(`${day.date}T00:00:00.000Z`), {
+            dateStyle: "long",
+            timeZone: "UTC",
+          }),
+        })
+  return (
+    <Card
+      title={plan.title}
+      action={
+        day ? <Body>{t("PlanDetail.day", { day: day.day })}</Body> : undefined
+      }
+      padded={false}
+    >
+      {note ? (
+        <View style={{ paddingHorizontal: spacing.lg }}>
+          <Body>{note}</Body>
+        </View>
+      ) : null}
+      {day ? (
+        <View>
+          {day.readings.map((reading, index) => (
+            <ReadingRow
+              key={reading.id}
+              reading={reading}
+              trackNames={plan.trackNames}
+              last={index === day.readings.length - 1}
+            />
+          ))}
+        </View>
+      ) : (
+        <View style={{ paddingBottom: spacing.lg }} />
+      )}
+    </Card>
   )
 }
