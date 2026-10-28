@@ -20,6 +20,8 @@ import * as Clipboard from "expo-clipboard"
 import {
   Check,
   ChevronLeft,
+  Circle,
+  CircleCheck,
   ChevronRight,
   Columns2,
   Copy,
@@ -49,6 +51,7 @@ import { Button } from "@/components/ui/button"
 import { usePreferences } from "@/lib/preferences"
 import { recordReading } from "@/lib/reading-history"
 import { highlightVerses, useHighlights } from "@/repositories/highlights"
+import { markReading, useReadingDone } from "@/repositories/plans"
 import { bibleVersionOf, useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
@@ -60,9 +63,12 @@ import { useColors } from "@/theme/use-colors"
  */
 export function Reader({
   slug,
+  reading,
   onGo,
 }: {
   slug: string
+  /** The plan reading this passage is, to mark it as read from here. */
+  reading?: string
   onGo: (slug: string) => void
 }) {
   const t = useTranslations()
@@ -73,6 +79,7 @@ export function Reader({
   const version = bibleVersionOf(profile.bibleVersion, locale)
   const passage = parsePassageSlug(slug)
   const state = usePassage(passage, version)
+  const done = useReadingDone(reading)
   // Verses picked in this passage; another passage starts with none.
   const [picked, setPicked] = useState<{
     slug: string
@@ -218,6 +225,18 @@ export function Reader({
                 }`
               )
             }
+          />
+        ) : null}
+
+        {reading && state.status === "ready" ? (
+          <Button
+            title={t(done ? "Reader.reading.done" : "Reader.reading.markDone")}
+            icon={done ? CircleCheck : Circle}
+            variant={done ? "secondary" : "primary"}
+            accessibilityRole="checkbox"
+            accessibilityLabel={t("Reader.reading.markDone")}
+            accessibilityState={{ checked: done }}
+            onPress={() => markReading(reading, !done)}
           />
         ) : null}
 

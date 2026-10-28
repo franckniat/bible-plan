@@ -146,3 +146,25 @@ export const planEnrollments = sqliteTable(
   },
   (table) => [index("plan_enrollments_plan").on(table.planId)]
 )
+
+/** Readings marked as read (synced, "readingProgress"): one per reading. */
+export const readingProgress = sqliteTable(
+  "reading_progress",
+  {
+    id: text("id").primaryKey(),
+    enrollmentId: text("enrollment_id")
+      .notNull()
+      .references(() => planEnrollments.id, { onDelete: "cascade" }),
+    readingId: text("reading_id")
+      .notNull()
+      .references(() => planReadings.id, { onDelete: "cascade" }),
+    completedAt: text("completed_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("reading_progress_reading").on(
+      table.enrollmentId,
+      table.readingId
+    ),
+  ]
+)

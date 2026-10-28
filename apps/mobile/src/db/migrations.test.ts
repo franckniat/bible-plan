@@ -23,6 +23,7 @@ const appTables = [
   "plan_readings",
   "profile",
   "reading_plans",
+  "reading_progress",
 ]
 
 describe("local database migrations", () => {

@@ -15,7 +15,7 @@ import type { Database } from "@/db/types"
 import { bookRange } from "@/lib/book-range"
 import { uuidv7 } from "@/lib/uuid"
 
-import { createPlan, listPlans, todayPlans } from "./plans"
+import { createPlan, listPlans, setReadingRead, todayPlans } from "./plans"
 import { readOutbox } from "./write"
 
 vi.mock("@/lib/ids", () => ({ newId: () => "unused" }))
@@ -191,5 +191,44 @@ describe("todayPlans", () => {
       day: { date: "2026-11-04" },
     })
     expect(todayPlans(db, "2027-01-01")[0]).toMatchObject({ day: null })
+  })
+})
+
+describe("setReadingRead", () => {
+  it("marks a reading as read once, offline, and unmarks it", async () => {
+    const db = await testDatabase()
+    const next = ids()
+    createPlan(
+      db,
+      {
+        source: "custom",
+        title: "Jean",
+        passages: bookRange("John", "John"),
+        startDate: "2026-11-02",
+        pace: { mode: "chaptersPerDay", chapters: 1 },
+      },
+      "fr",
+      { now, id: next }
+    )
+    const today = () => todayPlans(db, "2026-11-04")[0]!
+    const reading = today().day!.readings[0]!
+    expect(reading.completedAt).toBeNull()
+    expect(today().lateReadings).toBe(2)
+
+    setReadingRead(db, reading.id, true, { now, id: next })
+    setReadingRead(db, reading.id, true, { now, id: next })
+    expect(today().day!.readings[0]!.completedAt).toBe(now.toISOString())
+    expect(today().completedReadings).toBe(1)
+
+    setReadingRead(db, reading.id, false, { now })
+    expect(today().completedReadings).toBe(0)
+    expect(
+      readOutbox(db)
+        .slice(2)
+        .map((change) => [change.table, change.op])
+    ).toEqual([
+      ["readingProgress", "upsert"],
+      ["readingProgress", "delete"],
+    ])
   })
 })

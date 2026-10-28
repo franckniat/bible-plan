@@ -46,7 +46,9 @@ function TodayPlanCard({ plan }: { plan: TodayPlan }) {
   const note = !day
     ? t("App.today.finished")
     : plan.isToday
-      ? null
+      ? day.readings.every((reading) => reading.completedAt)
+        ? t("App.today.done")
+        : null
       : t("App.today.next", {
           date: format.dateTime(new Date(`${day.date}T00:00:00.000Z`), {
             dateStyle: "long",

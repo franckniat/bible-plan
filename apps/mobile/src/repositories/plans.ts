@@ -11,7 +11,18 @@ import {
   type Passage,
 } from "@workspace/core"
 import type { SyncRecord } from "@workspace/sync"
-import { and, asc, desc, eq, gte, lte, ne } from "drizzle-orm"
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  gte,
+  isNull,
+  lt,
+  lte,
+  ne,
+} from "drizzle-orm"
 
 import { useLocalQuery } from "@/db/changes"
 import { getDatabase } from "@/db/client"
@@ -20,11 +31,15 @@ import {
   planEnrollments,
   planReadings,
   readingPlans,
+  readingProgress,
 } from "@/db/schema"
 import type { Database } from "@/db/types"
 import { newId } from "@/lib/ids"
 
 import { writeSynced } from "./write"
+
+/** The synced tables the plans' screens read. */
+const planTables = ["readingPlan", "planEnrollment", "readingProgress"]
 
 /** Rows inserted at once, under SQLite's limit of bound values. */
 const CHUNK = 80
@@ -153,9 +168,7 @@ export function listPlans(db: Database): PlanSummary[] {
 
 /** The plans followed, kept up to date. */
 export function usePlans(): PlanSummary[] {
-  return useLocalQuery(["readingPlan", "planEnrollment"], () =>
-    listPlans(getDatabase())
-  )
+  return useLocalQuery(planTables, () => listPlans(getDatabase()))
 }
 
 /** Creates a plan (for screens). */
@@ -168,6 +181,8 @@ export type PlanReadingView = {
   track: number
   passage: Passage
   verses: number
+  /** When it was marked as read, or null. */
+  completedAt: string | null
 }
 
 export type PlanDayView = {
@@ -208,13 +223,17 @@ export function planDaysOf(
   if (!last) return []
   // Joined rather than listed by id: a long plan has thousands of days.
   const readings = db
-    .select({ reading: planReadings })
+    .select({
+      reading: planReadings,
+      completedAt: readingProgress.completedAt,
+    })
     .from(planReadings)
     .innerJoin(planDays, eq(planDays.id, planReadings.dayId))
+    .leftJoin(readingProgress, eq(readingProgress.readingId, planReadings.id))
     .where(and(where, lte(planDays.dayNumber, last.dayNumber)))
     .orderBy(asc(planReadings.position))
     .all()
-    .map((row) => row.reading)
+    .map((row) => ({ ...row.reading, completedAt: row.completedAt }))
   const byDay = new Map<string, typeof readings>()
   for (const reading of readings) {
     byDay.set(reading.dayId, [...(byDay.get(reading.dayId) ?? []), reading])
@@ -236,6 +255,7 @@ export function planDaysOf(
           end: { chapter: reading.endChapter, verse: reading.endVerse },
         },
         verses: reading.verses,
+        completedAt: reading.completedAt,
       })),
   }))
 }
@@ -245,6 +265,9 @@ export type TodayPlan = {
   title: string
   trackNames: (Record<Locale, string> | null)[]
   totalReadings: number
+  completedReadings: number
+  /** Unread readings planned before today. */
+  lateReadings: number
   /** The reading day of today, or else the next one; null once the plan is over. */
   day: PlanDayView | null
   /** Whether `day` is today. */
@@ -275,6 +298,8 @@ export function todayPlans(db: Database, today: IsoDate): TodayPlan[] {
         title: plan.title,
         trackNames: trackNamesOf(plan.tracks),
         totalReadings: plan.totalReadings,
+        completedReadings: completedReadings(db, plan.id),
+        lateReadings: lateReadings(db, plan.id, today),
         day: day ?? null,
         isToday: day?.date === today,
       }
@@ -283,9 +308,118 @@ export function todayPlans(db: Database, today: IsoDate): TodayPlan[] {
 
 /** Today's readings of the active plans, kept up to date. */
 export function useTodayPlans(today: IsoDate): TodayPlan[] {
+  return useLocalQuery(planTables, () => todayPlans(getDatabase(), today), [
+    today,
+  ])
+}
+
+/** Readings of a plan marked as read. */
+function completedReadings(db: Database, planId: string): number {
+  const [row] = db
+    .select({ count: count() })
+    .from(readingProgress)
+    .innerJoin(
+      planEnrollments,
+      eq(planEnrollments.id, readingProgress.enrollmentId)
+    )
+    .where(eq(planEnrollments.planId, planId))
+    .all()
+  return row?.count ?? 0
+}
+
+/** Readings of a plan planned before `today` and not read yet. */
+function lateReadings(db: Database, planId: string, today: IsoDate): number {
+  const [row] = db
+    .select({ count: count() })
+    .from(planReadings)
+    .innerJoin(planDays, eq(planDays.id, planReadings.dayId))
+    .leftJoin(readingProgress, eq(readingProgress.readingId, planReadings.id))
+    .where(
+      and(
+        eq(planDays.planId, planId),
+        lt(planDays.date, today),
+        isNull(readingProgress.id)
+      )
+    )
+    .all()
+  return row?.count ?? 0
+}
+
+/**
+ * Marks a reading as read, or not read, in the plan followed: one progress
+ * record per reading (marking twice keeps one), written to the outbox. Does
+ * nothing for a reading of no plan followed. Works offline.
+ */
+export function setReadingRead(
+  db: Database,
+  readingId: string,
+  read: boolean,
+  { now = new Date(), id = newId }: { now?: Date; id?: () => string } = {}
+): void {
+  const [enrollment] = db
+    .select({ id: planEnrollments.id })
+    .from(planReadings)
+    .innerJoin(planDays, eq(planDays.id, planReadings.dayId))
+    .innerJoin(planEnrollments, eq(planEnrollments.planId, planDays.planId))
+    .where(eq(planReadings.id, readingId))
+    .all()
+  if (!enrollment) return
+  const [current] = db
+    .select()
+    .from(readingProgress)
+    .where(
+      and(
+        eq(readingProgress.enrollmentId, enrollment.id),
+        eq(readingProgress.readingId, readingId)
+      )
+    )
+    .all()
+  if (read) {
+    if (current) return
+    const record: SyncRecord<"readingProgress"> = {
+      id: id(),
+      enrollmentId: enrollment.id,
+      readingId,
+      completedAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+    }
+    writeSynced(
+      db,
+      { table: "readingProgress", op: "upsert", record },
+      (tx) => tx.insert(readingProgress).values(record).run(),
+      now
+    )
+  } else if (current) {
+    writeSynced(
+      db,
+      { table: "readingProgress", op: "delete", id: current.id },
+      (tx) =>
+        tx
+          .delete(readingProgress)
+          .where(eq(readingProgress.id, current.id))
+          .run(),
+      now
+    )
+  }
+}
+
+/** Marks a reading as read or not (for screens). */
+export function markReading(readingId: string, read: boolean): void {
+  setReadingRead(getDatabase(), readingId, read)
+}
+
+/** Whether a reading is marked as read, kept up to date. */
+export function useReadingDone(readingId: string | undefined): boolean {
   return useLocalQuery(
-    ["readingPlan", "planEnrollment"],
-    () => todayPlans(getDatabase(), today),
-    [today]
+    planTables,
+    () =>
+      readingId
+        ? getDatabase()
+            .select({ id: readingProgress.id })
+            .from(readingProgress)
+            .where(eq(readingProgress.readingId, readingId))
+            .all().length > 0
+        : false,
+    [readingId]
   )
 }
