@@ -1609,6 +1609,13 @@
       "removeMessage": "Son texte sera retiré du téléphone. Vous pourrez la télécharger de nouveau ; vos surbrillances sont conservées.",
       "removeConfirm": "Supprimer",
       "cancel": "Annuler"
+    },
+    "plans": {
+      "startDate": "Commencer",
+      "today": "Aujourd’hui",
+      "tomorrow": "Demain",
+      "nextMonday": "Lundi prochain",
+      "chooseBook": "Choisir"
     }
   }
 }

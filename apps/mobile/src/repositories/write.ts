@@ -15,19 +15,22 @@ export type LocalChange<T extends SyncTable = SyncTable> =
   | { table: T; op: "delete"; id: string }
 
 /**
- * Writes a synced record: `apply` changes the local table and the change goes
- * into the outbox, in one transaction (both or neither). Done with or without
+ * Writes synced records: `apply` changes the local tables and the changes go
+ * into the outbox, in one transaction (all or nothing). Done with or without
  * an account: creating one pushes the outbox (the adoption). Then the screens
- * reading the table refresh.
+ * reading the tables refresh.
  */
 export function writeSynced<T extends SyncTable>(
   db: Database,
-  change: LocalChange<T>,
+  change: LocalChange<T> | readonly LocalChange[],
   apply: (tx: Database) => void,
   now: Date = new Date()
 ): void {
   const clientUpdatedAt = now.toISOString()
-  const entry: SyncChange =
+  const changes: readonly LocalChange[] = Array.isArray(change)
+    ? change
+    : [change as LocalChange<T>]
+  const entries: SyncChange[] = changes.map((change) =>
     change.op === "upsert"
       ? syncChangeSchema.parse({
           table: change.table,
@@ -42,20 +45,23 @@ export function writeSynced<T extends SyncTable>(
           op: "delete",
           clientUpdatedAt,
         })
+  )
 
   db.transaction((tx) => {
     apply(tx as Database)
-    tx.insert(outbox)
-      .values({
-        table: entry.table,
-        recordId: entry.id,
-        op: entry.op,
-        data: entry.data === undefined ? null : JSON.stringify(entry.data),
-        clientUpdatedAt,
-      })
-      .run()
+    for (const entry of entries) {
+      tx.insert(outbox)
+        .values({
+          table: entry.table,
+          recordId: entry.id,
+          op: entry.op,
+          data: entry.data === undefined ? null : JSON.stringify(entry.data),
+          clientUpdatedAt,
+        })
+        .run()
+    }
   })
-  notifyChange(change.table)
+  notifyChange(...new Set(changes.map((change) => change.table)))
 }
 
 /** The outbox, oldest first: what the next push will send. */

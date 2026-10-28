@@ -1,4 +1,6 @@
+import { catchUpStrategies, type Weekday } from "@workspace/core"
 import {
+  index,
   integer,
   sqliteTable,
   text,
@@ -66,4 +68,81 @@ export const highlights = sqliteTable(
   (table) => [
     uniqueIndex("highlights_verse").on(table.book, table.chapter, table.verse),
   ]
+)
+
+/**
+ * Reading plans made on this phone (synced as one whole with their days and
+ * readings, @workspace/sync "readingPlan"). Tracks and pace are the
+ * generator's input, kept to rebuild the plan (catch-up).
+ */
+export const readingPlans = sqliteTable("reading_plans", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  templateKey: text("template_key"),
+  startDate: text("start_date").notNull(),
+  endDate: text("end_date").notNull(),
+  activeWeekdays: text("active_weekdays", { mode: "json" })
+    .$type<Weekday[]>()
+    .notNull(),
+  tracks: text("tracks", { mode: "json" }).$type<unknown>().notNull(),
+  pace: text("pace", { mode: "json" }).$type<unknown>().notNull(),
+  totalDays: integer("total_days").notNull(),
+  totalVerses: integer("total_verses").notNull(),
+  totalReadings: integer("total_readings").notNull(),
+  catchUpStrategy: text("catch_up_strategy", {
+    enum: catchUpStrategies,
+  }).notNull(),
+  groupId: text("group_id"),
+  updatedAt: text("updated_at").notNull(),
+})
+
+/** A plan's reading days. */
+export const planDays = sqliteTable(
+  "plan_days",
+  {
+    id: text("id").primaryKey(),
+    planId: text("plan_id")
+      .notNull()
+      .references(() => readingPlans.id, { onDelete: "cascade" }),
+    dayNumber: integer("day_number").notNull(),
+    date: text("date").notNull(),
+    verses: integer("verses").notNull(),
+  },
+  (table) => [uniqueIndex("plan_days_number").on(table.planId, table.dayNumber)]
+)
+
+/** A day's readings, numbered like the canon. */
+export const planReadings = sqliteTable(
+  "plan_readings",
+  {
+    id: text("id").primaryKey(),
+    dayId: text("day_id")
+      .notNull()
+      .references(() => planDays.id, { onDelete: "cascade" }),
+    position: integer("position").notNull(),
+    track: integer("track").notNull(),
+    book: text("book").notNull(),
+    startChapter: integer("start_chapter").notNull(),
+    startVerse: integer("start_verse").notNull(),
+    endChapter: integer("end_chapter").notNull(),
+    endVerse: integer("end_verse").notNull(),
+    verses: integer("verses").notNull(),
+  },
+  (table) => [index("plan_readings_day").on(table.dayId)]
+)
+
+/** The plans followed on this phone (synced, "planEnrollment"). */
+export const planEnrollments = sqliteTable(
+  "plan_enrollments",
+  {
+    id: text("id").primaryKey(),
+    planId: text("plan_id")
+      .notNull()
+      .references(() => readingPlans.id, { onDelete: "cascade" }),
+    status: text("status", { enum: ["ACTIVE", "PAUSED", "ARCHIVED"] })
+      .notNull()
+      .default("ACTIVE"),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [index("plan_enrollments_plan").on(table.planId)]
 )

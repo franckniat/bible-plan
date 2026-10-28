@@ -1609,6 +1609,13 @@
       "removeMessage": "Its text will be removed from the phone. You can download it again; your highlights are kept.",
       "removeConfirm": "Remove",
       "cancel": "Cancel"
+    },
+    "plans": {
+      "startDate": "Start",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "nextMonday": "Next Monday",
+      "chooseBook": "Choose"
     }
   }
 }

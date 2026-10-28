@@ -15,13 +15,19 @@ const tables = (db: Database) =>
     .map(({ name }) => name)
     .filter((name) => !name.startsWith("__") && name !== "sqlite_sequence")
 
+const appTables = [
+  "highlights",
+  "outbox",
+  "plan_days",
+  "plan_enrollments",
+  "plan_readings",
+  "profile",
+  "reading_plans",
+]
+
 describe("local database migrations", () => {
   it("creates every table of the schema on a new phone", async () => {
-    expect(tables(await testDatabase())).toEqual([
-      "highlights",
-      "outbox",
-      "profile",
-    ])
+    expect(tables(await testDatabase())).toEqual(appTables)
   })
 
   it("brings every older database up to date without losing data", async () => {
@@ -49,6 +55,6 @@ describe("local database migrations", () => {
   it("changes nothing when the app starts again", async () => {
     const db = await testDatabase()
     await applyMigrations(db, migrationBundle())
-    expect(tables(db)).toEqual(["highlights", "outbox", "profile"])
+    expect(tables(db)).toEqual(appTables)
   })
 })
