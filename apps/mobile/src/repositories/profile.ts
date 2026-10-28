@@ -114,3 +114,11 @@ export function useProfile(): Profile {
 export function setProfile(change: ProfileChange): void {
   updateProfile(getDatabase(), change)
 }
+
+/** Forgets the version chosen when it is this one (a removed download). */
+export function unchooseVersion(version: BibleVersionId): void {
+  const db = getDatabase()
+  if (getProfile(db).bibleVersion === version) {
+    updateProfile(db, { bibleVersion: null })
+  }
+}

@@ -18,3 +18,8 @@ export async function readVersionFile(version: string): Promise<string> {
   if (!response) throw new Error(`${version} is not downloaded`)
   return response.text()
 }
+
+export async function deleteVersionFile(version: string): Promise<void> {
+  const cache = await caches.open(cacheName)
+  await cache.delete(keyOf(version))
+}

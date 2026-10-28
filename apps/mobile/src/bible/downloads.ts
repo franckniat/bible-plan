@@ -4,8 +4,10 @@ import { useSyncExternalStore } from "react"
 import { getPreferences, setPreferences } from "@/lib/preferences"
 import { siteUrl } from "@/lib/site"
 
-import { checkVersion } from "./texts"
-import { downloadVersionFile } from "./version-files"
+import { unchooseVersion } from "@/repositories/profile"
+
+import { checkVersion, forgetVersion } from "./texts"
+import { deleteVersionFile, downloadVersionFile } from "./version-files"
 
 /** The versions being downloaded now. */
 let downloading: readonly BibleVersionId[] = []
@@ -44,4 +46,17 @@ export async function downloadVersion(version: BibleVersionId) {
   } finally {
     setDownloading(downloading.filter((id) => id !== version))
   }
+}
+
+/**
+ * Removes a downloaded version from the phone (it can be downloaded again).
+ * When it was the one read, the reader goes back to the version of the
+ * app's language.
+ */
+export async function removeVersion(version: BibleVersionId) {
+  const { downloaded } = getPreferences()
+  setPreferences({ downloaded: downloaded.filter((id) => id !== version) })
+  forgetVersion(version)
+  unchooseVersion(version)
+  await deleteVersionFile(version)
 }

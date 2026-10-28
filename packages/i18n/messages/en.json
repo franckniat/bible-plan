@@ -1602,7 +1602,13 @@
       "download": "Other versions",
       "downloading": "Downloading {version}…",
       "failed": "Downloading {version} failed. Check your connection and try again.",
-      "note": "To download: about 4 MB each, then readable offline."
+      "note": "To download: about 4 MB each, then readable offline.",
+      "downloaded": "Downloaded versions",
+      "remove": "Remove {version}",
+      "removeTitle": "Remove {version}?",
+      "removeMessage": "Its text will be removed from the phone. You can download it again; your highlights are kept.",
+      "removeConfirm": "Remove",
+      "cancel": "Cancel"
     }
   }
 }

@@ -13,3 +13,8 @@ export async function downloadVersionFile(version: string, url: string) {
 export function readVersionFile(version: string): Promise<string> {
   return fileOf(version).text()
 }
+
+export function deleteVersionFile(version: string): void {
+  const file = fileOf(version)
+  if (file.exists) file.delete()
+}

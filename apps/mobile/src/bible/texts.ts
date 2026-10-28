@@ -61,6 +61,11 @@ export async function checkVersion(version: BibleVersionId): Promise<void> {
   await load(version)
 }
 
+/** Forgets a version kept in memory (a removed download). */
+export function forgetVersion(version: BibleVersionId): void {
+  loaded.delete(version)
+}
+
 /** The verses of a chapter; empty when the version does not have it. */
 export async function readChapter(
   version: BibleVersionId,

@@ -1602,7 +1602,13 @@
       "download": "Autres versions",
       "downloading": "Téléchargement de {version}…",
       "failed": "Le téléchargement de {version} a échoué. Vérifiez votre connexion et réessayez.",
-      "note": "À télécharger : environ 4 Mo chacune, lisibles ensuite sans connexion."
+      "note": "À télécharger : environ 4 Mo chacune, lisibles ensuite sans connexion.",
+      "downloaded": "Versions téléchargées",
+      "remove": "Supprimer {version}",
+      "removeTitle": "Supprimer {version} ?",
+      "removeMessage": "Son texte sera retiré du téléphone. Vous pourrez la télécharger de nouveau ; vos surbrillances sont conservées.",
+      "removeConfirm": "Supprimer",
+      "cancel": "Annuler"
     }
   }
 }
