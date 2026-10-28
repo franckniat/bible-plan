@@ -43,11 +43,11 @@ const kjv = getBibleVersion("kjv")
 describe("version registry", () => {
   it("lists the stored versions first, then the remote ones that are set up", () => {
     const ids = bibleVersions.map((version) => version.id)
-    expect(ids.slice(0, 2)).toEqual(["lsg1910", "kjv"])
-    expect(bibleVersions.slice(0, 2).every((v) => v.kind === "hosted")).toBe(
+    expect(ids.slice(0, 4)).toEqual(["lsg1910", "kjv", "bsb", "web"])
+    expect(bibleVersions.slice(0, 4).every((v) => v.kind === "hosted")).toBe(
       true
     )
-    expect(bibleVersions.slice(2).every((v) => v.kind === "youversion")).toBe(
+    expect(bibleVersions.slice(4).every((v) => v.kind === "youversion")).toBe(
       true
     )
     expect(isBibleVersionId("kjv")).toBe(true)
@@ -192,14 +192,17 @@ describe("fetchChaptersFrom", () => {
       expect(urls).toEqual(["/bible/kjv/John/3.json"])
     }))
 
-  it("asks a remote version from the site's API route", () =>
+  // Only when a remote translation is set up (data/youversion.json).
+  const remote = bibleVersions.find((v) => v.kind === "youversion")
+  it.runIf(remote)("asks a remote version from the site's API route", () =>
     withFetch(async (urls) => {
       const fetcher = fetchChaptersFrom("/bible", {
         remoteBaseUrl: "/api/bible/",
       })
-      await fetcher("bsb", "John", 3)
-      expect(urls).toEqual(["/api/bible/bsb/John/3"])
-    }))
+      await fetcher(remote!.id, "John", 3)
+      expect(urls).toEqual([`/api/bible/${remote!.id}/John/3`])
+    })
+  )
 
   it("fails with the address and the status when the answer is not ok", async () => {
     const original = globalThis.fetch

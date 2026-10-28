@@ -70,7 +70,7 @@ Une traduction peut aussi être lue dans l'application sans que son texte soit s
 - `pnpm --filter @workspace/bible-data import:youversion` interroge l'API et écrit `data/youversion.json` : la notice de droits, le caractère « domaine public » et le nombre de versets de chaque chapitre. Une traduction n'entre dans le registre que si elle y figure ; celles dont la licence n'est pas acceptée pour la clé sont ignorées avec un message. Relancer la commande après avoir accepté une licence, puis redémarrer le serveur de développement.
 - Une traduction du domaine public se lit partout ; les autres ne sont servies qu'à l'application elle-même (`Sec-Fetch-Site: same-origin`) et la page affiche leur notice de droits.
 
-Disponibles aujourd'hui : BSB, WEB et Ostervald. NIV et la Bible du Semeur demandent d'accepter la « Biblica Fast-track Bible License » pour la clé, dans le portail YouVersion Platform. NLT, NKJV, Parole de Vie, Segond 21 et Nouvelle Français courant ne sont pas proposées par l'API YouVersion. Darby et Martin 1744 sont exclues : leur découpage de Joël et de Malachie diffère du canon.
+Disponible aujourd'hui : Ostervald (BSB et WEB, du domaine public, sont hébergées depuis eBible.org pour que l'application mobile puisse les télécharger ; l'Ostervald d'eBible.org, de 1744, omet Psaume 66:1). NIV et la Bible du Semeur demandent d'accepter la « Biblica Fast-track Bible License » pour la clé, dans le portail YouVersion Platform. NLT, NKJV, Parole de Vie, Segond 21 et Nouvelle Français courant ne sont pas proposées par l'API YouVersion. Darby et Martin 1744 sont exclues : leur découpage de Joël et de Malachie diffère du canon.
 
 ## Traductions sous droits
 

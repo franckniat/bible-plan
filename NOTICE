@@ -47,6 +47,12 @@ Bible texts
     edition, without Strong's numbers
     (https://ebible.org/find/details.php?id=eng-kjv2006).
     Stored in packages/bible-data/data/kjv.
+  - Berean Standard Bible (English) - public domain. Source: eBible.org,
+    "engbsb", VPL edition (https://ebible.org/find/details.php?id=engbsb).
+    Stored in packages/bible-data/data/bsb.
+  - World English Bible (English) - public domain. Source: eBible.org,
+    "engwebp", VPL edition (https://ebible.org/find/details.php?id=engwebp).
+    Stored in packages/bible-data/data/web.
 
   The texts are converted, not edited, by
   packages/bible-data/scripts/import-ebible.ts (one JSON file per chapter,

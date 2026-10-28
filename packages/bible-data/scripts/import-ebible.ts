@@ -2,7 +2,7 @@
 //
 //   pnpm --filter @workspace/bible-data import:ebible <version> [--from <zip>]
 //
-// <version> is lsg1910 or kjv. The "VPL" archive (one verse per line) is
+// <version> is one of `sources` below. The "VPL" archive (one verse per line) is
 // downloaded from eBible.org, or read from a local copy with --from. The
 // text is only parsed as data: nothing from the archive is executed.
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises"
@@ -19,6 +19,8 @@ import { chapterPath, chapterSchema, type BibleChapter } from "../src/chapter"
 const sources = {
   lsg1910: "fraLSG",
   kjv: "eng-kjv2006",
+  bsb: "engbsb",
+  web: "engwebp",
 } as const
 
 type VersionId = keyof typeof sources
@@ -116,7 +118,9 @@ async function readArchive(version: VersionId, from?: string) {
 function parseVpl(version: string, text: string): BibleChapter[] {
   const chapters = new Map<string, BibleChapter>()
   for (const [index, line] of text.split(/\r?\n/).entries()) {
-    if (!line.trim()) continue
+    // Some versions leave out a few verses (Luke 17:36 in the WEB): their
+    // number stays, without text.
+    if (!line.trim() || /^\w{3} \d+:\d+\s*$/.test(line)) continue
     const match = /^(\w{3}) (\d+):(\d+) (.+)$/.exec(line)
     const book = match && osisOf.get(match[1]!)
     if (!match || !book) {
@@ -149,7 +153,7 @@ async function main() {
   const [version, flag, from] = process.argv.slice(2)
   if (!version || !(version in sources) || (flag && flag !== "--from")) {
     throw new Error(
-      "Usage: import:ebible <lsg1910|kjv> [--from <path to the _vpl.zip>]"
+      `Usage: import:ebible <${Object.keys(sources).join("|")}> [--from <path to the _vpl.zip>]`
     )
   }
   const id = version as VersionId
@@ -180,7 +184,8 @@ async function main() {
       chapters
         .filter((chapter) => chapter.book === book)
         .sort((a, b) => a.chapter - b.chapter)
-        .map((chapter) => chapter.verses.length),
+        // The last number, not the count: a verse left out keeps its number.
+        .map((chapter) => chapter.verses.at(-1)![0]),
     ])
   )
   await writeFile(

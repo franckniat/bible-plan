@@ -24,23 +24,9 @@ export type RemoteVersionConfig = {
 // Bible, they put the end of Joel in a fourth chapter and number Malachi in
 // three, and the app maps chapters between versions one to one.
 export const remoteVersionConfigs = [
-  // Public domain or free: readable with any key.
-  {
-    id: "bsb",
-    youVersionId: 3034,
-    name: "Berean Standard Bible",
-    abbreviation: "BSB",
-    language: "en",
-    youVersionAbbreviation: "BSB",
-  },
-  {
-    id: "web",
-    youVersionId: 206,
-    name: "World English Bible",
-    abbreviation: "WEB",
-    language: "en",
-    youVersionAbbreviation: "WEBUS",
-  },
+  // Public domain or free: readable with any key. BSB and WEB are stored in
+  // data/ instead (from eBible.org), so that the app can download them; the
+  // Ostervald of eBible.org (1744) leaves out Psalm 66:1.
   {
     id: "ostervald",
     youVersionId: 131,

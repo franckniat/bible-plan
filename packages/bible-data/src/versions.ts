@@ -1,7 +1,9 @@
 import type { Locale } from "@workspace/core"
 
+import bsbIndex from "../data/bsb/index.json"
 import kjvIndex from "../data/kjv/index.json"
 import lsg1910Index from "../data/lsg1910/index.json"
+import webIndex from "../data/web/index.json"
 import youVersionIndex from "../data/youversion.json"
 import {
   remoteVersionConfigs,
@@ -15,8 +17,8 @@ type HostedDefinition = {
   name: string
   abbreviation: string
   language: Locale
-  /** Year of the text. */
-  year: number
+  /** Year of the text, when it has one. */
+  year?: number
   /** Where the text comes from (public domain). */
   source: string
   /** The same translation on YouVersion (bible.com). */
@@ -52,6 +54,24 @@ const hosted = [
     source: kjvIndex.source,
     youVersion: { id: 1, abbreviation: "KJV" },
     verseCounts: kjvIndex.verseCounts,
+  },
+  {
+    id: "bsb",
+    name: "Berean Standard Bible",
+    abbreviation: "BSB",
+    language: "en",
+    source: bsbIndex.source,
+    youVersion: { id: 3034, abbreviation: "BSB" },
+    verseCounts: bsbIndex.verseCounts,
+  },
+  {
+    id: "web",
+    name: "World English Bible",
+    abbreviation: "WEB",
+    language: "en",
+    source: webIndex.source,
+    youVersion: { id: 206, abbreviation: "WEBUS" },
+    verseCounts: webIndex.verseCounts,
   },
 ] as const satisfies readonly HostedDefinition[]
 
