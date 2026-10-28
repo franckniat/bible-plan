@@ -303,3 +303,83 @@ describe("catchUpPlan", () => {
     })
   })
 })
+
+describe("catch-up and read days", () => {
+  /** Read readings with their day and date, to compare. */
+  function readDays(db: Database, planId: string) {
+    return planDetail(db, planId)!.days.flatMap((day) =>
+      day.readings
+        .filter((reading) => reading.completedAt)
+        .map((reading) => ({
+          reading: reading.id,
+          completedAt: reading.completedAt,
+          day: day.id,
+          date: day.date,
+        }))
+    )
+  }
+
+  it.each(["SHIFT", "REDISTRIBUTE"] as const)(
+    "%s keeps every read reading on its day, with its progress",
+    async (strategy) => {
+      const db = await testDatabase()
+      const next = ids()
+      const { id } = createPlan(
+        db,
+        {
+          source: "template",
+          templateKey: "psalms-proverbs-31-days",
+          startDate: "2026-11-02",
+          pace: { mode: "days", days: 31 },
+        },
+        "fr",
+        { now, id: next }
+      )
+      const days = planDetail(db, id)!.days
+      // Day 1 read, day 2 half read, day 3 not read, day 6 read ahead.
+      for (const reading of [
+        ...days[0]!.readings,
+        days[1]!.readings[0]!,
+        ...days[5]!.readings,
+      ]) {
+        setReadingRead(db, reading.id, true, { now, id: next })
+      }
+      const before = readDays(db, id)
+      const today = "2026-11-05"
+      expect(todayPlans(db, today)[0]!.lateReadings).toBe(3)
+
+      const result = catchUpPlan(db, id, strategy, today, { now, id: next })
+      expect(result).toMatchObject({ ok: true })
+      const withoutDates = (rows: ReturnType<typeof readDays>) =>
+        rows.map((row) => ({ ...row, date: undefined }))
+      // Read readings stay on their day, with their progress.
+      expect(withoutDates(readDays(db, id))).toEqual(withoutDates(before))
+      // A day read before the delay keeps its date; REDISTRIBUTE moves no
+      // day, SHIFT moves the days from the first late one, read or not.
+      expect(readDays(db, id)[0]).toEqual(before[0])
+      if (strategy === "REDISTRIBUTE") expect(readDays(db, id)).toEqual(before)
+      expect(todayPlans(db, today)[0]).toMatchObject({
+        lateReadings: 0,
+        completedReadings: 5,
+      })
+      // Every passage is still read once, days numbered in date order.
+      const after = planDetail(db, id)!.days
+      expect(after.map((day) => day.day)).toEqual(
+        after.map((_, index) => index + 1)
+      )
+      expect([...after.map((day) => day.date)].sort()).toEqual(
+        after.map((day) => day.date)
+      )
+      expect(
+        after.flatMap((day) => day.readings).reduce((n, r) => n + r.verses, 0)
+      ).toBe(
+        days.flatMap((day) => day.readings).reduce((n, r) => n + r.verses, 0)
+      )
+      // Once caught up, nothing is left to change.
+      expect(catchUpPlan(db, id, strategy, today, { now, id: next })).toEqual({
+        ok: true,
+        changes: null,
+      })
+    }
+  )
+})
