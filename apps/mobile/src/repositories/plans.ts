@@ -144,6 +144,7 @@ export type PlanSummary = {
   totalDays: number
   totalReadings: number
   status: "ACTIVE" | "PAUSED" | "ARCHIVED"
+  completedReadings: number
 }
 
 /** Plans followed on this phone, most recent first, without archived ones. */
@@ -164,6 +165,10 @@ export function listPlans(db: Database): PlanSummary[] {
     .where(ne(planEnrollments.status, "ARCHIVED"))
     .orderBy(desc(planEnrollments.id))
     .all()
+    .map((plan) => ({
+      ...plan,
+      completedReadings: completedReadings(db, plan.id),
+    }))
 }
 
 /** The plans followed, kept up to date. */
@@ -422,4 +427,47 @@ export function useReadingDone(readingId: string | undefined): boolean {
         : false,
     [readingId]
   )
+}
+
+export type PlanDetail = {
+  id: string
+  title: string
+  startDate: IsoDate
+  endDate: IsoDate
+  totalReadings: number
+  completedReadings: number
+  trackNames: (Record<Locale, string> | null)[]
+  days: PlanDayView[]
+}
+
+/** A plan with all its days, readings and progress; null when unknown. */
+export function planDetail(db: Database, planId: string): PlanDetail | null {
+  const [plan] = db
+    .select()
+    .from(readingPlans)
+    .where(eq(readingPlans.id, planId))
+    .all()
+  if (!plan) return null
+  const days = planDaysOf(db, planId)
+  return {
+    id: plan.id,
+    title: plan.title,
+    startDate: plan.startDate,
+    endDate: plan.endDate,
+    totalReadings: plan.totalReadings,
+    completedReadings: days.reduce(
+      (total, day) =>
+        total + day.readings.filter((reading) => reading.completedAt).length,
+      0
+    ),
+    trackNames: trackNamesOf(plan.tracks),
+    days,
+  }
+}
+
+/** A plan's detail, kept up to date. */
+export function usePlanDetail(planId: string): PlanDetail | null {
+  return useLocalQuery(planTables, () => planDetail(getDatabase(), planId), [
+    planId,
+  ])
 }

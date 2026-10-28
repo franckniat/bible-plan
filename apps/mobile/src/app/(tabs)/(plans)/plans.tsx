@@ -39,7 +39,16 @@ export default function PlansScreen() {
                 subtitle={`${t("Plans.dates", {
                   start: date(plan.startDate),
                   end: date(plan.endDate),
-                })} · ${t("Plans.days", { days: plan.totalDays })}`}
+                })} · ${t("PlanDetail.monthProgress", {
+                  completed: plan.completedReadings,
+                  total: plan.totalReadings,
+                })}`}
+                onPress={() =>
+                  router.push({
+                    pathname: "/plan/[id]",
+                    params: { id: plan.id },
+                  })
+                }
                 last={index === plans.length - 1}
               />
             ))}

@@ -15,7 +15,13 @@ import type { Database } from "@/db/types"
 import { bookRange } from "@/lib/book-range"
 import { uuidv7 } from "@/lib/uuid"
 
-import { createPlan, listPlans, setReadingRead, todayPlans } from "./plans"
+import {
+  createPlan,
+  listPlans,
+  planDetail,
+  setReadingRead,
+  todayPlans,
+} from "./plans"
 import { readOutbox } from "./write"
 
 vi.mock("@/lib/ids", () => ({ newId: () => "unused" }))
@@ -90,6 +96,7 @@ describe("createPlan", () => {
         totalDays: 31,
         totalReadings: 62,
         status: "ACTIVE",
+        completedReadings: 0,
       },
     ])
   })
@@ -219,6 +226,13 @@ describe("setReadingRead", () => {
     setReadingRead(db, reading.id, true, { now, id: next })
     expect(today().day!.readings[0]!.completedAt).toBe(now.toISOString())
     expect(today().completedReadings).toBe(1)
+
+    expect(planDetail(db, today().id)).toMatchObject({
+      title: "Jean",
+      totalReadings: 21,
+      completedReadings: 1,
+    })
+    expect(planDetail(db, today().id)!.days).toHaveLength(21)
 
     setReadingRead(db, reading.id, false, { now })
     expect(today().completedReadings).toBe(0)
