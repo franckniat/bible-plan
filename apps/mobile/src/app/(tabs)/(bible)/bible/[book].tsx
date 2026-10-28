@@ -1,10 +1,11 @@
 import { getBookName, getChapterCount, isBookId } from "@workspace/core"
-import { Redirect, router, Stack, useLocalSearchParams } from "expo-router"
+import { Redirect, Stack, useLocalSearchParams } from "expo-router"
 import { Pressable, Text, View } from "react-native"
 import { useLocale, useTranslations } from "use-intl"
 
 import { TabScreen } from "@/components/screen"
 import { haptics } from "@/lib/haptics"
+import { openPassage } from "@/lib/open-passage"
 import { radius, spacing, typography } from "@/theme/metrics"
 import { createThemedStyles, useThemedStyles } from "@/theme/themed-styles"
 
@@ -30,7 +31,7 @@ export default function BookScreen() {
                 accessibilityLabel={t("chapter", { book: name, chapter })}
                 onPress={() => {
                   haptics.tap()
-                  router.push(`/read/${book}.${chapter}`)
+                  openPassage(`${book}.${chapter}`)
                 }}
                 style={({ pressed }) => [
                   styles.cell,

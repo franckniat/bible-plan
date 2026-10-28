@@ -24,6 +24,8 @@ const preferencesSchema = z.object({
       layout: z.enum(["flow", "lines"]),
     })
     .catch({ size: 1, verseNumbers: true, layout: "flow" }),
+  /** The slug of the passage read last (e.g. "Exod.3"), where the Bible tab opens. */
+  lastPassage: z.string().nullable().catch(null),
 })
 
 export type Preferences = z.infer<typeof preferencesSchema>

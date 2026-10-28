@@ -23,6 +23,7 @@ describe("preferences", () => {
       onboarded: false,
       reminder: "morning",
       reader: { size: 1, verseNumbers: true, layout: "flow" },
+      lastPassage: null,
     })
   })
 
