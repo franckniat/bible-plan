@@ -45,11 +45,8 @@ import { PanelAction } from "@/components/bible/panel-action"
 import { SelectionPanel } from "@/components/bible/selection-panel"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
-import {
-  getPreferences,
-  setPreferences,
-  usePreferences,
-} from "@/lib/preferences"
+import { usePreferences } from "@/lib/preferences"
+import { recordReading } from "@/lib/reading-history"
 import { highlightVerses, useHighlights } from "@/repositories/highlights"
 import {
   bibleVersionNames,
@@ -62,7 +59,7 @@ import { useColors } from "@/theme/use-colors"
 /**
  * A passage read offline, from its slug (e.g. "John.3"); `onGo` opens another
  * one (the previous or next chapter, the whole chapter). The passage shown
- * becomes the last one read, where the Bible tab opens.
+ * joins the reading history, and the Bible tab opens on it.
  */
 export function Reader({
   slug,
@@ -97,9 +94,7 @@ export function Reader({
   }, [copied])
   const valid = passage !== null
   useEffect(() => {
-    if (valid && getPreferences().lastPassage !== slug) {
-      setPreferences({ lastPassage: slug })
-    }
+    if (valid) recordReading(slug)
   }, [slug, valid])
   const book = passage?.book ?? "Gen"
   const versification = getBibleVersion(version)

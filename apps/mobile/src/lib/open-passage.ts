@@ -1,9 +1,9 @@
 import { router } from "expo-router"
 
-import { setPreferences } from "@/lib/preferences"
+import { recordReading } from "@/lib/reading-history"
 
 /** Shows a passage at the root of the Bible tab, closing what is above. */
 export function openPassage(slug: string) {
-  setPreferences({ lastPassage: slug })
+  recordReading(slug)
   router.dismissTo("/bible")
 }

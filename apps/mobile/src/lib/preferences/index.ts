@@ -24,8 +24,11 @@ const preferencesSchema = z.object({
       layout: z.enum(["flow", "lines"]),
     })
     .catch({ size: 1, verseNumbers: true, layout: "flow" }),
-  /** The slug of the passage read last (e.g. "Exod.3"), where the Bible tab opens. */
-  lastPassage: z.string().nullable().catch(null),
+  /**
+   * The passages read on this phone, the latest first (reading-history.ts):
+   * the Bible tab opens on the first.
+   */
+  history: z.array(z.object({ slug: z.string(), at: z.number() })).catch([]),
 })
 
 export type Preferences = z.infer<typeof preferencesSchema>
