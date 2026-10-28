@@ -51,7 +51,11 @@ import {
   usePreferences,
 } from "@/lib/preferences"
 import { highlightVerses, useHighlights } from "@/repositories/highlights"
-import { bibleVersionOf, useProfile } from "@/repositories/profile"
+import {
+  bibleVersionNames,
+  bibleVersionOf,
+  useProfile,
+} from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
 
@@ -153,6 +157,13 @@ export function Reader({
                   passage: formatPassage(passage, locale),
                 })}
                 onPress={() => router.push("/choose-passage")}
+              />
+              <HeaderButton
+                label={versification.abbreviation}
+                accessibilityLabel={t("Mobile.read.chooseVersion", {
+                  version: bibleVersionNames[version],
+                })}
+                onPress={() => router.push("/choose-version")}
               />
             </View>
           ),

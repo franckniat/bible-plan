@@ -1525,7 +1525,8 @@
     "read": {
       "notFound": "Passage introuvable",
       "invalid": "Le lien « {slug} » ne désigne aucun passage.",
-      "choosePassage": "Aller à un autre passage (actuel : {passage})"
+      "choosePassage": "Aller à un autre passage (actuel : {passage})",
+      "chooseVersion": "Changer de version (actuelle : {version})"
     },
     "join": {
       "title": "Invitation",

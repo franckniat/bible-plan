@@ -5,19 +5,12 @@ import { useLocale, useTranslations } from "use-intl"
 
 import { usePassage } from "@/bible/use-passage"
 import { ChapterText } from "@/components/bible/chapter-text"
-import { ChoiceList } from "@/components/choice-list"
 import { TabScreen } from "@/components/screen"
 import { Card } from "@/components/ui/card"
 import { Segmented } from "@/components/ui/segmented"
 import { SwitchRow } from "@/components/ui/switch-row"
 import { setPreferences, usePreferences } from "@/lib/preferences"
-import {
-  bibleVersionIds,
-  bibleVersionNames,
-  bibleVersionOf,
-  setProfile,
-  useProfile,
-} from "@/repositories/profile"
+import { bibleVersionOf, useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
 
@@ -97,18 +90,6 @@ export default function ReaderSettingsScreen() {
             last
           />
         </Card>
-
-        <View style={styles.field}>
-          {label(t("version"))}
-          <ChoiceList
-            options={bibleVersionIds.map((id) => ({
-              value: id,
-              label: bibleVersionNames[id],
-            }))}
-            value={version}
-            onChange={(bibleVersion) => setProfile({ bibleVersion })}
-          />
-        </View>
       </TabScreen>
     </>
   )

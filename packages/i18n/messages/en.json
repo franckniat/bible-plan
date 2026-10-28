@@ -1525,7 +1525,8 @@
     "read": {
       "notFound": "Passage not found",
       "invalid": "The link “{slug}” doesn’t point to a passage.",
-      "choosePassage": "Go to another passage (now: {passage})"
+      "choosePassage": "Go to another passage (now: {passage})",
+      "chooseVersion": "Change the version (now: {version})"
     },
     "join": {
       "title": "Invitation",
