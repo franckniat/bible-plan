@@ -23,7 +23,6 @@ import {
   ChevronRight,
   Columns2,
   Copy,
-  List,
   Share2,
   Type,
 } from "lucide-react-native"
@@ -40,6 +39,7 @@ import { useLocale, useTranslations } from "use-intl"
 
 import { usePassage } from "@/bible/use-passage"
 import { ChapterText } from "@/components/bible/chapter-text"
+import { HeaderButton } from "@/components/bible/header-button"
 import { HighlightRow } from "@/components/bible/highlight-row"
 import { PanelAction } from "@/components/bible/panel-action"
 import { SelectionPanel } from "@/components/bible/selection-panel"
@@ -145,15 +145,16 @@ export function Reader({
         options={{
           title: formatPassage(passage, locale),
           headerLargeTitle: false,
-          headerLeft: () => (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t("BibleIndex.title")}
-              hitSlop={12}
-              onPress={() => router.push("/books")}
-            >
-              <List size={22} color={colors.foreground} />
-            </Pressable>
+          headerTitle: () => (
+            <View style={styles.header}>
+              <HeaderButton
+                label={formatPassage(passage, locale)}
+                accessibilityLabel={t("Mobile.read.choosePassage", {
+                  passage: formatPassage(passage, locale),
+                })}
+                onPress={() => router.push("/choose-passage")}
+              />
+            </View>
           ),
           headerRight: () => (
             <Pressable
@@ -349,6 +350,7 @@ export function Reader({
 }
 
 const styles = StyleSheet.create({
+  header: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
   chapter: { gap: spacing.sm },
   panelRoom: { height: 400 },
   navigation: {

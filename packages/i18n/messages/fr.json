@@ -1524,7 +1524,8 @@
   "Mobile": {
     "read": {
       "notFound": "Passage introuvable",
-      "invalid": "Le lien « {slug} » ne désigne aucun passage."
+      "invalid": "Le lien « {slug} » ne désigne aucun passage.",
+      "choosePassage": "Aller à un autre passage (actuel : {passage})"
     },
     "join": {
       "title": "Invitation",

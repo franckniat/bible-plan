@@ -1524,7 +1524,8 @@
   "Mobile": {
     "read": {
       "notFound": "Passage not found",
-      "invalid": "The link “{slug}” doesn’t point to a passage."
+      "invalid": "The link “{slug}” doesn’t point to a passage.",
+      "choosePassage": "Go to another passage (now: {passage})"
     },
     "join": {
       "title": "Invitation",
