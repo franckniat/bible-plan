@@ -2,13 +2,20 @@ import {
   allWeekdays,
   generatePlan,
   isBookId,
+  planCatchUp,
+  PlanGenerationError,
+  rebuildSchedule,
   newPlanSchema,
   resolveNewPlan,
   type BookId,
+  type CatchUpChanges,
+  type CatchUpStrategy,
   type IsoDate,
   type Locale,
   type NewPlan,
   type Passage,
+  type PlanGenerationErrorCode,
+  type ScheduleDay,
 } from "@workspace/core"
 import type { SyncRecord } from "@workspace/sync"
 import {
@@ -18,10 +25,12 @@ import {
   desc,
   eq,
   gte,
+  inArray,
   isNull,
   lt,
   lte,
   ne,
+  sql,
 } from "drizzle-orm"
 
 import { useLocalQuery } from "@/db/changes"
@@ -470,4 +479,183 @@ export function usePlanDetail(planId: string): PlanDetail | null {
   return useLocalQuery(planTables, () => planDetail(getDatabase(), planId), [
     planId,
   ])
+}
+
+/** A plan's stored schedule with the progress, as the catch-up reads it. */
+function scheduleOf(db: Database, planId: string) {
+  const [plan] = db
+    .select()
+    .from(readingPlans)
+    .where(eq(readingPlans.id, planId))
+    .all()
+  if (!plan) return null
+  const days: ScheduleDay[] = planDaysOf(db, planId).map((day) => ({
+    id: day.id,
+    date: day.date,
+    readings: day.readings.map(({ completedAt, ...reading }) => ({
+      ...reading,
+      done: completedAt !== null,
+    })),
+  }))
+  return { plan, days }
+}
+
+export type CatchUpResult =
+  | { ok: true; changes: CatchUpChanges | null }
+  | { ok: false; error: "not_found" | PlanGenerationErrorCode }
+
+/**
+ * What a catch-up would change in a late plan (see planCatchUp): null when
+ * nothing needs to change.
+ */
+export function previewCatchUp(
+  db: Database,
+  planId: string,
+  strategy: CatchUpStrategy,
+  today: IsoDate
+): CatchUpResult {
+  const schedule = scheduleOf(db, planId)
+  if (!schedule) return { ok: false, error: "not_found" }
+  try {
+    return {
+      ok: true,
+      changes: planCatchUp(strategy, {
+        days: schedule.days,
+        today,
+        activeWeekdays: schedule.plan.activeWeekdays,
+        endDate: schedule.plan.endDate,
+      }),
+    }
+  } catch (error) {
+    if (error instanceof PlanGenerationError) {
+      return { ok: false, error: error.code }
+    }
+    throw error
+  }
+}
+
+/**
+ * Brings a late plan back on schedule with a strategy, offline, as the web
+ * does: readings already read keep their day and their id (their progress
+ * stays), the others are moved or replaced (rebuildSchedule). The whole plan
+ * goes into the outbox, the sync replacing it at once.
+ */
+export function catchUpPlan(
+  db: Database,
+  planId: string,
+  strategy: CatchUpStrategy,
+  today: IsoDate,
+  { now = new Date(), id = newId }: { now?: Date; id?: () => string } = {}
+): CatchUpResult {
+  const preview = previewCatchUp(db, planId, strategy, today)
+  if (!preview.ok || !preview.changes) return preview
+  const { plan, days } = scheduleOf(db, planId)!
+  const rebuilt = rebuildSchedule(days, preview.changes, id)
+  const updatedAt = now.toISOString()
+
+  const recordDays = rebuilt.days.map((day) => ({
+    id: day.id,
+    dayNumber: day.dayNumber,
+    date: day.date,
+    verses: day.verses,
+    readings: day.readings.map(({ passage, ...reading }, position) => ({
+      id: reading.id,
+      position,
+      track: reading.track,
+      book: passage.book,
+      startChapter: passage.start.chapter,
+      startVerse: passage.start.verse,
+      endChapter: passage.end.chapter,
+      endVerse: passage.end.verse,
+      verses: reading.verses,
+    })),
+  }))
+  const record: SyncRecord<"readingPlan"> = {
+    ...plan,
+    endDate: rebuilt.endDate,
+    totalDays: rebuilt.totalDays,
+    totalReadings: rebuilt.totalReadings,
+    updatedAt,
+    days: recordDays,
+  }
+  const kept = new Set(
+    recordDays.flatMap((day) => day.readings.map((reading) => reading.id))
+  )
+  const removedReadings = days
+    .flatMap((day) => day.readings)
+    .filter((reading) => !kept.has(reading.id))
+    .map((reading) => reading.id)
+
+  writeSynced(
+    db,
+    { table: "readingPlan", op: "upsert", record },
+    (tx) => {
+      for (const ids of chunks(removedReadings)) {
+        tx.delete(planReadings).where(inArray(planReadings.id, ids)).run()
+      }
+      for (const ids of chunks(rebuilt.removedDayIds)) {
+        tx.delete(planDays).where(inArray(planDays.id, ids)).run()
+      }
+      // Numbers must stay unique while the days are numbered again.
+      tx.update(planDays)
+        .set({ dayNumber: sql`-${planDays.dayNumber}` })
+        .where(eq(planDays.planId, planId))
+        .run()
+      for (const { readings, ...day } of recordDays) {
+        tx.insert(planDays)
+          .values({ ...day, planId })
+          .onConflictDoUpdate({
+            target: planDays.id,
+            set: {
+              dayNumber: day.dayNumber,
+              date: day.date,
+              verses: day.verses,
+            },
+          })
+          .run()
+        for (const reading of readings) {
+          tx.insert(planReadings)
+            .values({ ...reading, dayId: day.id })
+            .onConflictDoUpdate({
+              target: planReadings.id,
+              set: { dayId: day.id, position: reading.position },
+            })
+            .run()
+        }
+      }
+      tx.update(readingPlans)
+        .set({
+          endDate: record.endDate,
+          totalDays: record.totalDays,
+          totalReadings: record.totalReadings,
+          updatedAt,
+        })
+        .where(eq(readingPlans.id, planId))
+        .run()
+    },
+    now
+  )
+  return preview
+}
+
+/** What a catch-up would change, kept up to date (for screens). */
+export function useCatchUpPreview(
+  planId: string,
+  strategy: CatchUpStrategy,
+  today: IsoDate
+): CatchUpResult {
+  return useLocalQuery(
+    planTables,
+    () => previewCatchUp(getDatabase(), planId, strategy, today),
+    [planId, strategy, today]
+  )
+}
+
+/** Catches up a late plan (for screens). */
+export function catchUp(
+  planId: string,
+  strategy: CatchUpStrategy,
+  today: IsoDate
+): CatchUpResult {
+  return catchUpPlan(getDatabase(), planId, strategy, today)
 }

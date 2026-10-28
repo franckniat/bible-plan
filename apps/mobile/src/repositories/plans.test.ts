@@ -16,6 +16,7 @@ import { bookRange } from "@/lib/book-range"
 import { uuidv7 } from "@/lib/uuid"
 
 import {
+  catchUpPlan,
   createPlan,
   listPlans,
   planDetail,
@@ -244,5 +245,61 @@ describe("setReadingRead", () => {
       ["readingProgress", "upsert"],
       ["readingProgress", "delete"],
     ])
+  })
+})
+
+describe("catchUpPlan", () => {
+  /** John, a chapter a day from Monday 2 November; day 1 read. */
+  async function latePlan() {
+    const db = await testDatabase()
+    const next = ids()
+    const { id } = createPlan(
+      db,
+      {
+        source: "custom",
+        title: "Jean",
+        passages: bookRange("John", "John"),
+        startDate: "2026-11-02",
+        pace: { mode: "chaptersPerDay", chapters: 1 },
+      },
+      "fr",
+      { now, id: next }
+    )
+    const first = planDetail(db, id)!.days[0]!.readings[0]!
+    setReadingRead(db, first.id, true, { now, id: next })
+    return { db, id, next, first }
+  }
+
+  it("shifts a late plan: the readings left start today, the end moves", async () => {
+    const { db, id, next } = await latePlan()
+    // Thursday: John 2 and 3 are late.
+    expect(todayPlans(db, "2026-11-05")[0]!.lateReadings).toBe(2)
+
+    const result = catchUpPlan(db, id, "SHIFT", "2026-11-05", {
+      now,
+      id: next,
+    })
+    expect(result).toMatchObject({
+      ok: true,
+      changes: { endDate: "2026-11-24" },
+    })
+    const [plan] = todayPlans(db, "2026-11-05")
+    expect(plan).toMatchObject({ lateReadings: 0, completedReadings: 1 })
+    expect(plan!.day!.readings[0]!.passage.start.chapter).toBe(2)
+    expect(planDetail(db, id)).toMatchObject({
+      endDate: "2026-11-24",
+      totalReadings: 21,
+    })
+    const last = readOutbox(db).at(-1)!
+    expect(last).toMatchObject({ table: "readingPlan", id, op: "upsert" })
+    expect(readingPlanRecordSchema.parse(last.data).days).toHaveLength(21)
+  })
+
+  it("changes nothing for a plan on time", async () => {
+    const { db, id } = await latePlan()
+    expect(catchUpPlan(db, id, "SHIFT", "2026-11-03", { now })).toEqual({
+      ok: true,
+      changes: null,
+    })
   })
 })

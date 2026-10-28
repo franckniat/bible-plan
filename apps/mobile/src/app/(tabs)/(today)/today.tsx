@@ -1,8 +1,9 @@
-import { getToday } from "@workspace/core"
+import { getToday, type IsoDate } from "@workspace/core"
 import { router } from "expo-router"
 import { View } from "react-native"
 import { useFormatter, useTranslations } from "use-intl"
 
+import { CatchUpNotice } from "@/components/plans/catch-up-notice"
 import { ReadingRow } from "@/components/plans/reading-row"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
@@ -15,7 +16,8 @@ import { spacing } from "@/theme/metrics"
 export default function TodayScreen() {
   const t = useTranslations()
   const profile = useProfile()
-  const plans = useTodayPlans(getToday(profile.timeZone))
+  const today = getToday(profile.timeZone)
+  const plans = useTodayPlans(today)
 
   if (plans.length === 0) {
     return (
@@ -33,13 +35,13 @@ export default function TodayScreen() {
   return (
     <TabScreen>
       {plans.map((plan) => (
-        <TodayPlanCard key={plan.id} plan={plan} />
+        <TodayPlanCard key={plan.id} plan={plan} today={today} />
       ))}
     </TabScreen>
   )
 }
 
-function TodayPlanCard({ plan }: { plan: TodayPlan }) {
+function TodayPlanCard({ plan, today }: { plan: TodayPlan; today: IsoDate }) {
   const t = useTranslations()
   const format = useFormatter()
   const { day } = plan
@@ -63,6 +65,13 @@ function TodayPlanCard({ plan }: { plan: TodayPlan }) {
       }
       padded={false}
     >
+      {plan.lateReadings > 0 ? (
+        <CatchUpNotice
+          planId={plan.id}
+          late={plan.lateReadings}
+          today={today}
+        />
+      ) : null}
       {note ? (
         <View style={{ paddingHorizontal: spacing.lg }}>
           <Body>{note}</Body>

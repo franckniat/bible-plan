@@ -11,6 +11,7 @@ import {
   shiftMonth,
   type Month,
 } from "@/components/plans/plan-calendar"
+import { CatchUpNotice } from "@/components/plans/catch-up-notice"
 import { ReadingRow } from "@/components/plans/reading-row"
 import { Body, TabScreen } from "@/components/screen"
 import { Card } from "@/components/ui/card"
@@ -61,6 +62,10 @@ function PlanView({ plan }: { plan: PlanDetail }) {
   const [view, setView] = useState<"calendar" | "list">("calendar")
   const [selected, setSelected] = useState<IsoDate | null>(null)
 
+  const lateReadings = plan.days
+    .filter((day) => day.date < today)
+    .flatMap((day) => day.readings)
+    .filter((reading) => !reading.completedAt).length
   const byDate = new Map(plan.days.map((day) => [day.date, day]))
   const monthDays = plan.days.filter((day) => monthOf(day.date) === month)
   const monthReadings = monthDays.flatMap((day) => day.readings)
@@ -123,6 +128,12 @@ function PlanView({ plan }: { plan: PlanDetail }) {
           />
           <Body>{progress}</Body>
         </Card>
+
+        {lateReadings > 0 ? (
+          <Card padded={false} style={{ paddingVertical: spacing.lg }}>
+            <CatchUpNotice planId={plan.id} late={lateReadings} today={today} />
+          </Card>
+        ) : null}
 
         <Segmented
           value={view}
