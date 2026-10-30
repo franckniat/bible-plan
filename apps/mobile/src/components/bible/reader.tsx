@@ -35,8 +35,9 @@ import {
   StyleSheet,
   Text,
   View,
+  type ScrollViewInstance,
 } from "react-native"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useLocale, useTranslations } from "use-intl"
 
 import { usePassage } from "@/bible/use-passage"
@@ -88,8 +89,27 @@ export function Reader({
     selection: VerseSelection | null
   }>({ slug, selection: null })
   const selection = picked.slug === slug ? picked.selection : null
-  const pick = (chapter: number, verse: number) =>
+  const pick = (chapter: number, verse: number, pageY: number) => {
+    tapY.current = pageY
     setPicked({ slug, selection: toggleVerse(selection, chapter, verse) })
+    keepInView()
+  }
+  // The verse tapped stays in view above the options' sheet.
+  const scroll = useRef<ScrollViewInstance>(null)
+  const scrollY = useRef(0)
+  const tapY = useRef<number | null>(null)
+  const sheetTop = useRef<number | null>(null)
+  const keepInView = () => {
+    const y = tapY.current
+    const top = sheetTop.current
+    if (y === null || top === null) return
+    // Close to the sheet or under it: the verse goes up, with room for the
+    // rest of it below the line tapped.
+    if (y < top - 160) return
+    const shift = y - Math.max(120, top - 260)
+    tapY.current = y - shift
+    scroll.current?.scrollTo({ y: scrollY.current + shift, animated: true })
+  }
   const clear = () => setPicked({ slug, selection: null })
   // "Copied" shows for the selection it was for, and not for long.
   const [copied, setCopied] = useState<string | null>(null)
@@ -196,7 +216,13 @@ export function Reader({
         onNext={() => next && go(next)}
         current={
           // Another passage starts at the top.
-          <TabScreen key={slug}>
+          <TabScreen
+            key={slug}
+            scrollRef={scroll}
+            onScrollY={(y) => {
+              scrollY.current = y
+            }}
+          >
             {state.status === "loading" ? (
               <ActivityIndicator
                 color={colors.accent}
@@ -225,7 +251,7 @@ export function Reader({
                     selected={
                       selection?.chapter === chapter ? selection.verses : []
                     }
-                    onPressVerse={(verse) => pick(chapter, verse)}
+                    onPressVerse={(verse, pageY) => pick(chapter, verse, pageY)}
                   />
                 </View>
               ))
@@ -300,6 +326,10 @@ export function Reader({
           reference={selectionReference(passage.book, selection, locale)}
           version={getBibleVersion(version).abbreviation}
           onClose={clear}
+          onTop={(top) => {
+            sheetTop.current = top
+            keepInView()
+          }}
         >
           <HighlightRow
             current={sharedColor(

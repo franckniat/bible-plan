@@ -1,5 +1,10 @@
-import type { ReactNode } from "react"
-import { ScrollView, StyleSheet, Text } from "react-native"
+import type { ReactNode, Ref } from "react"
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  type ScrollViewInstance,
+} from "react-native"
 
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
@@ -9,10 +14,27 @@ import { useColors } from "@/theme/use-colors"
  * be the screen's first child with automatic insets, so that iOS shrinks
  * the large title into the bar while scrolling.
  */
-export function TabScreen({ children }: { children?: ReactNode }) {
+export function TabScreen({
+  children,
+  scrollRef,
+  onScrollY,
+}: {
+  children?: ReactNode
+  /** To scroll from outside (the reader keeps a verse in view). */
+  scrollRef?: Ref<ScrollViewInstance>
+  /** Follows the vertical scroll. */
+  onScrollY?: (y: number) => void
+}) {
   const colors = useColors()
   return (
     <ScrollView
+      ref={scrollRef}
+      onScroll={
+        onScrollY
+          ? (event) => onScrollY(event.nativeEvent.contentOffset.y)
+          : undefined
+      }
+      scrollEventThrottle={onScrollY ? 32 : undefined}
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, backgroundColor: colors.background }}

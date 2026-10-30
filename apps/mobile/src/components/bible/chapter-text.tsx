@@ -43,7 +43,8 @@ export function ChapterText({
   /** The color of each highlighted verse, in the version's numbering. */
   highlights?: Readonly<Record<number, HighlightColor>>
   selected?: readonly number[]
-  onPressVerse?: (verse: number) => void
+  /** A verse tapped, with where (its height on the screen). */
+  onPressVerse?: (verse: number, pageY: number) => void
 }) {
   const styles = useThemedStyles(themedStyles)
   const fontSize = fontSizes[look.size]
@@ -56,15 +57,17 @@ export function ChapterText({
     return (
       <Text
         key={number}
-        onPress={onPressVerse ? () => onPressVerse(number) : undefined}
+        onPress={
+          onPressVerse
+            ? (event) => onPressVerse(number, event.nativeEvent.pageY)
+            : undefined
+        }
         accessibilityState={onPressVerse ? { selected: isSelected } : undefined}
-        style={[
-          color && {
-            backgroundColor: highlightBackgrounds[color],
-            color: "#0a0a0a",
-          },
-          isSelected && styles.selected,
-        ]}
+        style={
+          color
+            ? { backgroundColor: highlightBackgrounds[color], color: "#0a0a0a" }
+            : null
+        }
       >
         {/* A new paragraph starts on its own line, after text shown above. */}
         {flow && paragraph && index > 0 ? "\n" : null}
@@ -73,8 +76,15 @@ export function ChapterText({
             {number}{" "}
           </Text>
         ) : null}
+        {/* Only the words are marked when selected: not the number. */}
         {segments.map((segment, part) => (
-          <Text key={part} style={segment.italic ? styles.italic : null}>
+          <Text
+            key={part}
+            style={[
+              segment.italic && styles.italic,
+              isSelected && styles.selected,
+            ]}
+          >
             {segment.text}
           </Text>
         ))}
@@ -105,10 +115,10 @@ const themedStyles = createThemedStyles((colors) => ({
   text: { fontFamily: fontFamily.scripture, color: colors.foreground },
   italic: { fontFamily: fontFamily.scriptureItalic },
   number: { fontFamily: fontFamily.semibold, color: colors.accent },
-  // Selected verses are underlined, as on the web.
+  // Selected verses are underlined in gold, as on the web (a solid line:
+  // Android draws no dotted one).
   selected: {
     textDecorationLine: "underline",
-    textDecorationStyle: "dotted",
     textDecorationColor: colors.accent,
   },
   lines: { gap: spacing.sm },
