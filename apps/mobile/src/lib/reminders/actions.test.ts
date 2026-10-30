@@ -8,6 +8,8 @@ vi.mock("@/i18n/locale", () => ({ phoneLocale: () => "fr" }))
 vi.mock("@/repositories/plans", () => ({}))
 vi.mock("@/repositories/prayers", () => ({}))
 vi.mock("@/repositories/profile", () => ({}))
+vi.mock("@/repositories/reminders", () => ({}))
+vi.mock("./schedule", () => ({}))
 
 const { reminderAction } = await import("./actions")
 
@@ -36,6 +38,20 @@ describe("reminderAction", () => {
     })
     expect(reminderAction("later", data)).toEqual({ type: "later" })
     expect(reminderAction("meditate", data)).toEqual({ type: "meditate" })
+  })
+
+  it("skips the prayer time it announces", () => {
+    expect(
+      reminderAction("skip", {
+        kind: "reminder",
+        reminderId: "r1",
+        startsAt: "2026-10-31T07:30:00.000Z",
+      })
+    ).toEqual({
+      type: "skip",
+      reminderId: "r1",
+      startsAt: "2026-10-31T07:30:00.000Z",
+    })
   })
 
   it("leaves other notifications alone", () => {

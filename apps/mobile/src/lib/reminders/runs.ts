@@ -43,7 +43,16 @@ export const maxScheduled = 56
 export function planRuns(
   reminders: readonly ReminderTiming[],
   now: Date,
-  { days = horizonDays, max = maxScheduled } = {}
+  {
+    days = horizonDays,
+    max = maxScheduled,
+    skipped = new Set<string>(),
+  }: {
+    days?: number
+    max?: number
+    /** Prayer times skipped, "reminderId@ISO start": left out. */
+    skipped?: ReadonlySet<string>
+  } = {}
 ): ReminderRun[] {
   const end = now.getTime() + days * 24 * 60 * 60 * 1000
   const runs: ReminderRun[] = []
@@ -57,7 +66,9 @@ export function planRuns(
     let at = nextReminderRun(schedule, now)
     while (at && at.getTime() <= end) {
       const minutes = reminder.durationMinutes
-      if (minutes === null) {
+      if (skipped.has(`${reminder.id}@${at.toISOString()}`)) {
+        // A skipped prayer time rings neither before nor at its start.
+      } else if (minutes === null) {
         runs.push({ reminderId: reminder.id, kind: reminder.kind, at })
       } else {
         const warning = new Date(at.getTime() - reminder.leadMinutes * 60_000)

@@ -1539,7 +1539,10 @@
       "soonTitle": "Temps de prière dans {lead} min",
       "soonBody": "{minutes} min de prière à {time}. Préparez-vous.",
       "startTitle": "C’est l’heure de prier",
-      "startBody": "Votre temps de prière de {minutes} min commence."
+      "startBody": "Votre temps de prière de {minutes} min commence.",
+      "skipShort": "Passer",
+      "skip": "Passer ce temps de prière",
+      "skipped": "Ce temps de prière est passé. Ce n’est jamais un échec : retrouvez Dieu quand vous le pouvez."
     },
     "today": {
       "books": "{count} livres · {first} → {last}"

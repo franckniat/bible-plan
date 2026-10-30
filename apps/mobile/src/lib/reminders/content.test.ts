@@ -100,7 +100,7 @@ describe("contentOf", () => {
     expect(content?.title).toMatch(/^Temps de prière dans 5\smin$/)
     expect(content?.body).toContain("08:30")
     expect(content?.data.href).toBe(
-      "/prayer-time?minutes=30&at=2026-10-31T07:30:00.000Z"
+      "/prayer-time?minutes=30&at=2026-10-31T07:30:00.000Z&reminder=r1"
     )
   })
 })

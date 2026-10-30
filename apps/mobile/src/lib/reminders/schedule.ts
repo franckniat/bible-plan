@@ -17,7 +17,7 @@ import { phoneLocale } from "@/i18n/locale"
 import { notificationCentre } from "@/repositories/notifications"
 import { plansOn } from "@/repositories/plans"
 import { activePrayers } from "@/repositories/prayers"
-import { reminderBook } from "@/repositories/reminders"
+import { prayerTimes, reminderBook } from "@/repositories/reminders"
 import { currentProfile } from "@/repositories/profile"
 
 import { categoryOf, defineReminderActions } from "./actions"
@@ -123,7 +123,8 @@ function prayerTimeContent(run: ReminderRun, timeZone: string, locale: Locale) {
       kind: REMINDER,
       reminderId: run.reminderId,
       type: run.kind,
-      href: `/prayer-time?minutes=${minutes}&at=${startsAt.toISOString()}`,
+      href: `/prayer-time?minutes=${minutes}&at=${startsAt.toISOString()}&reminder=${run.reminderId}`,
+      startsAt: startsAt.toISOString(),
       readingIds: [],
       requestIds: [],
     },
@@ -153,7 +154,9 @@ export async function rescheduleReminders(now: Date = new Date()) {
     const reminders = reminderBook.all()
     const zones = new Map(reminders.map((item) => [item.id, item.timezone]))
     const logged = []
-    for (const run of planRuns(reminders, now)) {
+    for (const run of planRuns(reminders, now, {
+      skipped: prayerTimes.skipped(now),
+    })) {
       const content = contentOf(run, zones.get(run.reminderId)!, locale, t)
       if (!content) continue
       const id = await Notifications.scheduleNotificationAsync({

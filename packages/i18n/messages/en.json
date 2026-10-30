@@ -1539,7 +1539,10 @@
       "soonTitle": "Prayer time in {lead} min",
       "soonBody": "{minutes} min of prayer at {time}. Get ready.",
       "startTitle": "Time to pray",
-      "startBody": "Your {minutes}-minute prayer time is starting."
+      "startBody": "Your {minutes}-minute prayer time is starting.",
+      "skipShort": "Skip",
+      "skip": "Skip this prayer time",
+      "skipped": "This prayer time is skipped. It is never a failure: come back to God whenever you can."
     },
     "today": {
       "books": "{count} books · {first} → {last}"

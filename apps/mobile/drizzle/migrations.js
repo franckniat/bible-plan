@@ -10,6 +10,7 @@ import m0005 from './0005_sessions.sql';
 import m0006 from './0006_meditation_notes.sql';
 import m0007 from './0007_reminders.sql';
 import m0008 from './0008_notification_log.sql';
+import m0009 from './0009_skipped_prayer_times.sql';
 
   export default {
     journal,
@@ -22,7 +23,8 @@ m0004,
 m0005,
 m0006,
 m0007,
-m0008
+m0008,
+m0009
     }
   }
   

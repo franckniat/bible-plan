@@ -4,12 +4,12 @@ import {
   type ReminderInput,
 } from "@workspace/core"
 import type { SyncRecord } from "@workspace/sync"
-import { asc, count, eq } from "drizzle-orm"
+import { asc, count, eq, lt } from "drizzle-orm"
 import type { z } from "zod"
 
-import { useLocalQuery } from "@/db/changes"
+import { notifyChange, useLocalQuery } from "@/db/changes"
 import { getDatabase } from "@/db/client"
-import { reminders } from "@/db/schema"
+import { reminders, skippedPrayerTimes } from "@/db/schema"
 import type { Database } from "@/db/types"
 import { newId } from "@/lib/ids"
 
@@ -151,4 +151,45 @@ export function followTimeZone(
 /** Follows the phone's time zone (when the app opens or comes back). */
 export function followPhoneTimeZone(timeZone: string): boolean {
   return followTimeZone(getDatabase(), timeZone)
+}
+
+/** A prayer time to come, as its key: the reminder and its start. */
+export const prayerTimeKey = (reminderId: string, startsAt: Date | string) =>
+  `${reminderId}@${new Date(startsAt).toISOString()}`
+
+/**
+ * Skips a prayer time (kept on the phone): its notifications are left out.
+ * Nothing is recorded against the person: it is never a failure.
+ */
+export function skipPrayerTime(
+  db: Database,
+  reminderId: string,
+  startsAt: Date
+): void {
+  db.insert(skippedPrayerTimes)
+    .values({ reminderId, startsAt: startsAt.toISOString() })
+    .onConflictDoNothing()
+    .run()
+  notifyChange("reminder")
+}
+
+/** The prayer times skipped and still to come, as keys (prayerTimeKey). */
+export function skippedPrayerTimeKeys(db: Database, now: Date): Set<string> {
+  db.delete(skippedPrayerTimes)
+    .where(lt(skippedPrayerTimes.startsAt, now.toISOString()))
+    .run()
+  return new Set(
+    db
+      .select()
+      .from(skippedPrayerTimes)
+      .all()
+      .map((row) => prayerTimeKey(row.reminderId, row.startsAt))
+  )
+}
+
+/** Skipping, outside screens too (a notification's button). */
+export const prayerTimes = {
+  skip: (reminderId: string, startsAt: Date) =>
+    skipPrayerTime(getDatabase(), reminderId, startsAt),
+  skipped: (now: Date) => skippedPrayerTimeKeys(getDatabase(), now),
 }

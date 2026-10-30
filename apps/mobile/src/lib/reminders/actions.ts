@@ -9,7 +9,10 @@ import { phoneLocale } from "@/i18n/locale"
 import { messages } from "@/i18n/provider"
 import { markReading } from "@/repositories/plans"
 import { prayerJournal } from "@/repositories/prayers"
+import { prayerTimes } from "@/repositories/reminders"
 import { currentProfile } from "@/repositories/profile"
+
+import { rescheduleReminders } from "./schedule"
 
 /** How long "Later" puts a reminder off. */
 export const laterMinutes = 15
@@ -25,12 +28,15 @@ export type ReminderAction =
   | { type: "prayed"; requestIds: string[] }
   | { type: "meditate" }
   | { type: "later" }
+  | { type: "skip"; reminderId: string; startsAt: string }
 
 type ReminderData = {
   kind?: unknown
   href?: unknown
   readingIds?: unknown
   requestIds?: unknown
+  reminderId?: unknown
+  startsAt?: unknown
 }
 
 const strings = (value: unknown) =>
@@ -53,6 +59,15 @@ export function reminderAction(
       return { type: "meditate" }
     case "later":
       return { type: "later" }
+    case "skip":
+      return typeof data.reminderId === "string" &&
+        typeof data.startsAt === "string"
+        ? {
+            type: "skip",
+            reminderId: data.reminderId,
+            startsAt: data.startsAt,
+          }
+        : null
     default:
       return {
         type: "open",
@@ -88,6 +103,10 @@ export async function defineReminderActions() {
       button("prayed", t("Prayer.prayed")),
       later,
     ]),
+    // A prayer time can be skipped, from its warning or its start.
+    Notifications.setNotificationCategoryAsync(categoryOf("PRAYER_TIME"), [
+      button("skip", t("Mobile.prayerTime.skipShort")),
+    ]),
   ])
 }
 
@@ -113,6 +132,10 @@ async function respond(response: Notifications.NotificationResponse) {
       break
     case "meditate":
       router.push("/meditate")
+      break
+    case "skip":
+      prayerTimes.skip(action.reminderId, new Date(action.startsAt))
+      await rescheduleReminders()
       break
     case "later":
       await Notifications.scheduleNotificationAsync({

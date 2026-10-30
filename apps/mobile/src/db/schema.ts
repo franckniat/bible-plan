@@ -272,3 +272,19 @@ export const notificationLog = sqliteTable(
   },
   (table) => [index("notification_log_at").on(table.at)]
 )
+
+/** Prayer times skipped on this phone (local): never counted as a failure. */
+export const skippedPrayerTimes = sqliteTable(
+  "skipped_prayer_times",
+  {
+    reminderId: text("reminder_id").notNull(),
+    /** The start of the prayer time skipped. */
+    startsAt: text("starts_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("skipped_prayer_times_key").on(
+      table.reminderId,
+      table.startsAt
+    ),
+  ]
+)

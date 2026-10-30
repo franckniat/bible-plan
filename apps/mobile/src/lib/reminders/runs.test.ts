@@ -98,4 +98,20 @@ describe("planRuns", () => {
     )
     expect(runs[0]!.prayerTime?.phase).toBe("start")
   })
+
+  it("leaves out a skipped prayer time, before and at its start", () => {
+    const prayer = reminder({
+      kind: "PRAYER",
+      localTime: "08:30",
+      weekdays: [5],
+      leadMinutes: 5,
+      durationMinutes: 30,
+    })
+    const runs = planRuns([prayer], now, {
+      days: 8,
+      skipped: new Set(["r1@2026-10-30T07:30:00.000Z"]),
+    })
+    // The next one is a week later.
+    expect(runs[0]!.at.toISOString()).toBe("2026-11-06T07:25:00.000Z")
+  })
 })

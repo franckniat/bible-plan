@@ -30,6 +30,7 @@ const appTables = [
   "reading_plans",
   "reading_progress",
   "reminders",
+  "skipped_prayer_times",
 ]
 
 describe("local database migrations", () => {
