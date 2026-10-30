@@ -47,7 +47,16 @@ export default function RemindersScreen() {
                   key={reminder.id}
                   icon={BellRing}
                   label={`${t(`kinds.${reminder.kind}`)} · ${reminder.localTime}`}
-                  subtitle={days(reminder)}
+                  subtitle={
+                    reminder.durationMinutes
+                      ? `${days(reminder)} · ${t("prayerTime.summary", {
+                          minutes: reminder.durationMinutes,
+                          focus: t(
+                            `prayerTime.focusModes.${reminder.focusMode}.label`
+                          ),
+                        })}`
+                      : days(reminder)
+                  }
                   value={reminder.enabled ? undefined : "—"}
                   onPress={() =>
                     router.push({

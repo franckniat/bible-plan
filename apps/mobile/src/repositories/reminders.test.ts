@@ -82,4 +82,24 @@ describe("reminders", () => {
     ).toEqual(["Asia/Tokyo", "Europe/Paris"])
     expect(listReminders(db)[0]!.localTime).toBe("07:30")
   })
+
+  it("keeps a prayer time's length and warning, only on a prayer reminder", async () => {
+    const db = await testDatabase()
+    const prayerTime = { durationMinutes: 30, leadMinutes: 5 }
+    saveReminder(db, { ...input, kind: "PRAYER", ...prayerTime }, null, {
+      now,
+      id,
+    })
+    saveReminder(db, { ...input, ...prayerTime }, null, { now, id })
+    expect(
+      listReminders(db).map(({ kind, durationMinutes, leadMinutes }) => ({
+        kind,
+        durationMinutes,
+        leadMinutes,
+      }))
+    ).toEqual([
+      { kind: "PRAYER", durationMinutes: 30, leadMinutes: 5 },
+      { kind: "READING", durationMinutes: null, leadMinutes: 0 },
+    ])
+  })
 })

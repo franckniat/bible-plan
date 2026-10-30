@@ -1,6 +1,8 @@
 import {
   allWeekdays,
   maxRemindersPerUser,
+  prayerMinutes,
+  prayerTimeLeadMinutes,
   reminderKinds,
   type ReminderKind,
   type Weekday,
@@ -61,7 +63,16 @@ function ReminderForm({
     reminder?.weekdays ?? [...allWeekdays]
   )
   const [enabled, setEnabled] = useState(reminder?.enabled ?? true)
+  // A prayer reminder can be a prayer time: a length, a warning before.
+  const [duration, setDuration] = useState<number | null>(
+    reminder?.durationMinutes ?? null
+  )
+  const [lead, setLead] = useState(
+    reminder?.durationMinutes ? reminder.leadMinutes : prayerTimeLeadMinutes
+  )
+  const prayerTime = kind === "PRAYER" && duration !== null
   const [error, setError] = useState<string | null>(null)
+  const muted = [typography.small, { color: colors.mutedForeground }]
   const label = [
     typography.small,
     { color: colors.foreground, fontFamily: typography.label.fontFamily },
@@ -77,9 +88,10 @@ function ReminderForm({
         weekdays,
         channels: ["IN_APP", "PUSH"],
         enabled,
-        leadMinutes: reminder?.leadMinutes ?? 0,
-        durationMinutes: reminder?.durationMinutes ?? null,
-        focusMode: reminder?.focusMode ?? "NOTIFY",
+        leadMinutes: prayerTime ? lead : 0,
+        durationMinutes: prayerTime ? duration : null,
+        // The prayer screen and focus modes come with M15.
+        focusMode: "NOTIFY",
       },
       id
     )
@@ -149,6 +161,46 @@ function ReminderForm({
             ))}
           </View>
         </Card>
+        {kind === "PRAYER" ? (
+          <Card padded={false}>
+            <SwitchRow
+              label={t("prayerTime.label")}
+              value={duration !== null}
+              onValueChange={(on) => setDuration(on ? 30 : null)}
+            />
+            {duration !== null ? (
+              <View style={styles.section}>
+                <Text style={muted}>{t("prayerTime.description")}</Text>
+                <Text style={label}>{t("prayerTime.duration")}</Text>
+                <View style={styles.chips}>
+                  {prayerMinutes.map((minutes) => (
+                    <Chip
+                      key={minutes}
+                      label={t("prayerTime.minutes", { minutes })}
+                      selected={duration === minutes}
+                      onPress={() => setDuration(minutes)}
+                    />
+                  ))}
+                </View>
+                <Text style={label}>{t("prayerTime.lead")}</Text>
+                <View style={styles.chips}>
+                  {leadChoices.map((minutes) => (
+                    <Chip
+                      key={minutes}
+                      label={
+                        minutes === 0
+                          ? t("prayerTime.leadNone")
+                          : t("prayerTime.leadMinutes", { minutes })
+                      }
+                      selected={lead === minutes}
+                      onPress={() => setLead(minutes)}
+                    />
+                  ))}
+                </View>
+              </View>
+            ) : null}
+          </Card>
+        ) : null}
         <Card padded={false}>
           <SwitchRow
             label={t("channels.PUSH")}
@@ -176,7 +228,15 @@ function ReminderForm({
   )
 }
 
+/** How long before a prayer time it is announced. */
+const leadChoices = [0, 5, 10, 15]
+
 const styles = {
+  section: {
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.lg,
+  },
   chips: {
     flexDirection: "row" as const,
     flexWrap: "wrap" as const,
