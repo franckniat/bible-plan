@@ -3,10 +3,11 @@ import { getLocale, getTranslations } from "next-intl/server"
 
 import type { BibleVersionId } from "@workspace/bible-data"
 import {
+  findVerseOfTheDay,
   formatPassage,
   getToday,
-  toPassageSlug,
   type Locale,
+  toPassageSlug,
 } from "@workspace/core"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
@@ -14,7 +15,6 @@ import { cn } from "@workspace/ui/lib/utils"
 import { PassageText } from "@/components/reader/passage-text"
 import { VerseCard } from "@/components/reader/verse-card"
 import { Link } from "@/i18n/navigation"
-import { findVerseOfTheDay } from "@/lib/verse-of-the-day"
 
 /**
  * The verse of the day, in the version the reader uses. Nothing is shown when

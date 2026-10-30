@@ -659,3 +659,8 @@ export function catchUp(
 ): CatchUpResult {
   return catchUpPlan(getDatabase(), planId, strategy, today)
 }
+
+/** The active plans on a day, outside screens (reminders). */
+export function plansOn(today: IsoDate): TodayPlan[] {
+  return todayPlans(getDatabase(), today)
+}

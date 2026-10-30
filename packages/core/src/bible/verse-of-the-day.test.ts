@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest"
 
-import { addDays, parseReference, toPassageSlug, type IsoDate } from "@workspace/core"
-
-import pool from "@/content/verse-pool.json"
-import verses from "@/content/verses-of-the-day.json"
-
+import { addDays } from "../plans/dates"
+import type { IsoDate } from "../schemas/common"
+import { parseReference } from "./parse"
+import { toPassageSlug } from "./slug"
 import { findVerseOfTheDay, pickFromPool } from "./verse-of-the-day"
+import pool from "./verse-pool.json"
+import verses from "./verses-of-the-day.json"
 
 const calendar = {
   "2026-10-17": "Philippiens 4:19",
@@ -26,16 +27,16 @@ describe("findVerseOfTheDay", () => {
 
   it("draws a verse from the pool on the days without one", () => {
     const date = "2026-10-18"
-    expect(small.map((ref) => toPassageSlug(parseReference(ref)![0]!))).toContain(
-      slug(date)
-    )
+    expect(
+      small.map((ref) => toPassageSlug(parseReference(ref)![0]!))
+    ).toContain(slug(date))
   })
 
   it("gives the same verse all day, whoever asks", () => {
     expect(slug("2026-11-02")).toBe(slug("2026-11-02"))
-    expect(
+    expect(findVerseOfTheDay("2026-11-02", "fr", {}, pool)).toEqual(
       findVerseOfTheDay("2026-11-02", "fr", {}, pool)
-    ).toEqual(findVerseOfTheDay("2026-11-02", "fr", {}, pool))
+    )
   })
 
   it("has no verse when there is neither a choice nor a pool", () => {

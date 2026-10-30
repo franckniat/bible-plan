@@ -4,18 +4,18 @@ import { hasLocale } from "next-intl"
 import { getTranslations } from "next-intl/server"
 
 import {
+  type ContentTranslator,
   daysBetween,
   defaultLocale,
+  findVerseOfTheDay,
   getToday,
   pickReminderTopics,
-  reminderContent,
-  type ContentTranslator,
   type ReminderContent,
+  reminderContent,
 } from "@workspace/core"
 import { prisma } from "@workspace/db"
 
 import { routing } from "@/i18n/routing"
-import { findVerseOfTheDay } from "@/lib/verse-of-the-day"
 import { getTodayPlans } from "@/server/services/plans"
 import { listPrayerTitles } from "@/server/services/prayers"
 import type { DueReminder } from "@/server/services/reminder-dispatch"

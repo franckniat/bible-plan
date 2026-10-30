@@ -277,3 +277,8 @@ export const prayerJournal = {
     setPrayerStatus(getDatabase(), id, status),
   remove: (id: string) => deletePrayer(getDatabase(), id),
 }
+
+/** Titles of the active requests, least recently prayed for first (reminders). */
+export function activePrayerTitles(): string[] {
+  return listPrayers(getDatabase(), "ACTIVE").map((prayer) => prayer.title)
+}

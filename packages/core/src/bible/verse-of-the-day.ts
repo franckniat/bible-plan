@@ -1,13 +1,9 @@
-import {
-  daysBetween,
-  parseReference,
-  type IsoDate,
-  type Locale,
-  type Passage,
-} from "@workspace/core"
-
-import pool from "@/content/verse-pool.json"
-import verses from "@/content/verses-of-the-day.json"
+import { daysBetween } from "../plans/dates"
+import type { IsoDate, Locale } from "../schemas/common"
+import { parseReference } from "./parse"
+import type { Passage } from "./passage"
+import pool from "./verse-pool.json"
+import verses from "./verses-of-the-day.json"
 
 /** Verses chosen by hand: a date (YYYY-MM-DD) and a reference in French or English. */
 export type VerseCalendar = Record<string, string>
