@@ -216,3 +216,17 @@ export const meditationSessions = sqliteTable("meditation_sessions", {
   startedAt: text("started_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 })
+
+/** Meditation notes on a passage (synced, "meditationNote"). */
+export const meditationNotes = sqliteTable("meditation_notes", {
+  id: text("id").primaryKey(),
+  /** The book of the passage, to filter the notes. */
+  book: text("book").notNull(),
+  /** Passage slugs. */
+  passage: text("passage").notNull(),
+  keyVerse: text("key_verse"),
+  reflection: text("reflection"),
+  application: text("application"),
+  sessionId: text("session_id"),
+  updatedAt: text("updated_at").notNull(),
+})

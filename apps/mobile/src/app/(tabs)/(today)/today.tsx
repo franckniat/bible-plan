@@ -1,6 +1,6 @@
 import { getToday, type IsoDate } from "@workspace/core"
 import { router } from "expo-router"
-import { Sparkles } from "lucide-react-native"
+import { NotebookPen, Sparkles } from "lucide-react-native"
 import { View } from "react-native"
 import { useFormatter, useTranslations } from "use-intl"
 
@@ -21,12 +21,20 @@ export default function TodayScreen() {
   const plans = useTodayPlans(today)
 
   const meditate = (
-    <Button
-      title={t("App.today.shortcuts.meditate")}
-      icon={Sparkles}
-      variant="outline"
-      onPress={() => router.push("/meditate")}
-    />
+    <>
+      <Button
+        title={t("App.today.shortcuts.meditate")}
+        icon={Sparkles}
+        variant="outline"
+        onPress={() => router.push("/meditate")}
+      />
+      <Button
+        title={t("App.today.shortcuts.notes")}
+        icon={NotebookPen}
+        variant="outline"
+        onPress={() => router.push("/notes")}
+      />
+    </>
   )
 
   if (plans.length === 0) {
