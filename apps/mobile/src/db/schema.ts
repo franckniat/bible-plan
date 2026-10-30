@@ -1,4 +1,9 @@
-import { catchUpStrategies, type Weekday } from "@workspace/core"
+import {
+  catchUpStrategies,
+  prayerCategories,
+  prayerStatuses,
+  type Weekday,
+} from "@workspace/core"
 import {
   index,
   integer,
@@ -167,4 +172,34 @@ export const readingProgress = sqliteTable(
       table.readingId
     ),
   ]
+)
+
+/** Prayer requests of the journal (synced, "prayerRequest"). */
+export const prayerRequests = sqliteTable("prayer_requests", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  details: text("details"),
+  category: text("category", { enum: prayerCategories }).notNull(),
+  status: text("status", { enum: prayerStatuses }).notNull(),
+  startedOn: text("started_on").notNull(),
+  /** Passage slugs, as JSON. */
+  passages: text("passages", { mode: "json" }).$type<string[]>().notNull(),
+  lastPrayedAt: text("last_prayed_at"),
+  prayerCount: integer("prayer_count").notNull(),
+  answeredOn: text("answered_on"),
+  answerNote: text("answer_note"),
+  groupId: text("group_id"),
+  updatedAt: text("updated_at").notNull(),
+})
+
+/** Each "I prayed" (synced, "prayerLog"), for the statistics. */
+export const prayerLogs = sqliteTable(
+  "prayer_logs",
+  {
+    id: text("id").primaryKey(),
+    requestId: text("request_id").notNull(),
+    prayedAt: text("prayed_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [index("prayer_logs_request").on(table.requestId)]
 )

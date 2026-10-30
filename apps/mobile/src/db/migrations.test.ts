@@ -21,6 +21,8 @@ const appTables = [
   "plan_days",
   "plan_enrollments",
   "plan_readings",
+  "prayer_logs",
+  "prayer_requests",
   "profile",
   "reading_plans",
   "reading_progress",
