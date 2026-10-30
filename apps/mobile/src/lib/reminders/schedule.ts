@@ -14,6 +14,7 @@ import { createTranslator } from "use-intl"
 
 import { messages } from "@/i18n/provider"
 import { phoneLocale } from "@/i18n/locale"
+import { notificationCentre } from "@/repositories/notifications"
 import { plansOn } from "@/repositories/plans"
 import { activePrayers } from "@/repositories/prayers"
 import { reminderBook } from "@/repositories/reminders"
@@ -118,17 +119,27 @@ export async function rescheduleReminders(now: Date = new Date()) {
     await defineReminderActions()
     const reminders = reminderBook.all()
     const zones = new Map(reminders.map((item) => [item.id, item.timezone]))
+    const logged = []
     for (const run of planRuns(reminders, now)) {
       const content = contentOf(run, zones.get(run.reminderId)!, locale, t)
       if (!content) continue
-      await Notifications.scheduleNotificationAsync({
+      const id = await Notifications.scheduleNotificationAsync({
         content,
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: run.at,
         },
       })
+      logged.push({
+        id,
+        kind: run.kind,
+        title: content.title,
+        body: content.body,
+        href: content.data.href,
+        at: run.at.toISOString(),
+      })
     }
+    notificationCentre.logScheduled(logged, now)
   } catch {
     // Reminders are scheduled again at the next opening.
   }

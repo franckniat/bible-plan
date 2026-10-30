@@ -19,6 +19,7 @@ const appTables = [
   "highlights",
   "meditation_notes",
   "meditation_sessions",
+  "notification_log",
   "outbox",
   "plan_days",
   "plan_enrollments",

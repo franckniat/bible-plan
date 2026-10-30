@@ -14,6 +14,7 @@ vi.mock("@/i18n/provider", () => ({ messages: {} }))
 vi.mock("@/i18n/locale", () => ({ phoneLocale: () => "fr" }))
 vi.mock("@/repositories/profile", () => ({ currentProfile: () => ({}) }))
 vi.mock("@/repositories/reminders", () => ({ reminderBook: {} }))
+vi.mock("@/repositories/notifications", () => ({ notificationCentre: {} }))
 vi.mock("@/repositories/plans", () => ({ plansOn: () => state.plans }))
 vi.mock("@/repositories/prayers", () => ({
   activePrayers: () => state.titles.map((title) => ({ id: title, title })),

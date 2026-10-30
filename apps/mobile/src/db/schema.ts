@@ -252,3 +252,23 @@ export const reminders = sqliteTable("reminders", {
   focusMode: text("focus_mode", { enum: focusModes }).notNull(),
   updatedAt: text("updated_at").notNull(),
 })
+
+/**
+ * The reminders scheduled on this phone, for the notification centre: those
+ * due are listed (not synced, as on the web each device has its own).
+ */
+export const notificationLog = sqliteTable(
+  "notification_log",
+  {
+    /** The id of the scheduled notification. */
+    id: text("id").primaryKey(),
+    kind: text("kind", { enum: reminderKinds }).notNull(),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    href: text("href").notNull(),
+    /** When it rings. */
+    at: text("at").notNull(),
+    readAt: text("read_at"),
+  },
+  (table) => [index("notification_log_at").on(table.at)]
+)
