@@ -2,6 +2,7 @@ import {
   catchUpStrategies,
   prayerCategories,
   prayerStatuses,
+  sessionKinds,
   type Weekday,
 } from "@workspace/core"
 import {
@@ -203,3 +204,15 @@ export const prayerLogs = sqliteTable(
   },
   (table) => [index("prayer_logs_request").on(table.requestId)]
 )
+
+/** Finished meditation and prayer sessions (synced, "meditationSession"). */
+export const meditationSessions = sqliteTable("meditation_sessions", {
+  id: text("id").primaryKey(),
+  kind: text("kind", { enum: sessionKinds }).notNull(),
+  /** Passage slug, or null. */
+  passage: text("passage"),
+  plannedSeconds: integer("planned_seconds").notNull(),
+  durationSeconds: integer("duration_seconds").notNull(),
+  startedAt: text("started_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+})

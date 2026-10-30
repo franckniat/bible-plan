@@ -36,6 +36,13 @@
       "when": 1793354547519,
       "tag": "0004_prayer_journal",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1793355384190,
+      "tag": "0005_sessions",
+      "breakpoints": true
     }
   ]
 }

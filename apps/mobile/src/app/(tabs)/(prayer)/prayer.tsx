@@ -1,6 +1,6 @@
 import { prayerStatuses, type PrayerStatus } from "@workspace/core"
 import { router } from "expo-router"
-import { Plus } from "lucide-react-native"
+import { Plus, Timer } from "lucide-react-native"
 import { useState } from "react"
 import { useTranslations } from "use-intl"
 
@@ -24,6 +24,12 @@ export default function PrayerScreen() {
         title={t("add")}
         icon={Plus}
         onPress={() => router.push("/prayer-edit")}
+      />
+      <Button
+        title={t("timer")}
+        icon={Timer}
+        variant="outline"
+        onPress={() => router.push("/prayer-timer")}
       />
       <Segmented
         value={status}

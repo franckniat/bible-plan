@@ -1,5 +1,6 @@
 import { getToday, type IsoDate } from "@workspace/core"
 import { router } from "expo-router"
+import { Sparkles } from "lucide-react-native"
 import { View } from "react-native"
 import { useFormatter, useTranslations } from "use-intl"
 
@@ -19,6 +20,15 @@ export default function TodayScreen() {
   const today = getToday(profile.timeZone)
   const plans = useTodayPlans(today)
 
+  const meditate = (
+    <Button
+      title={t("App.today.shortcuts.meditate")}
+      icon={Sparkles}
+      variant="outline"
+      onPress={() => router.push("/meditate")}
+    />
+  )
+
   if (plans.length === 0) {
     return (
       <TabScreen>
@@ -29,6 +39,7 @@ export default function TodayScreen() {
             onPress={() => router.navigate("/plans")}
           />
         </Card>
+        {meditate}
       </TabScreen>
     )
   }
@@ -37,6 +48,7 @@ export default function TodayScreen() {
       {plans.map((plan) => (
         <TodayPlanCard key={plan.id} plan={plan} today={today} />
       ))}
+      {meditate}
     </TabScreen>
   )
 }

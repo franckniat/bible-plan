@@ -36,7 +36,9 @@
       "expo-localization",
       "expo-font",
       "expo-sqlite",
-      "expo-asset"
+      "expo-asset",
+      "expo-audio",
+      ["expo-notifications", { "sounds": ["./assets/sounds/session-end.wav"] }]
     ],
     "experiments": {
       "typedRoutes": true,

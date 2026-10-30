@@ -17,6 +17,7 @@ const tables = (db: Database) =>
 
 const appTables = [
   "highlights",
+  "meditation_sessions",
   "outbox",
   "plan_days",
   "plan_enrollments",
