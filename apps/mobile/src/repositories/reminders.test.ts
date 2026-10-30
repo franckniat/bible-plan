@@ -3,11 +3,20 @@ import { describe, expect, it, vi } from "vitest"
 
 import { testDatabase } from "@/db/test-database"
 
-import { deleteReminder, listReminders, saveReminder } from "./reminders"
+import { ensureProfile, getProfile } from "./profile"
+import {
+  deleteReminder,
+  followTimeZone,
+  listReminders,
+  saveReminder,
+} from "./reminders"
 import { readOutbox } from "./write"
 
 vi.mock("@/db/client", () => ({ getDatabase: () => undefined }))
 vi.mock("@/lib/ids", () => ({ newId: () => "unused" }))
+vi.mock("@/lib/preferences/storage", () => ({
+  storage: { get: () => null, set: () => {} },
+}))
 
 const now = new Date("2026-10-30T09:00:00.000Z")
 let next = 0
@@ -55,5 +64,22 @@ describe("reminders", () => {
       ok: false,
       error: "limit",
     })
+  })
+
+  it("follows the phone to another time zone, keeping the local times", async () => {
+    const db = await testDatabase()
+    ensureProfile(db, { now, timeZone: "Africa/Douala", deviceId: id })
+    saveReminder(db, input, null, { now, id })
+    saveReminder(db, { ...input, timeZone: "Asia/Tokyo" }, null, { now, id })
+
+    expect(followTimeZone(db, "Africa/Douala", { now })).toBe(false)
+    expect(followTimeZone(db, "Europe/Paris", { now })).toBe(true)
+    expect(getProfile(db).timeZone).toBe("Europe/Paris")
+    expect(
+      listReminders(db)
+        .map((reminder) => reminder.timezone)
+        .sort()
+    ).toEqual(["Asia/Tokyo", "Europe/Paris"])
+    expect(listReminders(db)[0]!.localTime).toBe("07:30")
   })
 })

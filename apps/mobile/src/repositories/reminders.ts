@@ -13,6 +13,7 @@ import { reminders } from "@/db/schema"
 import type { Database } from "@/db/types"
 import { newId } from "@/lib/ids"
 
+import { getProfile, updateProfile } from "./profile"
 import { writeSynced } from "./write"
 
 export type Reminder = typeof reminders.$inferSelect
@@ -106,4 +107,48 @@ export const reminderBook = {
   save: (input: z.input<typeof reminderInputSchema>, id: string | null) =>
     saveReminder(getDatabase(), input, id),
   remove: (id: string) => deleteReminder(getDatabase(), id),
+}
+
+/**
+ * Follows the phone to another time zone: the profile takes it, and the
+ * reminders set in the former one keep their local time in the new one (a
+ * 07:00 reminder still rings at 07:00 where the phone is). Gives whether
+ * anything changed.
+ */
+export function followTimeZone(
+  db: Database,
+  timeZone: string,
+  { now = new Date() }: { now?: Date } = {}
+): boolean {
+  const former = getProfile(db).timeZone
+  if (former === timeZone) return false
+  updateProfile(db, { timeZone })
+  for (const reminder of db
+    .select()
+    .from(reminders)
+    .where(eq(reminders.timezone, former))
+    .all()) {
+    const record = {
+      ...reminder,
+      timezone: timeZone,
+      updatedAt: now.toISOString(),
+    }
+    writeSynced(
+      db,
+      { table: "reminder", op: "upsert", record },
+      (tx) =>
+        tx
+          .update(reminders)
+          .set({ timezone: timeZone, updatedAt: record.updatedAt })
+          .where(eq(reminders.id, reminder.id))
+          .run(),
+      now
+    )
+  }
+  return true
+}
+
+/** Follows the phone's time zone (when the app opens or comes back). */
+export function followPhoneTimeZone(timeZone: string): boolean {
+  return followTimeZone(getDatabase(), timeZone)
 }
