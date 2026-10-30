@@ -11,9 +11,9 @@ import {
   type UnlockedAchievement,
 } from "@workspace/core"
 import type { SyncRecord } from "@workspace/sync"
-import { eq, isNull } from "drizzle-orm"
+import { eq, inArray, isNull } from "drizzle-orm"
 
-import { useLocalQuery } from "@/db/changes"
+import { notifyChange, useLocalQuery } from "@/db/changes"
 import { getDatabase } from "@/db/client"
 import {
   achievements,
@@ -204,4 +204,24 @@ export function useAchievements(timeZone: string, today: IsoDate) {
 /** Evaluates the achievements again (after what can earn one). */
 export function checkAchievements(timeZone: string): UnlockedAchievement[] {
   return syncAchievements(getDatabase(), timeZone)
+}
+
+/** Celebrated on this phone: not shown again (local, not synced). */
+export function markSeen(db: Database, ids: string[], now: Date): void {
+  if (ids.length === 0) return
+  db.update(achievements)
+    .set({ seenAt: now.toISOString() })
+    .where(inArray(achievements.id, ids))
+    .run()
+  notifyChange("achievement")
+}
+
+/** Earned and still to celebrate, kept up to date. */
+export function useUnseenAchievements(): Achievement[] {
+  return useLocalQuery(["achievement"], () => unseenAchievements(getDatabase()))
+}
+
+/** Marks achievements as celebrated (for screens). */
+export function celebrated(ids: string[]): void {
+  markSeen(getDatabase(), ids, new Date())
 }

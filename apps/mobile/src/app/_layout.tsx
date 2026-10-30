@@ -5,6 +5,7 @@ import { useEffect } from "react"
 import { useColorScheme } from "react-native"
 import { useTranslations } from "use-intl"
 
+import { Celebration } from "@/components/achievements/celebration"
 import { Body, Screen } from "@/components/screen"
 import { useDatabase } from "@/db/migrate"
 import { I18nProvider } from "@/i18n/provider"
@@ -47,6 +48,7 @@ function App() {
   return (
     <I18nProvider locale={locale}>
       <Navigation />
+      <Celebration />
     </I18nProvider>
   )
 }

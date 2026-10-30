@@ -6,10 +6,12 @@ import { uuidv7 } from "@/lib/uuid"
 
 import {
   listAchievements,
+  markSeen,
   syncAchievements,
   unseenAchievements,
 } from "./achievements"
 import { createPlan, planDetail, setReadingRead } from "./plans"
+import { markPrayed, savePrayerRequest } from "./prayers"
 import { readOutbox } from "./write"
 
 vi.mock("@/lib/ids", () => ({ newId: () => "unused" }))
@@ -58,5 +60,34 @@ describe("syncAchievements", () => {
 
     expect(syncAchievements(db, "Africa/Douala", { now, id })).toEqual([])
     expect(listAchievements(db)).toHaveLength(3)
+  })
+})
+
+describe("celebration", () => {
+  it("keeps a recent achievement to celebrate until it is seen", async () => {
+    const db = await testDatabase()
+    const prayer = savePrayerRequest(db, { title: "Paix" }, null, {
+      now: new Date("2026-10-30T07:00:00.000Z"),
+      id,
+      today: "2026-10-30",
+    })
+    if (prayer.ok) {
+      markPrayed(db, prayer.id, {
+        now: new Date("2026-10-30T07:05:00.000Z"),
+        id,
+      })
+    }
+    syncAchievements(db, "Africa/Douala", {
+      now: new Date("2026-10-30T07:06:00.000Z"),
+      id,
+    })
+    const unseen = unseenAchievements(db)
+    expect(unseen.map((a) => a.key)).toEqual(["first-prayer"])
+    markSeen(
+      db,
+      unseen.map((a) => a.id),
+      new Date("2026-10-30T07:07:00.000Z")
+    )
+    expect(unseenAchievements(db)).toEqual([])
   })
 })
