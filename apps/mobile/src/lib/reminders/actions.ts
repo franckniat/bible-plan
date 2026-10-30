@@ -15,7 +15,8 @@ import { currentProfile } from "@/repositories/profile"
 export const laterMinutes = 15
 
 /** The buttons of a reminder notification, by its kind. */
-export const categoryOf = (kind: ReminderKind) => `reminder-${kind}`
+export const categoryOf = (kind: ReminderKind | "PRAYER_TIME") =>
+  `reminder-${kind}`
 
 /** What a tap on a reminder or one of its buttons does. */
 export type ReminderAction =

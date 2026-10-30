@@ -1535,7 +1535,11 @@
       "soon": "Les groupes arrivent bientôt dans l’application."
     },
     "prayerTime": {
-      "title": "Temps de prière"
+      "title": "Temps de prière",
+      "soonTitle": "Temps de prière dans {lead} min",
+      "soonBody": "{minutes} min de prière à {time}. Préparez-vous.",
+      "startTitle": "C’est l’heure de prier",
+      "startBody": "Votre temps de prière de {minutes} min commence."
     },
     "today": {
       "books": "{count} livres · {first} → {last}"

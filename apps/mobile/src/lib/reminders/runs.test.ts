@@ -9,6 +9,8 @@ const reminder = (change: Partial<ReminderTiming> = {}): ReminderTiming => ({
   timezone: "Africa/Douala",
   weekdays: [0, 1, 2, 3, 4, 5, 6],
   enabled: true,
+  leadMinutes: 0,
+  durationMinutes: null,
   ...change,
 })
 
@@ -49,5 +51,51 @@ describe("planRuns", () => {
     expect(runs.at(-1)!.at.getTime()).toBeLessThanOrEqual(
       new Date("2026-11-06T06:30:00.000Z").getTime()
     )
+  })
+
+  it("warns before a prayer time and notifies at its start, to the minute", () => {
+    const runs = planRuns(
+      [
+        reminder({
+          kind: "PRAYER",
+          localTime: "08:30",
+          weekdays: [5],
+          leadMinutes: 5,
+          durationMinutes: 30,
+        }),
+      ],
+      now
+    )
+    const startsAt = new Date("2026-10-30T07:30:00.000Z")
+    expect(runs.slice(0, 2)).toEqual([
+      {
+        reminderId: "r1",
+        kind: "PRAYER",
+        at: new Date("2026-10-30T07:25:00.000Z"),
+        prayerTime: { phase: "warning", minutes: 30, startsAt },
+      },
+      {
+        reminderId: "r1",
+        kind: "PRAYER",
+        at: startsAt,
+        prayerTime: { phase: "start", minutes: 30, startsAt },
+      },
+    ])
+  })
+
+  it("leaves out a warning already past", () => {
+    const runs = planRuns(
+      [
+        reminder({
+          kind: "PRAYER",
+          localTime: "08:05",
+          weekdays: [5],
+          leadMinutes: 10,
+          durationMinutes: 30,
+        }),
+      ],
+      now
+    )
+    expect(runs[0]!.prayerTime?.phase).toBe("start")
   })
 })

@@ -62,6 +62,7 @@ export function contentOf(
   locale: Locale,
   t: ContentTranslator
 ) {
+  if (run.prayerTime) return prayerTimeContent(run, timeZone, locale)
   const day = getToday(timeZone, run.at)
   const plans = run.kind === "READING" ? plansOn(day) : []
   // Requests are picked by id, then named by their titles.
@@ -93,6 +94,38 @@ export function contentOf(
       // What the buttons act on: the readings left, the requests named.
       readingIds: remainingReadings(plans).map((reading) => reading.id),
       requestIds: picked,
+    },
+  }
+}
+
+/** The warning before a prayer time, or its start: it opens the prayer timer. */
+function prayerTimeContent(run: ReminderRun, timeZone: string, locale: Locale) {
+  const { phase, minutes, startsAt } = run.prayerTime!
+  const t = createTranslator({
+    locale,
+    messages: messages[locale],
+    namespace: "Mobile.prayerTime",
+  })
+  const time = new Intl.DateTimeFormat(locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone,
+  }).format(startsAt)
+  const lead = Math.round((startsAt.getTime() - run.at.getTime()) / 60_000)
+  return {
+    title: phase === "warning" ? t("soonTitle", { lead }) : t("startTitle"),
+    body:
+      phase === "warning"
+        ? t("soonBody", { minutes, time })
+        : t("startBody", { minutes }),
+    categoryIdentifier: categoryOf("PRAYER_TIME"),
+    data: {
+      kind: REMINDER,
+      reminderId: run.reminderId,
+      type: run.kind,
+      href: `/prayer-time?minutes=${minutes}&at=${startsAt.toISOString()}`,
+      readingIds: [],
+      requestIds: [],
     },
   }
 }

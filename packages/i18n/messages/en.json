@@ -1535,7 +1535,11 @@
       "soon": "Groups are coming to the app soon."
     },
     "prayerTime": {
-      "title": "Prayer time"
+      "title": "Prayer time",
+      "soonTitle": "Prayer time in {lead} min",
+      "soonBody": "{minutes} min of prayer at {time}. Get ready.",
+      "startTitle": "Time to pray",
+      "startBody": "Your {minutes}-minute prayer time is starting."
     },
     "today": {
       "books": "{count} books · {first} → {last}"
