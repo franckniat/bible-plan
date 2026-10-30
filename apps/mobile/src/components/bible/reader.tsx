@@ -41,9 +41,11 @@ import { useLocale, useTranslations } from "use-intl"
 
 import { usePassage } from "@/bible/use-passage"
 import { versionName } from "@/bible/versions"
+import { ChapterPager } from "@/components/bible/chapter-pager"
 import { ChapterText } from "@/components/bible/chapter-text"
 import { HeaderButton } from "@/components/bible/header-button"
 import { HighlightRow } from "@/components/bible/highlight-row"
+import { NeighborChapter } from "@/components/bible/neighbor-chapter"
 import { PanelAction } from "@/components/bible/panel-action"
 import { SelectionPanel } from "@/components/bible/selection-panel"
 import { Body, TabScreen } from "@/components/screen"
@@ -178,99 +180,120 @@ export function Reader({
           ),
         }}
       />
-      {/* Another passage starts at the top. */}
-      <TabScreen key={slug}>
-        {state.status === "loading" ? (
-          <ActivityIndicator
-            color={colors.accent}
-            accessibilityLabel={t("Reader.loading")}
-          />
-        ) : state.status === "error" ? (
-          <Body>{t("Reader.loadFailed")}</Body>
-        ) : (
-          state.text.chapters.map(({ chapter, verses }) => (
-            <View key={chapter} style={styles.chapter}>
-              {state.text.chapters.length > 1 ? (
-                <Text
-                  style={[typography.h3, { color: colors.mutedForeground }]}
-                >
-                  {t("Reader.chapter", { chapter })}
-                </Text>
-              ) : null}
-              <ChapterText
-                version={version}
-                verses={verses}
-                look={reader}
-                highlights={colorsOf(
-                  chapter,
-                  verses.map(([number]) => number)
-                )}
-                selected={
-                  selection?.chapter === chapter ? selection.verses : []
-                }
-                onPressVerse={(verse) => pick(chapter, verse)}
+      <ChapterPager
+        pageKey={slug}
+        previous={
+          previous ? (
+            <NeighborChapter {...previous} version={version} look={reader} />
+          ) : null
+        }
+        next={
+          next ? (
+            <NeighborChapter {...next} version={version} look={reader} />
+          ) : null
+        }
+        onPrevious={() => previous && go(previous)}
+        onNext={() => next && go(next)}
+        current={
+          // Another passage starts at the top.
+          <TabScreen key={slug}>
+            {state.status === "loading" ? (
+              <ActivityIndicator
+                color={colors.accent}
+                accessibilityLabel={t("Reader.loading")}
               />
-            </View>
-          ))
-        )}
-
-        {!whole ? (
-          <Button
-            title={t("Reader.wholeChapter")}
-            variant="outline"
-            onPress={() =>
-              onGo(
-                `${passage.book}.${passage.start.chapter}${
-                  single ? "" : `-${passage.end.chapter}`
-                }`
-              )
-            }
-          />
-        ) : null}
-
-        {reading && state.status === "ready" ? (
-          <Button
-            title={t(done ? "Reader.reading.done" : "Reader.reading.markDone")}
-            icon={done ? CircleCheck : Circle}
-            variant={done ? "secondary" : "primary"}
-            accessibilityRole="checkbox"
-            accessibilityLabel={t("Reader.reading.markDone")}
-            accessibilityState={{ checked: done }}
-            onPress={() => markReading(reading, !done)}
-          />
-        ) : null}
-
-        {previous || next ? (
-          <View style={styles.navigation}>
-            {previous ? (
-              <Button
-                title={label(previous)}
-                icon={ChevronLeft}
-                variant="outline"
-                size="sm"
-                accessibilityLabel={t("Reader.previous", {
-                  chapter: label(previous),
-                })}
-                onPress={() => go(previous)}
-              />
+            ) : state.status === "error" ? (
+              <Body>{t("Reader.loadFailed")}</Body>
             ) : (
-              <View />
+              state.text.chapters.map(({ chapter, verses }) => (
+                <View key={chapter} style={styles.chapter}>
+                  {state.text.chapters.length > 1 ? (
+                    <Text
+                      style={[typography.h3, { color: colors.mutedForeground }]}
+                    >
+                      {t("Reader.chapter", { chapter })}
+                    </Text>
+                  ) : null}
+                  <ChapterText
+                    version={version}
+                    verses={verses}
+                    look={reader}
+                    highlights={colorsOf(
+                      chapter,
+                      verses.map(([number]) => number)
+                    )}
+                    selected={
+                      selection?.chapter === chapter ? selection.verses : []
+                    }
+                    onPressVerse={(verse) => pick(chapter, verse)}
+                  />
+                </View>
+              ))
             )}
-            {next ? (
+
+            {!whole ? (
               <Button
-                title={label(next)}
-                icon={ChevronRight}
+                title={t("Reader.wholeChapter")}
                 variant="outline"
-                size="sm"
-                accessibilityLabel={t("Reader.next", { chapter: label(next) })}
-                onPress={() => go(next)}
+                onPress={() =>
+                  onGo(
+                    `${passage.book}.${passage.start.chapter}${
+                      single ? "" : `-${passage.end.chapter}`
+                    }`
+                  )
+                }
               />
             ) : null}
-          </View>
-        ) : null}
-        {/* Room for the panel, so the last verses can be picked too. */}
-        {selection ? <View style={styles.panelRoom} /> : null}
-      </TabScreen>
+
+            {reading && state.status === "ready" ? (
+              <Button
+                title={t(
+                  done ? "Reader.reading.done" : "Reader.reading.markDone"
+                )}
+                icon={done ? CircleCheck : Circle}
+                variant={done ? "secondary" : "primary"}
+                accessibilityRole="checkbox"
+                accessibilityLabel={t("Reader.reading.markDone")}
+                accessibilityState={{ checked: done }}
+                onPress={() => markReading(reading, !done)}
+              />
+            ) : null}
+
+            {previous || next ? (
+              <View style={styles.navigation}>
+                {previous ? (
+                  <Button
+                    title={label(previous)}
+                    icon={ChevronLeft}
+                    variant="outline"
+                    size="sm"
+                    accessibilityLabel={t("Reader.previous", {
+                      chapter: label(previous),
+                    })}
+                    onPress={() => go(previous)}
+                  />
+                ) : (
+                  <View />
+                )}
+                {next ? (
+                  <Button
+                    title={label(next)}
+                    icon={ChevronRight}
+                    variant="outline"
+                    size="sm"
+                    accessibilityLabel={t("Reader.next", {
+                      chapter: label(next),
+                    })}
+                    onPress={() => go(next)}
+                  />
+                ) : null}
+              </View>
+            ) : null}
+            {/* Room for the panel, so the last verses can be picked too. */}
+            {selection ? <View style={styles.panelRoom} /> : null}
+          </TabScreen>
+        }
+      />
 
       {selection && state.status === "ready" ? (
         <SelectionPanel
