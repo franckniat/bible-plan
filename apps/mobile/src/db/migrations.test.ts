@@ -16,6 +16,7 @@ const tables = (db: Database) =>
     .filter((name) => !name.startsWith("__") && name !== "sqlite_sequence")
 
 const appTables = [
+  "achievements",
   "highlights",
   "meditation_notes",
   "meditation_sessions",

@@ -8,6 +8,7 @@ import { useTranslations } from "use-intl"
 import { Body, Screen } from "@/components/screen"
 import { useDatabase } from "@/db/migrate"
 import { I18nProvider } from "@/i18n/provider"
+import { useAchievementEvaluation } from "@/lib/achievements/keep-evaluated"
 import { usePreferences } from "@/lib/preferences"
 import { useReminderResponses } from "@/lib/reminders/actions"
 import { useReminderScheduling } from "@/lib/reminders/keep-scheduled"
@@ -42,6 +43,7 @@ function App() {
   const { locale } = useProfile()
   useReminderScheduling()
   useReminderResponses()
+  useAchievementEvaluation()
   return (
     <I18nProvider locale={locale}>
       <Navigation />

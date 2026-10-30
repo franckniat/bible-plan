@@ -288,3 +288,18 @@ export const skippedPrayerTimes = sqliteTable(
     ),
   ]
 )
+
+/** Badges and trophies earned (synced, "achievement"): one row per level. */
+export const achievements = sqliteTable(
+  "achievements",
+  {
+    id: text("id").primaryKey(),
+    key: text("key").notNull(),
+    level: integer("level").notNull(),
+    unlockedAt: text("unlocked_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+    /** When it was celebrated on this phone (local); null: still to show. */
+    seenAt: text("seen_at"),
+  },
+  (table) => [uniqueIndex("achievements_level").on(table.key, table.level)]
+)
