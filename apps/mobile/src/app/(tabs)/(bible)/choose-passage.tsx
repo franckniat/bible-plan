@@ -6,7 +6,6 @@ import {
   parsePassageSlug,
 } from "@workspace/core"
 import { ChevronDown, ChevronRight, History } from "lucide-react-native"
-import { Stack } from "expo-router"
 import { useRef, useState } from "react"
 import {
   Pressable,
@@ -42,13 +41,14 @@ export default function ChoosePassageScreen() {
   const scrolled = useRef(false)
 
   return (
-    <>
-      <Stack.Screen
-        options={{ title: t("title"), presentation: "formSheet" }}
-      />
+    <View style={styles.screen}>
+      {/* A sheet has no header: its title is at the top of it. */}
+      <Text accessibilityRole="header" style={styles.title}>
+        {t("title")}
+      </Text>
       <ScrollView
         ref={scroll}
-        contentInsetAdjustmentBehavior="automatic"
+        nestedScrollEnabled
         style={styles.screen}
         contentContainerStyle={styles.content}
       >
@@ -167,12 +167,21 @@ export default function ChoosePassageScreen() {
           </View>
         ))}
       </ScrollView>
-    </>
+    </View>
   )
 }
 
 const themedStyles = createThemedStyles((colors) => ({
   screen: { flex: 1, backgroundColor: colors.background },
+  title: {
+    ...typography.h3,
+    textAlign: "center",
+    color: colors.foreground,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
   content: { paddingBottom: spacing.xl },
   testament: {
     ...typography.label,

@@ -15,11 +15,14 @@ export function LargeTitleStack({
   name,
   title,
   headerRight,
+  children,
 }: {
   /** Route of the tab's root screen inside the stack. */
   name: string
   title: string
   headerRight?: () => ReactNode
+  /** Other screens of the stack with their own options (sheets…). */
+  children?: ReactNode
 }) {
   const colors = useColors()
   const dark = useColorScheme() === "dark"
@@ -53,6 +56,7 @@ export function LargeTitleStack({
         name={name}
         options={{ title, headerRight, headerLargeTitle: true }}
       />
+      {children}
     </Stack>
   )
 }
