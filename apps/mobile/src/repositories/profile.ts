@@ -106,6 +106,11 @@ export function updateProfile(
 }
 
 /** The local profile, kept up to date. */
+/** The profile as it is now, outside screens (notifications). */
+export function currentProfile(): Profile {
+  return getProfile(getDatabase())
+}
+
 export function useProfile(): Profile {
   return useLocalQuery(["profile"], () => getProfile(getDatabase()))
 }

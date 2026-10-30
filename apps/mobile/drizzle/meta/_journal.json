@@ -50,6 +50,13 @@
       "when": 1793355767996,
       "tag": "0006_meditation_notes",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1793356097340,
+      "tag": "0007_reminders",
+      "breakpoints": true
     }
   ]
 }

@@ -8,7 +8,7 @@ import { IntlProvider } from "use-intl"
 import { phoneLocale } from "./locale"
 
 // Both languages are bundled: they are small and the app works offline.
-const messages: Record<Locale, Messages> = { fr, en }
+export const messages: Record<Locale, Messages> = { fr, en }
 
 /** The language chosen in the app (the profile's), or else the phone's. */
 export function I18nProvider({

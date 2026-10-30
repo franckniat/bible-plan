@@ -1,8 +1,11 @@
 import {
   catchUpStrategies,
+  focusModes,
   prayerCategories,
   prayerStatuses,
+  reminderKinds,
   sessionKinds,
+  type ReminderChannel,
   type Weekday,
 } from "@workspace/core"
 import {
@@ -228,5 +231,24 @@ export const meditationNotes = sqliteTable("meditation_notes", {
   reflection: text("reflection"),
   application: text("application"),
   sessionId: text("session_id"),
+  updatedAt: text("updated_at").notNull(),
+})
+
+/** Reading, prayer and meditation reminders (synced, "reminder"). */
+export const reminders = sqliteTable("reminders", {
+  id: text("id").primaryKey(),
+  kind: text("kind", { enum: reminderKinds }).notNull(),
+  /** "07:30", in `timezone`. */
+  localTime: text("local_time").notNull(),
+  timezone: text("timezone").notNull(),
+  weekdays: text("weekdays", { mode: "json" }).$type<Weekday[]>().notNull(),
+  channels: text("channels", { mode: "json" })
+    .$type<ReminderChannel[]>()
+    .notNull(),
+  enabled: integer("enabled", { mode: "boolean" }).notNull(),
+  leadMinutes: integer("lead_minutes").notNull(),
+  /** A prayer time's length; null for a plain reminder. */
+  durationMinutes: integer("duration_minutes"),
+  focusMode: text("focus_mode", { enum: focusModes }).notNull(),
   updatedAt: text("updated_at").notNull(),
 })

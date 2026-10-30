@@ -1,6 +1,13 @@
 import { readingSpeeds } from "@workspace/core"
 import { router } from "expo-router"
-import { BookOpen, Clock, Gauge, Languages, Shapes } from "lucide-react-native"
+import {
+  Bell,
+  BookOpen,
+  Clock,
+  Gauge,
+  Languages,
+  Shapes,
+} from "lucide-react-native"
 import { View } from "react-native"
 import { useLocale, useTranslations } from "use-intl"
 
@@ -41,6 +48,12 @@ export default function SettingsScreen() {
 
       <Card title={t("Mobile.settings.app")} padded={false}>
         <View>
+          <ListRow
+            icon={Bell}
+            label={t("Reminders.title")}
+            subtitle={t("Reminders.description")}
+            onPress={() => router.push("/settings/reminders")}
+          />
           <ListRow
             icon={Languages}
             label={t("Settings.fields.locale")}
