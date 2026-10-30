@@ -278,7 +278,10 @@ export const prayerJournal = {
   remove: (id: string) => deletePrayer(getDatabase(), id),
 }
 
-/** Titles of the active requests, least recently prayed for first (reminders). */
-export function activePrayerTitles(): string[] {
-  return listPrayers(getDatabase(), "ACTIVE").map((prayer) => prayer.title)
+/** The active requests, least recently prayed for first (reminders). */
+export function activePrayers(): { id: string; title: string }[] {
+  return listPrayers(getDatabase(), "ACTIVE").map(({ id, title }) => ({
+    id,
+    title,
+  }))
 }

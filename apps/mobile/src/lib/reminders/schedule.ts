@@ -3,6 +3,7 @@ import {
   findVerseOfTheDay,
   getToday,
   pickReminderTopics,
+  remainingReadings,
   reminderContent,
   type ContentTranslator,
   type Locale,
@@ -14,10 +15,11 @@ import { createTranslator } from "use-intl"
 import { messages } from "@/i18n/provider"
 import { phoneLocale } from "@/i18n/locale"
 import { plansOn } from "@/repositories/plans"
-import { activePrayerTitles } from "@/repositories/prayers"
+import { activePrayers } from "@/repositories/prayers"
 import { reminderBook } from "@/repositories/reminders"
 import { currentProfile } from "@/repositories/profile"
 
+import { categoryOf, defineReminderActions } from "./actions"
 import { planRuns, type ReminderRun } from "./runs"
 
 /** Marks the notifications of reminders, to replace them all at once. */
@@ -60,29 +62,36 @@ export function contentOf(
   t: ContentTranslator
 ) {
   const day = getToday(timeZone, run.at)
+  const plans = run.kind === "READING" ? plansOn(day) : []
+  // Requests are picked by id, then named by their titles.
+  const prayers = run.kind === "PRAYER" ? activePrayers() : []
+  const picked = pickReminderTopics(
+    prayers.map((prayer) => prayer.id),
+    daysBetween("1970-01-01", day)
+  )
   const content = reminderContent({
     kind: run.kind,
     locale,
-    plans: run.kind === "READING" ? plansOn(day) : [],
+    plans,
     verse: run.kind === "MEDITATION" ? findVerseOfTheDay(day, locale) : null,
-    topics:
-      run.kind === "PRAYER"
-        ? pickReminderTopics(
-            activePrayerTitles(),
-            daysBetween("1970-01-01", day)
-          )
-        : [],
+    topics: picked.map(
+      (id) => prayers.find((prayer) => prayer.id === id)!.title
+    ),
     t,
   })
   if (!content) return null
   return {
     title: content.title,
     body: content.body,
+    categoryIdentifier: categoryOf(run.kind),
     data: {
       kind: REMINDER,
       reminderId: run.reminderId,
       type: run.kind,
       href: content.href ?? "/today",
+      // What the buttons act on: the readings left, the requests named.
+      readingIds: remainingReadings(plans).map((reading) => reading.id),
+      requestIds: picked,
     },
   }
 }
@@ -106,6 +115,7 @@ export async function rescheduleReminders(now: Date = new Date()) {
     const { granted } = await Notifications.getPermissionsAsync()
     if (!granted) return
     const { locale, t } = translator()
+    await defineReminderActions()
     const reminders = reminderBook.all()
     const zones = new Map(reminders.map((item) => [item.id, item.timezone]))
     for (const run of planRuns(reminders, now)) {

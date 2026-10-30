@@ -9,6 +9,7 @@ import { Body, Screen } from "@/components/screen"
 import { useDatabase } from "@/db/migrate"
 import { I18nProvider } from "@/i18n/provider"
 import { usePreferences } from "@/lib/preferences"
+import { useReminderResponses } from "@/lib/reminders/actions"
 import { useReminderScheduling } from "@/lib/reminders/keep-scheduled"
 import { useProfile } from "@/repositories/profile"
 import { navigationTheme } from "@/theme/colors"
@@ -40,6 +41,7 @@ export default function RootLayout() {
 function App() {
   const { locale } = useProfile()
   useReminderScheduling()
+  useReminderResponses()
   return (
     <I18nProvider locale={locale}>
       <Navigation />

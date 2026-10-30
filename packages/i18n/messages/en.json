@@ -1616,6 +1616,9 @@
       "tomorrow": "Tomorrow",
       "nextMonday": "Next Monday",
       "chooseBook": "Choose"
+    },
+    "reminders": {
+      "meditateNow": "Meditate now"
     }
   }
 }

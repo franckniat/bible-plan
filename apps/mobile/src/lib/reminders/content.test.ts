@@ -16,7 +16,10 @@ vi.mock("@/repositories/profile", () => ({ currentProfile: () => ({}) }))
 vi.mock("@/repositories/reminders", () => ({ reminderBook: {} }))
 vi.mock("@/repositories/plans", () => ({ plansOn: () => state.plans }))
 vi.mock("@/repositories/prayers", () => ({
-  activePrayerTitles: () => state.titles,
+  activePrayers: () => state.titles.map((title) => ({ id: title, title })),
+}))
+vi.mock("./actions", () => ({
+  categoryOf: (kind: string) => `reminder-${kind}`,
 }))
 
 const { contentOf } = await import("./schedule")
@@ -49,7 +52,12 @@ describe("contentOf", () => {
     expect(contentOf(run("READING"), "Africa/Douala", "fr", t)).toMatchObject({
       title: "C’est l’heure de lire",
       body: "Au programme : Jean 3.",
-      data: { kind: "reminder", href: "/read/John.3?reading=x" },
+      categoryIdentifier: "reminder-READING",
+      data: {
+        kind: "reminder",
+        href: "/read/John.3?reading=x",
+        readingIds: ["x"],
+      },
     })
   })
 
@@ -67,7 +75,7 @@ describe("contentOf", () => {
     state.titles = ["Marie"]
     expect(contentOf(run("PRAYER"), "Africa/Douala", "fr", t)).toMatchObject({
       body: "Pensez à prier pour : Marie.",
-      data: { href: "/prayer" },
+      data: { href: "/prayer", requestIds: ["Marie"] },
     })
     expect(
       contentOf(run("MEDITATION"), "Africa/Douala", "fr", t)?.body
