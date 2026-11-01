@@ -182,6 +182,8 @@ export function MarkedText({
               : null,
           ]}
           onPress={part.onPress}
+          // No grey block over a verse tapped (iOS's pressed text).
+          suppressHighlighting
         >
           {part.text}
         </Text>
