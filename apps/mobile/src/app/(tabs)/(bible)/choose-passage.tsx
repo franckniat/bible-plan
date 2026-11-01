@@ -1,11 +1,10 @@
 import {
   type BookId,
   books,
-  formatPassage,
   getChapterCount,
   parsePassageSlug,
 } from "@workspace/core"
-import { ChevronDown, ChevronRight, History } from "lucide-react-native"
+import { ChevronDown, ChevronRight } from "lucide-react-native"
 import { useRef, useState } from "react"
 import {
   Pressable,
@@ -26,16 +25,15 @@ import { useColors } from "@/theme/use-colors"
 /**
  * The books of the Bible by testament, opened from the reader's header: a
  * book unfolds its chapters, and a chapter opens in the reader. The book
- * being read is unfolded, in view, under the other places read lately.
+ * being read is unfolded, in view.
  */
 export default function ChoosePassageScreen() {
   const t = useTranslations("BibleIndex")
   const locale = useLocale()
   const colors = useColors()
   const styles = useThemedStyles(themedStyles)
-  const [last, ...earlier] = useReadingHistory()
+  const [last] = useReadingHistory()
   const reading = parsePassageSlug(last?.slug ?? "")
-  const recent = earlier.slice(0, 5)
   const [open, setOpen] = useState<BookId | null>(reading?.book ?? null)
   const scroll = useRef<ScrollViewInstance>(null)
   const scrolled = useRef(false)
@@ -52,37 +50,6 @@ export default function ChoosePassageScreen() {
         style={styles.screen}
         contentContainerStyle={styles.content}
       >
-        {recent.length > 0 ? (
-          <View>
-            <Text style={styles.testament}>{t("recent")}</Text>
-            {recent.map((entry) => {
-              const passage = parsePassageSlug(entry.slug)
-              if (!passage) return null
-              return (
-                <Pressable
-                  key={entry.slug}
-                  accessibilityRole="button"
-                  onPress={() => {
-                    haptics.tap()
-                    openPassage(entry.slug)
-                  }}
-                  style={({ pressed }) => [
-                    styles.book,
-                    pressed && styles.pressed,
-                  ]}
-                >
-                  <View style={styles.recent}>
-                    <History size={16} color={colors.mutedForeground} />
-                    <Text style={styles.name}>
-                      {formatPassage(passage, locale)}
-                    </Text>
-                  </View>
-                  <ChevronRight size={18} color={colors.mutedForeground} />
-                </Pressable>
-              )
-            })}
-          </View>
-        ) : null}
         {(["old", "new"] as const).map((testament) => (
           <View key={testament}>
             <Text style={styles.testament}>{t(`testament.${testament}`)}</Text>
@@ -202,7 +169,6 @@ const themedStyles = createThemedStyles((colors) => ({
     borderBottomColor: colors.border,
   },
   name: { ...typography.body, color: colors.foreground },
-  recent: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
   current: { fontFamily: typography.h3.fontFamily, color: colors.primary },
   pressed: { backgroundColor: colors.accentSoft },
   grid: {
