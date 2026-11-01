@@ -1,6 +1,13 @@
 import { getToday, type IsoDate } from "@workspace/core"
 import { Stack, useLocalSearchParams } from "expo-router"
-import { ChevronLeft, ChevronRight } from "lucide-react-native"
+import {
+  Archive,
+  ArchiveRestore,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+} from "lucide-react-native"
 import { useState } from "react"
 import { Pressable, Text, View } from "react-native"
 import { useFormatter, useTranslations } from "use-intl"
@@ -14,14 +21,18 @@ import {
 import { CatchUpNotice } from "@/components/plans/catch-up-notice"
 import { ReadingRow } from "@/components/plans/reading-row"
 import { Body, TabScreen } from "@/components/screen"
+import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { Segmented } from "@/components/ui/segmented"
 import {
+  changePlanStatus,
   usePlanDetail,
+  type PlanStatus,
   type PlanDayView,
   type PlanDetail,
 } from "@/repositories/plans"
+import { haptics } from "@/lib/haptics"
 import { useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
@@ -135,6 +146,8 @@ function PlanView({ plan }: { plan: PlanDetail }) {
           </Card>
         ) : null}
 
+        <PlanActions plan={plan} />
+
         <Segmented
           value={view}
           options={[
@@ -197,6 +210,59 @@ function PlanView({ plan }: { plan: PlanDetail }) {
         )}
       </TabScreen>
     </>
+  )
+}
+
+/** Pause, resume, archive or restore the plan, as on the web. */
+function PlanActions({ plan }: { plan: PlanDetail }) {
+  const t = useTranslations("PlanDetail.actions")
+  const set = (status: PlanStatus) => () => {
+    haptics.tap()
+    changePlanStatus(plan.id, status)
+  }
+  return (
+    <Card>
+      {plan.status !== "ACTIVE" ? (
+        <Body>
+          {t(plan.status === "PAUSED" ? "pausedHint" : "archivedHint")}
+        </Body>
+      ) : null}
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.sm }}>
+        {plan.status === "ACTIVE" ? (
+          <Button
+            title={t("pause")}
+            icon={Pause}
+            size="sm"
+            variant="outline"
+            onPress={set("PAUSED")}
+          />
+        ) : null}
+        {plan.status === "PAUSED" ? (
+          <Button
+            title={t("resume")}
+            icon={Play}
+            size="sm"
+            onPress={set("ACTIVE")}
+          />
+        ) : null}
+        {plan.status === "ARCHIVED" ? (
+          <Button
+            title={t("restore")}
+            icon={ArchiveRestore}
+            size="sm"
+            onPress={set("ACTIVE")}
+          />
+        ) : (
+          <Button
+            title={t("archive")}
+            icon={Archive}
+            size="sm"
+            variant="ghost"
+            onPress={set("ARCHIVED")}
+          />
+        )}
+      </View>
+    </Card>
   )
 }
 

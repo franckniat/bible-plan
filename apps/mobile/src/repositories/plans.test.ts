@@ -20,6 +20,7 @@ import {
   createPlan,
   listPlans,
   planDetail,
+  setPlanStatus,
   setReadingRead,
   todayPlans,
 } from "./plans"
@@ -382,4 +383,38 @@ describe("catch-up and read days", () => {
       })
     }
   )
+})
+
+describe("setPlanStatus", () => {
+  it("pauses a plan out of Today, archives it apart, restores it", async () => {
+    const db = await testDatabase()
+    const { id } = createPlan(
+      db,
+      {
+        source: "custom",
+        title: "Marc",
+        passages: bookRange("Mark", "Mark"),
+        startDate: "2026-11-02",
+        pace: { mode: "chaptersPerDay", chapters: 1 },
+      },
+      "fr",
+      { now, id: ids() }
+    )
+    setPlanStatus(db, id, "PAUSED", { now })
+    expect(todayPlans(db, "2026-11-02")).toEqual([])
+    expect(listPlans(db)).toMatchObject([{ id, status: "PAUSED" }])
+
+    setPlanStatus(db, id, "ARCHIVED", { now })
+    expect(listPlans(db)).toEqual([])
+    expect(listPlans(db, { archived: true })).toMatchObject([{ id }])
+    expect(planDetail(db, id)).toMatchObject({ status: "ARCHIVED" })
+
+    setPlanStatus(db, id, "ACTIVE", { now })
+    expect(todayPlans(db, "2026-11-02")).toHaveLength(1)
+    expect(
+      readOutbox(db)
+        .filter((change) => change.table === "planEnrollment")
+        .map((change) => (change.data as { status: string }).status)
+    ).toEqual(["ACTIVE", "PAUSED", "ARCHIVED", "ACTIVE"])
+  })
 })

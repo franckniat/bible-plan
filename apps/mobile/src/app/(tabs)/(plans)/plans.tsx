@@ -1,6 +1,7 @@
 import { planTemplates, type Locale } from "@workspace/core"
 import { router } from "expo-router"
 import { ArrowRight, ListOrdered } from "lucide-react-native"
+import { useState } from "react"
 import { Text, View } from "react-native"
 import { useFormatter, useLocale, useTranslations } from "use-intl"
 
@@ -9,6 +10,7 @@ import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ListRow } from "@/components/ui/list-row"
+import { Segmented } from "@/components/ui/segmented"
 import { usePlans } from "@/repositories/plans"
 import { typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
@@ -19,7 +21,10 @@ export default function PlansScreen() {
   const locale = useLocale() as Locale
   const format = useFormatter()
   const colors = useColors()
-  const plans = usePlans()
+  const [view, setView] = useState<"current" | "archived">("current")
+  const current = usePlans()
+  const archived = usePlans(true)
+  const plans = view === "current" ? current : archived
   const date = (value: string) =>
     format.dateTime(new Date(`${value}T00:00:00.000Z`), {
       dateStyle: "medium",
@@ -29,13 +34,32 @@ export default function PlansScreen() {
 
   return (
     <TabScreen>
-      {plans.length > 0 ? (
+      {archived.length > 0 ? (
+        <Segmented
+          value={view}
+          options={[
+            {
+              value: "current",
+              label: t("Plans.views.current", { count: current.length }),
+            },
+            {
+              value: "archived",
+              label: t("Plans.views.archived", { count: archived.length }),
+            },
+          ]}
+          onChange={setView}
+        />
+      ) : null}
+      {plans.length === 0 && view === "archived" ? (
+        <Body>{t("Plans.archivedEmpty")}</Body>
+      ) : plans.length > 0 ? (
         <Card title={t("Plans.title")} padded={false}>
           <View>
             {plans.map((plan, index) => (
               <ListRow
                 key={plan.id}
                 label={plan.title}
+                value={plan.status === "PAUSED" ? t("Plans.paused") : undefined}
                 subtitle={`${t("Plans.dates", {
                   start: date(plan.startDate),
                   end: date(plan.endDate),

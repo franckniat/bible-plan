@@ -157,7 +157,10 @@ export type PlanSummary = {
 }
 
 /** Plans followed on this phone, most recent first, without archived ones. */
-export function listPlans(db: Database): PlanSummary[] {
+export function listPlans(
+  db: Database,
+  { archived = false }: { archived?: boolean } = {}
+): PlanSummary[] {
   return db
     .select({
       id: readingPlans.id,
@@ -171,7 +174,11 @@ export function listPlans(db: Database): PlanSummary[] {
     })
     .from(planEnrollments)
     .innerJoin(readingPlans, eq(readingPlans.id, planEnrollments.planId))
-    .where(ne(planEnrollments.status, "ARCHIVED"))
+    .where(
+      archived
+        ? eq(planEnrollments.status, "ARCHIVED")
+        : ne(planEnrollments.status, "ARCHIVED")
+    )
     .orderBy(desc(planEnrollments.id))
     .all()
     .map((plan) => ({
@@ -181,8 +188,56 @@ export function listPlans(db: Database): PlanSummary[] {
 }
 
 /** The plans followed, kept up to date. */
-export function usePlans(): PlanSummary[] {
-  return useLocalQuery(planTables, () => listPlans(getDatabase()))
+export function usePlans(archived = false): PlanSummary[] {
+  return useLocalQuery(
+    planTables,
+    () => listPlans(getDatabase(), { archived }),
+    [archived]
+  )
+}
+
+export type PlanStatus = "ACTIVE" | "PAUSED" | "ARCHIVED"
+
+/**
+ * Pauses, resumes, archives or restores the plan followed (its enrollment),
+ * as on the web: a paused or archived plan leaves Today, an archived one
+ * stays in the archived plans with its progress.
+ */
+export function setPlanStatus(
+  db: Database,
+  planId: string,
+  status: PlanStatus,
+  { now = new Date() }: { now?: Date } = {}
+): boolean {
+  const [enrollment] = db
+    .select()
+    .from(planEnrollments)
+    .where(eq(planEnrollments.planId, planId))
+    .all()
+  if (!enrollment) return false
+  if (enrollment.status === status) return true
+  const record: SyncRecord<"planEnrollment"> = {
+    ...enrollment,
+    status,
+    updatedAt: now.toISOString(),
+  }
+  writeSynced(
+    db,
+    { table: "planEnrollment", op: "upsert", record },
+    (tx) =>
+      tx
+        .update(planEnrollments)
+        .set({ status, updatedAt: record.updatedAt })
+        .where(eq(planEnrollments.id, enrollment.id))
+        .run(),
+    now
+  )
+  return true
+}
+
+/** Changes a plan's status (for screens). */
+export function changePlanStatus(planId: string, status: PlanStatus) {
+  return setPlanStatus(getDatabase(), planId, status)
 }
 
 /** Creates a plan (for screens). */
@@ -441,6 +496,7 @@ export function useReadingDone(readingId: string | undefined): boolean {
 export type PlanDetail = {
   id: string
   title: string
+  status: PlanStatus
   startDate: IsoDate
   endDate: IsoDate
   totalReadings: number
@@ -458,9 +514,15 @@ export function planDetail(db: Database, planId: string): PlanDetail | null {
     .all()
   if (!plan) return null
   const days = planDaysOf(db, planId)
+  const [enrollment] = db
+    .select({ status: planEnrollments.status })
+    .from(planEnrollments)
+    .where(eq(planEnrollments.planId, planId))
+    .all()
   return {
     id: plan.id,
     title: plan.title,
+    status: enrollment?.status ?? "ACTIVE",
     startDate: plan.startDate,
     endDate: plan.endDate,
     totalReadings: plan.totalReadings,
