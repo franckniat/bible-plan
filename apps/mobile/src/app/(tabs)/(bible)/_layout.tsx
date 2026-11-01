@@ -20,6 +20,15 @@ export default function BibleStack() {
   return (
     <LargeTitleStack name="bible" title={t("bible")}>
       <Stack.Screen name="choose-passage" options={sheet} />
+      {/* The text stays usable behind it: more verses can be tapped. */}
+      <Stack.Screen
+        name="verse-actions"
+        options={{
+          ...sheet,
+          sheetAllowedDetents: "fitToContents",
+          sheetLargestUndimmedDetentIndex: "last",
+        }}
+      />
     </LargeTitleStack>
   )
 }

@@ -16,20 +16,16 @@ import {
   parsePassageSlug,
 } from "@workspace/core"
 import { router, Stack } from "expo-router"
-import * as Clipboard from "expo-clipboard"
 import {
-  Check,
   ChevronLeft,
   Circle,
   CircleCheck,
   ChevronRight,
-  Columns2,
-  Copy,
-  Share2,
   Type,
 } from "lucide-react-native"
 import {
   ActivityIndicator,
+  Dimensions,
   Pressable,
   Share,
   StyleSheet,
@@ -45,14 +41,12 @@ import { versionName } from "@/bible/versions"
 import { ChapterPager } from "@/components/bible/chapter-pager"
 import { ChapterText } from "@/components/bible/chapter-text"
 import { HeaderButton } from "@/components/bible/header-button"
-import { HighlightRow } from "@/components/bible/highlight-row"
 import { NeighborChapter } from "@/components/bible/neighbor-chapter"
-import { PanelAction } from "@/components/bible/panel-action"
-import { SelectionPanel } from "@/components/bible/selection-panel"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { usePreferences } from "@/lib/preferences"
 import { recordReading } from "@/lib/reading-history"
+import { useVerseActions, verseActions } from "@/lib/verse-actions"
 import { highlightVerses, useHighlights } from "@/repositories/highlights"
 import { markReading, useReadingDone } from "@/repositories/plans"
 import { bibleVersionOf, useProfile } from "@/repositories/profile"
@@ -92,17 +86,16 @@ export function Reader({
   const pick = (chapter: number, verse: number, pageY: number) => {
     tapY.current = pageY
     setPicked({ slug, selection: toggleVerse(selection, chapter, verse) })
-    keepInView()
   }
   // The verse tapped stays in view above the options' sheet.
   const scroll = useRef<ScrollViewInstance>(null)
   const scrollY = useRef(0)
   const tapY = useRef<number | null>(null)
-  const sheetTop = useRef<number | null>(null)
+  const { sheetHeight } = useVerseActions()
   const keepInView = () => {
     const y = tapY.current
-    const top = sheetTop.current
-    if (y === null || top === null) return
+    if (y === null || sheetHeight === null) return
+    const top = Dimensions.get("window").height - sheetHeight
     // Close to the sheet or under it: the verse goes up, with room for the
     // rest of it below the line tapped.
     if (y < top - 160) return
@@ -110,14 +103,9 @@ export function Reader({
     tapY.current = y - shift
     scroll.current?.scrollTo({ y: scrollY.current + shift, animated: true })
   }
+  // Once the sheet is open, and for each verse tapped while it is.
+  useEffect(keepInView, [sheetHeight, selection])
   const clear = () => setPicked({ slug, selection: null })
-  // "Copied" shows for the selection it was for, and not for long.
-  const [copied, setCopied] = useState<string | null>(null)
-  useEffect(() => {
-    if (!copied) return
-    const timer = setTimeout(() => setCopied(null), 2500)
-    return () => clearTimeout(timer)
-  }, [copied])
   const valid = passage !== null
   useEffect(() => {
     if (valid) recordReading(slug)
@@ -136,6 +124,76 @@ export function Reader({
   /** The colors of the verses of a chapter, in the version's numbering. */
   const colorsOf = (chapter: number, verses: readonly number[]) =>
     colorsInVersion(highlighted, book, chapter, verses, versification)
+
+  // The options of the verses selected, for their native sheet: opened with
+  // the first verse, closed with the last.
+  const ready = state.status === "ready" ? state.text : null
+  const selectionColors =
+    passage && selection ? colorsOf(selection.chapter, selection.verses) : {}
+  useEffect(() => {
+    if (!passage || !selection || !ready) {
+      verseActions.set(null)
+      return
+    }
+    const reference = selectionReference(passage.book, selection, locale)
+    const abbreviation = versification.abbreviation
+    const text = selectionText(
+      version,
+      selection,
+      ready.chapters.find(({ chapter }) => chapter === selection.chapter)
+        ?.verses ?? []
+    )
+    // The other versions number some verses differently: the canon's.
+    const canon = canonVersesOf(
+      passage.book,
+      selection.chapter,
+      selection.verses,
+      versification
+    )
+    const opened = verseActions.get().actions !== null
+    verseActions.set({
+      key: `${slug}:${selection.chapter}:${selection.verses.join(",")}`,
+      reference,
+      version: abbreviation,
+      color: sharedColor(selectionColors, selection.verses),
+      highlight: (color) =>
+        highlightVerses({
+          book: passage.book,
+          chapter: selection.chapter,
+          verses: canon,
+          color,
+        }),
+      copyText: `« ${text} »\n${reference} ${abbreviation}`,
+      share: () =>
+        void Share.share({
+          title: `${reference} ${abbreviation}`,
+          message: `« ${text} » — ${reference} ${abbreviation}`,
+        }),
+      compare: () => {
+        clear()
+        // Once the sheet has gone.
+        setTimeout(
+          () =>
+            router.push({
+              pathname: "/compare",
+              params: {
+                book: passage.book,
+                chapter: String(selection.chapter),
+                from: String(canon[0]),
+                to: String(canon.at(-1)),
+              },
+            }),
+          350
+        )
+      },
+      close: clear,
+    })
+    if (!opened) router.push("/verse-actions")
+    // Read again when the verses, their colors or the text change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, JSON.stringify(selection), JSON.stringify(selectionColors), ready])
+  // Leaving the reader leaves no options behind.
+  useEffect(() => () => verseActions.set(null), [])
 
   if (!passage) {
     return (
@@ -315,111 +373,11 @@ export function Reader({
                 ) : null}
               </View>
             ) : null}
-            {/* Room for the panel, so the last verses can be picked too. */}
+            {/* Room for the sheet, so the last verses can be picked too. */}
             {selection ? <View style={styles.panelRoom} /> : null}
           </TabScreen>
         }
       />
-
-      {selection && state.status === "ready" ? (
-        <SelectionPanel
-          reference={selectionReference(passage.book, selection, locale)}
-          version={getBibleVersion(version).abbreviation}
-          onClose={clear}
-          onTop={(top) => {
-            sheetTop.current = top
-            keepInView()
-          }}
-        >
-          <HighlightRow
-            current={sharedColor(
-              colorsOf(selection.chapter, selection.verses),
-              selection.verses
-            )}
-            onPick={(color) =>
-              highlightVerses({
-                book: passage.book,
-                chapter: selection.chapter,
-                verses: canonVersesOf(
-                  passage.book,
-                  selection.chapter,
-                  selection.verses,
-                  versification
-                ),
-                color,
-              })
-            }
-          />
-          {(() => {
-            // The text as on the web: « … » then the reference and version.
-            const reference = selectionReference(
-              passage.book,
-              selection,
-              locale
-            )
-            const abbreviation = versification.abbreviation
-            const text = selectionText(
-              version,
-              selection,
-              state.text.chapters.find(
-                ({ chapter }) => chapter === selection.chapter
-              )?.verses ?? []
-            )
-            const key = `${selection.chapter}:${selection.verses.join(",")}`
-            return (
-              <>
-                <PanelAction
-                  icon={copied === key ? Check : Copy}
-                  label={
-                    copied === key
-                      ? t("Reader.selection.copied")
-                      : t("Reader.selection.copy")
-                  }
-                  onPress={async () => {
-                    await Clipboard.setStringAsync(
-                      `« ${text} »\n${reference} ${abbreviation}`
-                    )
-                    setCopied(key)
-                  }}
-                />
-                <PanelAction
-                  icon={Columns2}
-                  label={t("Reader.selection.compare")}
-                  onPress={() => {
-                    // The other versions number some verses differently:
-                    // compare the verses of the canon.
-                    const canon = canonVersesOf(
-                      passage.book,
-                      selection.chapter,
-                      selection.verses,
-                      versification
-                    )
-                    router.push({
-                      pathname: "/compare",
-                      params: {
-                        book: passage.book,
-                        chapter: String(selection.chapter),
-                        from: String(canon[0]),
-                        to: String(canon.at(-1)),
-                      },
-                    })
-                  }}
-                />
-                <PanelAction
-                  icon={Share2}
-                  label={t("Reader.selection.share")}
-                  onPress={() =>
-                    void Share.share({
-                      title: `${reference} ${abbreviation}`,
-                      message: `« ${text} » — ${reference} ${abbreviation}`,
-                    })
-                  }
-                />
-              </>
-            )
-          })()}
-        </SelectionPanel>
-      ) : null}
     </>
   )
 }
