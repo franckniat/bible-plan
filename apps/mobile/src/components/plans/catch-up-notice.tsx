@@ -18,8 +18,11 @@ export function CatchUpNotice({
   planId,
   late,
   today,
+  strategy,
 }: {
   planId: string
+  /** FREE: the calendar stays, the readings are caught up when one likes. */
+  strategy: CatchUpStrategy
   /** Unread readings planned before today. */
   late: number
   today: IsoDate
@@ -31,6 +34,15 @@ export function CatchUpNotice({
   const spread = useCatchUpPreview(planId, "REDISTRIBUTE", today)
   const [error, setError] = useState<string | null>(null)
   if (late === 0) return null
+  if (strategy === "FREE") {
+    return (
+      <View style={{ paddingHorizontal: spacing.lg }}>
+        <Notice icon={Hourglass}>
+          {`${t("late", { count: late })} ${t("free")}`}
+        </Notice>
+      </View>
+    )
+  }
 
   const date = (value: IsoDate) =>
     format.dateTime(new Date(`${value}T00:00:00.000Z`), {

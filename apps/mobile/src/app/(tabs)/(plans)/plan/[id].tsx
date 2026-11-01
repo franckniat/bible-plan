@@ -1,4 +1,4 @@
-import { getToday, type IsoDate } from "@workspace/core"
+import { catchUpStrategies, getToday, type IsoDate } from "@workspace/core"
 import { router, Stack, useLocalSearchParams } from "expo-router"
 import {
   Archive,
@@ -20,6 +20,7 @@ import {
   type Month,
 } from "@/components/plans/plan-calendar"
 import { CatchUpNotice } from "@/components/plans/catch-up-notice"
+import { ChoiceList } from "@/components/choice-list"
 import { ReadingRow } from "@/components/plans/reading-row"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
@@ -28,6 +29,7 @@ import { ProgressBar } from "@/components/ui/progress-bar"
 import { Segmented } from "@/components/ui/segmented"
 import {
   changePlanStatus,
+  chooseCatchUp,
   removePlan,
   usePlanDetail,
   type PlanStatus,
@@ -145,11 +147,31 @@ function PlanView({ plan }: { plan: PlanDetail }) {
 
         {lateReadings > 0 ? (
           <Card padded={false} style={{ paddingVertical: spacing.lg }}>
-            <CatchUpNotice planId={plan.id} late={lateReadings} today={today} />
+            <CatchUpNotice
+              planId={plan.id}
+              late={lateReadings}
+              today={today}
+              strategy={plan.catchUpStrategy}
+            />
           </Card>
         ) : null}
 
         <PlanActions plan={plan} />
+
+        <Card title={t("PlanDetail.catchUp.legend")} padded={false}>
+          <View style={{ paddingHorizontal: spacing.lg }}>
+            <Body>{t("PlanDetail.catchUp.description")}</Body>
+          </View>
+          <ChoiceList
+            options={catchUpStrategies.map((strategy) => ({
+              value: strategy,
+              label: t(`PlanDetail.catchUp.${strategy}.label`),
+              subtitle: t(`PlanDetail.catchUp.${strategy}.description`),
+            }))}
+            value={plan.catchUpStrategy}
+            onChange={(strategy) => chooseCatchUp(plan.id, strategy)}
+          />
+        </Card>
 
         <Segmented
           value={view}

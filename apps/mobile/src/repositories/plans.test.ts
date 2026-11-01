@@ -21,6 +21,7 @@ import {
   deletePlan,
   listPlans,
   planDetail,
+  setCatchUpStrategy,
   setPlanStatus,
   setReadingRead,
   todayPlans,
@@ -451,5 +452,34 @@ describe("deletePlan", () => {
       ["planEnrollment", "delete"],
       ["readingPlan", "delete"],
     ])
+  })
+})
+
+describe("setCatchUpStrategy", () => {
+  it("keeps the strategy chosen with the plan, and sends the plan whole", async () => {
+    const db = await testDatabase()
+    const { id } = createPlan(
+      db,
+      {
+        source: "custom",
+        title: "Jean",
+        passages: bookRange("John", "John"),
+        startDate: "2026-11-02",
+        pace: { mode: "chaptersPerDay", chapters: 1 },
+      },
+      "fr",
+      { now, id: ids() }
+    )
+    setCatchUpStrategy(db, id, "FREE", { now })
+    expect(planDetail(db, id)).toMatchObject({ catchUpStrategy: "FREE" })
+    expect(todayPlans(db, "2026-11-05")[0]).toMatchObject({
+      catchUpStrategy: "FREE",
+      lateReadings: 3,
+    })
+    const last = readOutbox(db).at(-1)!
+    expect(last).toMatchObject({ table: "readingPlan", id, op: "upsert" })
+    const record = readingPlanRecordSchema.parse(last.data)
+    expect(record).toMatchObject({ catchUpStrategy: "FREE" })
+    expect(record.days).toHaveLength(21)
   })
 })

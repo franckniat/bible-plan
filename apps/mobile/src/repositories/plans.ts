@@ -304,6 +304,66 @@ export function removePlan(planId: string) {
   return deletePlan(getDatabase(), planId)
 }
 
+/**
+ * Chooses what happens when the plan is late, as on the web: shift it,
+ * spread the readings left until its end, or catch up freely (the calendar
+ * stays). The plan goes into the outbox whole, with its days.
+ */
+export function setCatchUpStrategy(
+  db: Database,
+  planId: string,
+  strategy: CatchUpStrategy,
+  { now = new Date() }: { now?: Date } = {}
+): boolean {
+  const [plan] = db
+    .select()
+    .from(readingPlans)
+    .where(eq(readingPlans.id, planId))
+    .all()
+  if (!plan) return false
+  if (plan.catchUpStrategy === strategy) return true
+  const updatedAt = now.toISOString()
+  const record: SyncRecord<"readingPlan"> = {
+    ...plan,
+    catchUpStrategy: strategy,
+    updatedAt,
+    days: planDaysOf(db, planId).map((day) => ({
+      id: day.id,
+      dayNumber: day.day,
+      date: day.date,
+      verses: day.verses,
+      readings: day.readings.map(({ passage, ...reading }, position) => ({
+        id: reading.id,
+        position,
+        track: reading.track,
+        book: passage.book,
+        startChapter: passage.start.chapter,
+        startVerse: passage.start.verse,
+        endChapter: passage.end.chapter,
+        endVerse: passage.end.verse,
+        verses: reading.verses,
+      })),
+    })),
+  }
+  writeSynced(
+    db,
+    { table: "readingPlan", op: "upsert", record },
+    (tx) =>
+      tx
+        .update(readingPlans)
+        .set({ catchUpStrategy: strategy, updatedAt })
+        .where(eq(readingPlans.id, planId))
+        .run(),
+    now
+  )
+  return true
+}
+
+/** Chooses a plan's catch-up (for screens). */
+export function chooseCatchUp(planId: string, strategy: CatchUpStrategy) {
+  return setCatchUpStrategy(getDatabase(), planId, strategy)
+}
+
 /** Changes a plan's status (for screens). */
 export function changePlanStatus(planId: string, status: PlanStatus) {
   return setPlanStatus(getDatabase(), planId, status)
@@ -401,6 +461,7 @@ export function planDaysOf(
 export type TodayPlan = {
   id: string
   title: string
+  catchUpStrategy: CatchUpStrategy
   trackNames: (Record<Locale, string> | null)[]
   totalReadings: number
   completedReadings: number
@@ -423,6 +484,7 @@ export function todayPlans(db: Database, today: IsoDate): TodayPlan[] {
       title: readingPlans.title,
       tracks: readingPlans.tracks,
       totalReadings: readingPlans.totalReadings,
+      catchUpStrategy: readingPlans.catchUpStrategy,
     })
     .from(planEnrollments)
     .innerJoin(readingPlans, eq(readingPlans.id, planEnrollments.planId))
@@ -434,6 +496,7 @@ export function todayPlans(db: Database, today: IsoDate): TodayPlan[] {
       return {
         id: plan.id,
         title: plan.title,
+        catchUpStrategy: plan.catchUpStrategy,
         trackNames: trackNamesOf(plan.tracks),
         totalReadings: plan.totalReadings,
         completedReadings: completedReadings(db, plan.id),
@@ -566,6 +629,7 @@ export type PlanDetail = {
   id: string
   title: string
   status: PlanStatus
+  catchUpStrategy: CatchUpStrategy
   startDate: IsoDate
   endDate: IsoDate
   totalReadings: number
@@ -592,6 +656,7 @@ export function planDetail(db: Database, planId: string): PlanDetail | null {
     id: plan.id,
     title: plan.title,
     status: enrollment?.status ?? "ACTIVE",
+    catchUpStrategy: plan.catchUpStrategy,
     startDate: plan.startDate,
     endDate: plan.endDate,
     totalReadings: plan.totalReadings,

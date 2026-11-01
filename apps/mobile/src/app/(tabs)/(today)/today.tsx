@@ -102,6 +102,7 @@ function TodayPlanCard({ plan, today }: { plan: TodayPlan; today: IsoDate }) {
           planId={plan.id}
           late={plan.lateReadings}
           today={today}
+          strategy={plan.catchUpStrategy}
         />
       ) : null}
       {note ? (
