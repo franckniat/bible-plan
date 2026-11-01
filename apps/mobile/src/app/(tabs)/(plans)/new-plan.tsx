@@ -429,8 +429,12 @@ export default function NewPlanScreen() {
           title={t("PlanWizard.create.submit")}
           disabled={!plan}
           onPress={() => {
-            addPlan(request, locale)
-            router.back()
+            // The new plan, with a reading reminder to set if none.
+            const { id } = addPlan(request, locale)
+            router.replace({
+              pathname: "/plan/[id]",
+              params: { id, created: "1" },
+            })
           }}
         />
       </TabScreen>

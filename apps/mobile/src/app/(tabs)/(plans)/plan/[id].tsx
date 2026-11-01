@@ -22,6 +22,7 @@ import {
 import { CatchUpNotice } from "@/components/plans/catch-up-notice"
 import { ChoiceList } from "@/components/choice-list"
 import { ReadingRow } from "@/components/plans/reading-row"
+import { ReminderSuggestion } from "@/components/plans/reminder-suggestion"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -47,7 +48,11 @@ const utc = (date: IsoDate) => new Date(`${date}T00:00:00.000Z`)
 /** A plan: its progress, and its days by month, as a list or a calendar. */
 export default function PlanScreen() {
   const t = useTranslations()
-  const { id } = useLocalSearchParams<{ id: string }>()
+  const { id, created } = useLocalSearchParams<{
+    id: string
+    /** Just made: a reading reminder is offered. */
+    created?: string
+  }>()
   const plan = usePlanDetail(id)
   if (!plan) {
     return (
@@ -56,10 +61,10 @@ export default function PlanScreen() {
       </TabScreen>
     )
   }
-  return <PlanView plan={plan} />
+  return <PlanView plan={plan} created={created === "1"} />
 }
 
-function PlanView({ plan }: { plan: PlanDetail }) {
+function PlanView({ plan, created }: { plan: PlanDetail; created: boolean }) {
   const t = useTranslations()
   const format = useFormatter()
   const colors = useColors()
@@ -155,6 +160,8 @@ function PlanView({ plan }: { plan: PlanDetail }) {
             />
           </Card>
         ) : null}
+
+        {created ? <ReminderSuggestion /> : null}
 
         <PlanActions plan={plan} />
 
