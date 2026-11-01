@@ -45,6 +45,8 @@ import { createThemedStyles, useThemedStyles } from "@/theme/themed-styles"
 const quickChapters = [1, 2, 3, 5, 10]
 /** Lengths offered for a plan over a number of days, as on the web. */
 const quickDays = [30, 90, 180, 365]
+/** Reading times offered, in minutes a day, as on the web. */
+const quickMinutes = [5, 10, 15, 20, 30]
 /** End dates offered: in so many months. */
 const quickMonths = [1, 3, 6, 12]
 
@@ -96,7 +98,7 @@ export default function NewPlanScreen() {
   const { template: templateKey, type } = useLocalSearchParams<{
     template?: string
     /** How the plan's length is chosen; by chapters a day when left out. */
-    type?: "chapters" | "duration"
+    type?: "chapters" | "duration" | "time"
   }>()
   const template = templateKey ? getPlanTemplate(templateKey) : undefined
 
@@ -108,6 +110,9 @@ export default function NewPlanScreen() {
   const [choosing, setChoosing] = useState<"from" | "to" | null>(null)
   const [chapters, setChapters] = useState(3)
   const duration = type === "duration"
+  const time = type === "time"
+  const [minutes, setMinutes] = useState(15)
+  const readingWpm = readingSpeeds[profile.readingSpeed]
   const [lengthMode, setLengthMode] = useState<"days" | "endDate">("days")
   const [days, setDays] = useState(90)
   // In so many months after the start: follows the start date chosen.
@@ -135,11 +140,13 @@ export default function NewPlanScreen() {
         passages,
         startDate,
         activeWeekdays: weekdays,
-        pace: !duration
-          ? { mode: "chaptersPerDay", chapters }
-          : lengthMode === "days"
-            ? { mode: "days", days }
-            : { mode: "endDate", endDate: inMonths(startDate, months) },
+        pace: time
+          ? { mode: "minutesPerDay", minutes, readingWpm }
+          : !duration
+            ? { mode: "chaptersPerDay", chapters }
+            : lengthMode === "days"
+              ? { mode: "days", days }
+              : { mode: "endDate", endDate: inMonths(startDate, months) },
       }
 
   const preview = previewPlan(request, locale)
@@ -238,7 +245,35 @@ export default function NewPlanScreen() {
               </Text>
             </Card>
 
-            {duration ? (
+            {time ? (
+              <Card title={t("PlanWizard.schedule.minutes.label")}>
+                <View style={styles.chips}>
+                  {quickMinutes.map((value) => (
+                    <Chip
+                      key={value}
+                      label={t("PlanWizard.schedule.minutes.quick", {
+                        minutes: value,
+                      })}
+                      selected={minutes === value}
+                      onPress={() => setMinutes(value)}
+                    />
+                  ))}
+                </View>
+                <Text style={styles.hint}>
+                  {t.rich("PlanWizard.schedule.minutes.hint", {
+                    wpm: readingWpm,
+                    settings: (chunk) => (
+                      <Text
+                        style={styles.link}
+                        onPress={() => router.push("/settings/pace")}
+                      >
+                        {chunk}
+                      </Text>
+                    ),
+                  })}
+                </Text>
+              </Card>
+            ) : duration ? (
               <Card title={t("PlanWizard.schedule.mode.legend")}>
                 <Segmented
                   value={lengthMode}
@@ -419,6 +454,7 @@ const themedStyles = createThemedStyles((colors) => ({
   },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   rangeHint: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg },
+  link: { color: colors.primary, textDecorationLine: "underline" },
   hint: { ...typography.small, color: colors.mutedForeground },
   summary: { gap: spacing.xs },
   summaryText: { ...typography.body, color: colors.foreground },

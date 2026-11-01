@@ -121,10 +121,11 @@ describe("createPlan", () => {
     expect(days).toHaveLength(63)
   })
 
-  it("stores the same plan as the web over a number of days or until a date", async () => {
+  it("stores the same plan as the web over days, until a date, or by minutes", async () => {
     for (const pace of [
       { mode: "days", days: 90 },
       { mode: "endDate", endDate: "2027-02-01" },
+      { mode: "minutesPerDay", minutes: 15, readingWpm: 200 },
     ] as const) {
       const db = await testDatabase()
       const request: NewPlan = {
