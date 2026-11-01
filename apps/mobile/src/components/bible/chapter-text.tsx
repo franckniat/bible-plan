@@ -8,6 +8,7 @@ import type { Preferences } from "@/lib/preferences"
 import { fontFamily } from "@/theme/fonts"
 import { spacing } from "@/theme/metrics"
 import { createThemedStyles, useThemedStyles } from "@/theme/themed-styles"
+import { useColors } from "@/theme/use-colors"
 
 /** How a reader shows the text: size 0 (small) to 3, numbers, layout. */
 export type ReaderLook = Preferences["reader"]
@@ -34,19 +35,15 @@ const chipBackgrounds: Record<HighlightColor, string> = {
   PINK: "#f472b6",
 }
 
-/** A selected verse: gold behind its letters, its number a deeper gold. */
-const selectionBackground = "#f2b441"
-const selectionChip = "#d4952a"
-
 /** Dark letters on the light bands. */
 const onBand = "#0a0a0a"
 
 /**
  * Verses in Lora, numbered in gold, flowing or one per line, as on the web:
  * paragraphs and the translators' words in italics (King James Version)
- * through bible-data's displayVerse. Verses can be tapped to select them. A
- * highlighted or selected verse has a rounded band behind its letters only,
- * its number in a chip of its own (MarkedText).
+ * through bible-data's displayVerse. A highlighted verse has a rounded band
+ * behind its letters only, its number in a chip of its own; a selected verse
+ * (tapped) a dotted line under its words, as on the web (MarkedText).
  */
 export function ChapterText({
   version,
@@ -66,6 +63,7 @@ export function ChapterText({
   onPressVerse?: (verse: number, pageY: number) => void
 }) {
   const styles = useThemedStyles(themedStyles)
+  const colors = useColors()
   const fontSize = fontSizes[look.size]
   const text = [
     styles.text,
@@ -81,16 +79,12 @@ export function ChapterText({
     const { paragraph, segments } = displayVerse(version, words)
     const color = highlights[number]
     const isSelected = selected.includes(number)
-    const band = isSelected
-      ? selectionBackground
-      : color
-        ? highlightBackgrounds[color]
-        : null
-    const chip = isSelected
-      ? selectionChip
-      : color
-        ? chipBackgrounds[color]
-        : null
+    const band = color ? highlightBackgrounds[color] : null
+    const chip = color ? chipBackgrounds[color] : null
+    // Gold dots, dark on a highlight to stay visible.
+    const dots = isSelected
+      ? { color: band ? onBand : colors.accent, group: `${number}` }
+      : undefined
     const onPress = onPressVerse
       ? (event: GestureResponderEvent) =>
           onPressVerse(number, event.nativeEvent.pageY)
@@ -123,6 +117,7 @@ export function ChapterText({
           band ? { color: onBand } : null,
         ],
         mark: band ? { color: band, group: `${number}` } : undefined,
+        underline: dots,
         onPress,
       })
     })

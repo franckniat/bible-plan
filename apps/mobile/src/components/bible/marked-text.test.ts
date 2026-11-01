@@ -28,8 +28,8 @@ const line = (text: string) => ({
 describe("marked text", () => {
   it("joins the marked parts of a verse into one band, its number apart", () => {
     expect(bandsOf(parts)).toEqual([
-      { start: 0, end: 1, color: "chip" },
-      { start: 2, end: 17, color: "band" },
+      { start: 0, end: 1, color: "chip", kind: "band" },
+      { start: 2, end: 17, color: "band", kind: "band" },
     ])
   })
 
@@ -37,9 +37,21 @@ describe("marked text", () => {
     // "1 Au " on the first line, "commencement Dieu" on the second.
     const lines = [line("1 Au "), line("commencement Dieu")]
     expect(piecesOf(bandsOf(parts), lines)).toEqual([
-      { line: 0, from: 0, to: 1, color: "chip" },
-      { line: 0, from: 2, to: 4, color: "band" },
-      { line: 1, from: 0, to: 12, color: "band" },
+      { line: 0, from: 0, to: 1, color: "chip", kind: "band" },
+      { line: 0, from: 2, to: 4, color: "band", kind: "band" },
+      { line: 1, from: 0, to: 12, color: "band", kind: "band" },
+    ])
+  })
+
+  it("puts dots under the words of a selected verse, not under its number", () => {
+    const selected = parts.map((part) =>
+      part.key.startsWith("1-") && part.key !== "1-n" && part.key !== "1-s"
+        ? { ...part, mark: undefined, underline: { color: "gold", group: "1" } }
+        : { ...part, mark: undefined }
+    )
+    expect(bandsOf(selected)).toEqual([
+      // The space after the verse is in, then left out at the end of a line.
+      { start: 2, end: 18, color: "gold", kind: "dots" },
     ])
   })
 

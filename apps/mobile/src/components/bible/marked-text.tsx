@@ -9,48 +9,67 @@ import {
   type TextStyle,
 } from "react-native"
 
-/** A run of text, maybe marked: a color painted behind its letters. */
+/** A mark of a run of text; parts in a row with one group make one mark. */
+type Mark = { color: string; group: string }
+
+/**
+ * A run of text, maybe marked: a color painted behind its letters (a
+ * highlight), a dotted line under them (a selection), or both.
+ */
 export type MarkedPart = {
   key: string
   text: string
   style?: StyleProp<TextStyle>
-  /** The color behind the letters; parts in a row with one mark make a band. */
-  mark?: { color: string; group: string }
+  mark?: Mark
+  underline?: Mark
   onPress?: (event: GestureResponderEvent) => void
 }
+
+/** A band behind the letters, or dots under them. */
+type Kind = "band" | "dots"
 
 /** A line of text laid out natively. */
 type TextLayoutLine = TextLayoutEvent["nativeEvent"]["lines"][number]
 
-type Band = { start: number; end: number; color: string }
+type Band = { start: number; end: number; color: string; kind: Kind }
 type Rect = { left: number; top: number; width: number; height: number }
 
 /** Room around the letters, and the roundness of a band. */
 const padX = 4
 const padY = 2
 const radius = 7
+/** The dots of a selection: their size, their step, under the baseline. */
+const dot = 2.5
+const dotStep = 5
+const dotsBelow = 3
 
-/** The bands of the parts: their marked runs, by offset in the text. */
+/** The marks of the parts: their marked runs, by offset in the text. */
 export function bandsOf(parts: readonly MarkedPart[]): Band[] {
   const bands: Band[] = []
-  let offset = 0
-  let previous: MarkedPart | null = null
-  for (const part of parts) {
-    const end = offset + part.text.length
-    const last = bands.at(-1)
-    if (part.mark) {
-      if (
-        last &&
-        previous?.mark?.group === part.mark.group &&
-        last.end === offset
-      ) {
-        last.end = end
-      } else {
-        bands.push({ start: offset, end, color: part.mark.color })
+  for (const kind of ["band", "dots"] as const) {
+    const markOf = (part: MarkedPart | null) =>
+      kind === "band" ? part?.mark : part?.underline
+    let offset = 0
+    let previous: MarkedPart | null = null
+    let last: Band | null = null
+    for (const part of parts) {
+      const end = offset + part.text.length
+      const mark = markOf(part)
+      if (mark) {
+        if (
+          last &&
+          markOf(previous)?.group === mark.group &&
+          last.end === offset
+        ) {
+          last.end = end
+        } else {
+          last = { start: offset, end, color: mark.color, kind }
+          bands.push(last)
+        }
       }
+      previous = part
+      offset = end
     }
-    previous = part
-    offset = end
   }
   return bands
 }
@@ -72,7 +91,13 @@ export function slice(parts: readonly MarkedPart[], from: number, to: number) {
 }
 
 /** A piece of a band on one line: where it starts and ends in that line. */
-type Piece = { line: number; from: number; to: number; color: string }
+type Piece = {
+  line: number
+  from: number
+  to: number
+  color: string
+  kind: Kind
+}
 
 /** The bands cut by the lines, without the spaces at their ends. */
 export function piecesOf(
@@ -88,7 +113,15 @@ export function piecesOf(
       let to = Math.min(band.end, lineEnd) - lineStart
       while (from < to && /\s/.test(line.text[from]!)) from += 1
       while (to > from && /\s/.test(line.text[to - 1]!)) to -= 1
-      if (from < to) pieces.push({ line: index, from, to, color: band.color })
+      if (from < to) {
+        pieces.push({
+          line: index,
+          from,
+          to,
+          color: band.color,
+          kind: band.kind,
+        })
+      }
     }
     lineStart = lineEnd
   })
@@ -98,7 +131,9 @@ export function piecesOf(
 /**
  * Text with colored bands behind some of its letters, and only behind the
  * letters: a rounded band on each line, as tall as the letters, whatever the
- * line height (React Native paints a span's background over the whole line).
+ * line height (React Native paints a span's background over the whole line);
+ * and dotted lines just under some (its own underline crosses the text on
+ * iOS with a line height).
  * The text is laid out once natively, then each band is measured from the
  * width of the line up to it. The web paints span backgrounds well: there,
  * the parts carry their own background.
@@ -138,6 +173,13 @@ export function MarkedText({
           style={[
             part.style,
             web && part.mark ? { backgroundColor: part.mark.color } : null,
+            web && part.underline
+              ? {
+                  textDecorationLine: "underline",
+                  textDecorationStyle: "dotted",
+                  textDecorationColor: part.underline.color,
+                }
+              : null,
           ]}
           onPress={part.onPress}
         >
@@ -203,7 +245,7 @@ export function MarkedText({
     })
 
   const x = widths.x
-  const rects: (Rect & { color: string; key: string })[] = []
+  const rects: (Rect & { color: string; key: string; kind: Kind })[] = []
   if (x !== undefined) {
     for (const piece of pieces) {
       const from = widths[`${piece.line}:${piece.from}`]
@@ -213,32 +255,86 @@ export function MarkedText({
       // The letters sit in the middle of the line's height.
       const letters = line.ascender + line.descender
       const top = line.y + (line.height - letters) / 2
-      rects.push({
-        key: `${piece.line}:${piece.from}`,
-        color: piece.color,
-        left: line.x + from - x - padX,
-        width: to - from + 2 * padX,
-        top: top - padY,
-        height: letters + 2 * padY,
-      })
+      const left = line.x + from - x
+      rects.push(
+        piece.kind === "band"
+          ? {
+              key: `b${piece.line}:${piece.from}`,
+              kind: "band",
+              color: piece.color,
+              left: left - padX,
+              width: to - from + 2 * padX,
+              top: top - padY,
+              height: letters + 2 * padY,
+            }
+          : {
+              // Dots just under the baseline, as the web's dotted line.
+              key: `d${piece.line}:${piece.from}`,
+              kind: "dots",
+              color: piece.color,
+              left,
+              width: to - from,
+              top: top + line.ascender + dotsBelow,
+              height: dot,
+            }
+      )
     }
   }
 
   return (
     <View>
-      {rects.map(({ key, color, ...rect }) => (
-        <View
-          key={key}
-          pointerEvents="none"
-          style={{
-            position: "absolute",
-            ...rect,
-            borderRadius: radius,
-            backgroundColor: color,
-          }}
-        />
-      ))}
+      {/* Bands behind the text, dots over it. */}
+      {rects
+        .filter((rect) => rect.kind === "band")
+        .map(({ key, color, left, top, width, height }) => (
+          <View
+            key={key}
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              left,
+              top,
+              width,
+              height,
+              borderRadius: radius,
+              backgroundColor: color,
+            }}
+          />
+        ))}
       {text}
+      {rects
+        .filter((rect) => rect.kind === "dots")
+        .map(({ key, color, left, top, width, height }) => (
+          <View
+            key={key}
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              left,
+              top,
+              width,
+              height,
+              flexDirection: "row",
+              overflow: "hidden",
+              gap: dotStep - dot,
+            }}
+          >
+            {Array.from(
+              { length: Math.floor(width / dotStep) + 1 },
+              (_, index) => (
+                <View
+                  key={index}
+                  style={{
+                    width: dot,
+                    height: dot,
+                    borderRadius: dot / 2,
+                    backgroundColor: color,
+                  }}
+                />
+              )
+            )}
+          </View>
+        ))}
       {/* Measured unseen: wide enough not to wrap, clipped to nothing. */}
       <View
         pointerEvents="none"
