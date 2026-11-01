@@ -235,6 +235,75 @@ export function setPlanStatus(
   return true
 }
 
+/**
+ * Deletes a plan with its days, readings, enrollment and progress, written
+ * to the outbox as deletes (the sync removes them everywhere).
+ */
+export function deletePlan(
+  db: Database,
+  planId: string,
+  { now = new Date() }: { now?: Date } = {}
+): boolean {
+  const enrollments = db
+    .select({ id: planEnrollments.id })
+    .from(planEnrollments)
+    .where(eq(planEnrollments.planId, planId))
+    .all()
+  const [plan] = db
+    .select({ id: readingPlans.id })
+    .from(readingPlans)
+    .where(eq(readingPlans.id, planId))
+    .all()
+  if (!plan) return false
+  const progress = enrollments.flatMap((enrollment) =>
+    db
+      .select({ id: readingProgress.id })
+      .from(readingProgress)
+      .where(eq(readingProgress.enrollmentId, enrollment.id))
+      .all()
+  )
+  const dayIds = db
+    .select({ id: planDays.id })
+    .from(planDays)
+    .where(eq(planDays.planId, planId))
+    .all()
+    .map((day) => day.id)
+  writeSynced(
+    db,
+    [
+      ...progress.map((row) => ({
+        table: "readingProgress" as const,
+        op: "delete" as const,
+        id: row.id,
+      })),
+      ...enrollments.map((row) => ({
+        table: "planEnrollment" as const,
+        op: "delete" as const,
+        id: row.id,
+      })),
+      { table: "readingPlan", op: "delete", id: planId },
+    ],
+    (tx) => {
+      for (const ids of chunks(progress.map((row) => row.id))) {
+        tx.delete(readingProgress).where(inArray(readingProgress.id, ids)).run()
+      }
+      tx.delete(planEnrollments).where(eq(planEnrollments.planId, planId)).run()
+      for (const ids of chunks(dayIds)) {
+        tx.delete(planReadings).where(inArray(planReadings.dayId, ids)).run()
+      }
+      tx.delete(planDays).where(eq(planDays.planId, planId)).run()
+      tx.delete(readingPlans).where(eq(readingPlans.id, planId)).run()
+    },
+    now
+  )
+  return true
+}
+
+/** Deletes a plan (for screens). */
+export function removePlan(planId: string) {
+  return deletePlan(getDatabase(), planId)
+}
+
 /** Changes a plan's status (for screens). */
 export function changePlanStatus(planId: string, status: PlanStatus) {
   return setPlanStatus(getDatabase(), planId, status)

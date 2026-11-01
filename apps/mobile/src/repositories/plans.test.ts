@@ -18,6 +18,7 @@ import { uuidv7 } from "@/lib/uuid"
 import {
   catchUpPlan,
   createPlan,
+  deletePlan,
   listPlans,
   planDetail,
   setPlanStatus,
@@ -416,5 +417,39 @@ describe("setPlanStatus", () => {
         .filter((change) => change.table === "planEnrollment")
         .map((change) => (change.data as { status: string }).status)
     ).toEqual(["ACTIVE", "PAUSED", "ARCHIVED", "ACTIVE"])
+  })
+})
+
+describe("deletePlan", () => {
+  it("deletes a plan with its days, readings and progress, through the outbox", async () => {
+    const db = await testDatabase()
+    const next = ids()
+    const { id } = createPlan(
+      db,
+      {
+        source: "custom",
+        title: "Jude",
+        passages: bookRange("Jude", "Jude"),
+        startDate: "2026-11-02",
+        pace: { mode: "chaptersPerDay", chapters: 1 },
+      },
+      "fr",
+      { now, id: next }
+    )
+    const reading = planDetail(db, id)!.days[0]!.readings[0]!
+    setReadingRead(db, reading.id, true, { now, id: next })
+
+    expect(deletePlan(db, id, { now })).toBe(true)
+    expect(planDetail(db, id)).toBeNull()
+    expect(listPlans(db)).toEqual([])
+    expect(
+      readOutbox(db)
+        .slice(-3)
+        .map((change) => [change.table, change.op])
+    ).toEqual([
+      ["readingProgress", "delete"],
+      ["planEnrollment", "delete"],
+      ["readingPlan", "delete"],
+    ])
   })
 })

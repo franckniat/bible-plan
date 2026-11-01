@@ -1,5 +1,5 @@
 import { getToday, type IsoDate } from "@workspace/core"
-import { Stack, useLocalSearchParams } from "expo-router"
+import { router, Stack, useLocalSearchParams } from "expo-router"
 import {
   Archive,
   ArchiveRestore,
@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Pause,
   Play,
+  Trash2,
 } from "lucide-react-native"
 import { useState } from "react"
 import { Pressable, Text, View } from "react-native"
@@ -27,11 +28,13 @@ import { ProgressBar } from "@/components/ui/progress-bar"
 import { Segmented } from "@/components/ui/segmented"
 import {
   changePlanStatus,
+  removePlan,
   usePlanDetail,
   type PlanStatus,
   type PlanDayView,
   type PlanDetail,
 } from "@/repositories/plans"
+import { confirm } from "@/lib/confirm"
 import { haptics } from "@/lib/haptics"
 import { useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
@@ -243,6 +246,25 @@ function PlanActions({ plan }: { plan: PlanDetail }) {
             icon={Play}
             size="sm"
             onPress={set("ACTIVE")}
+          />
+        ) : null}
+        {plan.status === "ARCHIVED" ? (
+          <Button
+            title={t("delete")}
+            icon={Trash2}
+            size="sm"
+            variant="destructive"
+            onPress={async () => {
+              const sure = await confirm({
+                title: t("delete"),
+                message: t("deleteQuestion"),
+                confirmLabel: t("deleteConfirm"),
+                cancelLabel: t("cancel"),
+              })
+              if (!sure) return
+              removePlan(plan.id)
+              router.back()
+            }}
           />
         ) : null}
         {plan.status === "ARCHIVED" ? (
