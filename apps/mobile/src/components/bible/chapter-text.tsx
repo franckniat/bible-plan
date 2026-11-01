@@ -15,6 +15,14 @@ export type ReaderLook = Preferences["reader"]
 
 const fontSizes = [16, 18, 21, 24] as const
 
+/** The space between lines, as a multiple of the font size. */
+const lineHeightFactors: Record<ReaderLook["lineHeight"], number> = {
+  compact: 1.5,
+  normal: 1.7,
+  wide: 2,
+  wider: 2.3,
+}
+
 /** The highlight colors of the web (Tailwind 300), dark text on them. */
 export const highlightBackgrounds: Record<HighlightColor, string> = {
   YELLOW: "#fde047",
@@ -67,7 +75,10 @@ export function ChapterText({
   const fontSize = fontSizes[look.size]
   const text = [
     styles.text,
-    { fontSize, lineHeight: Math.round(fontSize * 1.7) },
+    {
+      fontSize,
+      lineHeight: Math.round(fontSize * lineHeightFactors[look.lineHeight]),
+    },
   ]
 
   /** The parts of a verse: its number, its words, and the spaces between. */

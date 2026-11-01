@@ -22,7 +22,12 @@ describe("preferences", () => {
     expect(getPreferences()).toEqual({
       onboarded: false,
       reminder: "morning",
-      reader: { size: 1, verseNumbers: true, layout: "flow" },
+      reader: {
+        size: 1,
+        verseNumbers: true,
+        layout: "flow",
+        lineHeight: "normal",
+      },
       downloaded: [],
       history: [],
     })
@@ -46,5 +51,21 @@ describe("preferences", () => {
     })
     saved.set("preferences", "not json")
     expect((await load()).getPreferences().onboarded).toBe(false)
+  })
+
+  it("keeps the reader's look of an older phone, with the normal spacing", async () => {
+    saved.set(
+      "preferences",
+      JSON.stringify({
+        reader: { size: 3, verseNumbers: false, layout: "lines" },
+      })
+    )
+    const { getPreferences } = await load()
+    expect(getPreferences().reader).toEqual({
+      size: 3,
+      verseNumbers: false,
+      layout: "lines",
+      lineHeight: "normal",
+    })
   })
 })

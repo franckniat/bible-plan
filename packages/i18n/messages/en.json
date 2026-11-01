@@ -1526,7 +1526,14 @@
       "notFound": "Passage not found",
       "invalid": "The link “{slug}” doesn’t point to a passage.",
       "choosePassage": "Go to another passage (now: {passage})",
-      "chooseVersion": "Change the version (now: {version})"
+      "chooseVersion": "Change the version (now: {version})",
+      "lineHeight": "Line spacing",
+      "lineHeights": {
+        "compact": "Tight",
+        "normal": "Normal",
+        "wide": "Wide",
+        "wider": "Extra wide"
+      }
     },
     "join": {
       "title": "Invitation",

@@ -9,7 +9,7 @@ import { TabScreen } from "@/components/screen"
 import { Card } from "@/components/ui/card"
 import { Segmented } from "@/components/ui/segmented"
 import { SwitchRow } from "@/components/ui/switch-row"
-import { setPreferences, usePreferences } from "@/lib/preferences"
+import { lineHeights, setPreferences, usePreferences } from "@/lib/preferences"
 import { bibleVersionOf, useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
@@ -26,6 +26,7 @@ const sample: Passage = {
 /** How the reader shows the text, with a sample verse (as on the web). */
 export default function ReaderSettingsScreen() {
   const t = useTranslations("Reader")
+  const tMobile = useTranslations("Mobile.read")
   const locale = useLocale()
   const colors = useColors()
   const { reader } = usePreferences()
@@ -67,6 +68,18 @@ export default function ReaderSettingsScreen() {
             onChange={(size) =>
               set({ size: Number(size) as typeof reader.size })
             }
+          />
+        </View>
+
+        <View style={styles.field}>
+          {label(tMobile("lineHeight"))}
+          <Segmented
+            value={reader.lineHeight}
+            options={lineHeights.map((lineHeight) => ({
+              value: lineHeight,
+              label: tMobile(`lineHeights.${lineHeight}`),
+            }))}
+            onChange={(lineHeight) => set({ lineHeight })}
           />
         </View>
 

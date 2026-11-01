@@ -12,6 +12,9 @@ export const reminderTimes = {
   evening: "20:00",
 } as const
 
+/** The line spacings of the reader, tight to extra wide. */
+export const lineHeights = ["compact", "normal", "wide", "wider"] as const
+
 const preferencesSchema = z.object({
   /** The welcome screens and the onboarding are done. */
   onboarded: z.boolean().catch(false),
@@ -22,8 +25,14 @@ const preferencesSchema = z.object({
       size: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
       verseNumbers: z.boolean(),
       layout: z.enum(["flow", "lines"]),
+      lineHeight: z.enum(lineHeights).catch("normal"),
     })
-    .catch({ size: 1, verseNumbers: true, layout: "flow" }),
+    .catch({
+      size: 1,
+      verseNumbers: true,
+      layout: "flow",
+      lineHeight: "normal",
+    }),
   /**
    * The passages read on this phone, the latest first (reading-history.ts):
    * the Bible tab opens on the first.

@@ -1526,7 +1526,14 @@
       "notFound": "Passage introuvable",
       "invalid": "Le lien « {slug} » ne désigne aucun passage.",
       "choosePassage": "Aller à un autre passage (actuel : {passage})",
-      "chooseVersion": "Changer de version (actuelle : {version})"
+      "chooseVersion": "Changer de version (actuelle : {version})",
+      "lineHeight": "Interligne",
+      "lineHeights": {
+        "compact": "Serré",
+        "normal": "Normal",
+        "wide": "Large",
+        "wider": "Très large"
+      }
     },
     "join": {
       "title": "Invitation",
