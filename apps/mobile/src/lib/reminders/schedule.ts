@@ -20,7 +20,7 @@ import { activePrayers } from "@/repositories/prayers"
 import { prayerTimes, reminderBook } from "@/repositories/reminders"
 import { currentProfile } from "@/repositories/profile"
 
-import { categoryOf, defineReminderActions } from "./actions"
+import { categoryOf, defineReminderActions } from "./categories"
 import { planRuns, type ReminderRun } from "./runs"
 
 /** Marks the notifications of reminders, to replace them all at once. */

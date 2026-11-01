@@ -19,7 +19,10 @@ export default function PrayerTimerScreen() {
           minutes={prayerMinutes}
           defaultMinutes={30}
           after={() => (
-            <Button title={t("done.backToJournal")} onPress={() => router.back()} />
+            <Button
+              title={t("done.backToJournal")}
+              onPress={() => router.back()}
+            />
           )}
         />
       </TabScreen>

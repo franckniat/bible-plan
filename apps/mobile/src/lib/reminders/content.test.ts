@@ -21,7 +21,7 @@ vi.mock("@/repositories/plans", () => ({ plansOn: () => state.plans }))
 vi.mock("@/repositories/prayers", () => ({
   activePrayers: () => state.titles.map((title) => ({ id: title, title })),
 }))
-vi.mock("./actions", () => ({
+vi.mock("./categories", () => ({
   categoryOf: (kind: string) => `reminder-${kind}`,
 }))
 

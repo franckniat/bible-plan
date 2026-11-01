@@ -4,7 +4,7 @@ import { useTranslations } from "use-intl"
 import { LargeTitleStack } from "@/components/large-title-stack"
 
 // A screen opened from a link gets a back button to the tab's root.
-export const unstable_settings = { initialRouteName: "bible" }
+export const unstable_settings = { anchor: "bible" }
 
 /** Sheets that rise from the bottom over the reader, as in reading apps. */
 const sheet = {

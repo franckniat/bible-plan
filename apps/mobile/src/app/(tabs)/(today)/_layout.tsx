@@ -9,7 +9,7 @@ import { useUnreadNotifications } from "@/repositories/notifications"
 import { useColors } from "@/theme/use-colors"
 
 // A screen opened from a link gets a back button to the tab's root.
-export const unstable_settings = { initialRouteName: "today" }
+export const unstable_settings = { anchor: "today" }
 
 export default function TodayStack() {
   const t = useTranslations("App.nav")
