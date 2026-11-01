@@ -1,3 +1,6 @@
+// Before anything that formats a text (use-intl).
+import "@/lib/intl-polyfills"
+
 import { Stack, ThemeProvider } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { StatusBar } from "expo-status-bar"

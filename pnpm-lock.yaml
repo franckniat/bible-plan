@@ -44,6 +44,15 @@ importers:
       '@expo-google-fonts/lora':
         specifier: ^0.4.2
         version: 0.4.2
+      '@formatjs/intl-getcanonicallocales':
+        specifier: ^3.3.0
+        version: 3.3.0
+      '@formatjs/intl-locale':
+        specifier: ^5.4.2
+        version: 5.4.2
+      '@formatjs/intl-pluralrules':
+        specifier: ^7.0.0
+        version: 7.0.0
       '@workspace/bible-data':
         specifier: workspace:*
         version: link:../../packages/bible-data
@@ -1984,6 +1993,9 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
+  '@formatjs/bigdecimal@0.2.8':
+    resolution: {integrity: sha512-e/U8n09DJByWetRTG8pjNtNKOeW0T4efkFcceo72y0QAjyiP5egv97N6fSa2wKiTJHVydO8crTkTueF5bKuYjg==}
+
   '@formatjs/fast-memoize@3.1.7':
     resolution: {integrity: sha512-zXfhLpvA6T7+efdt9JLbBwZ00tT7NsBMDVnDu8rpHeNNv8KfRZAMo2gkG0k9lK/Nzc//3kJ9pImsfuJxk3KhUA==}
 
@@ -1999,8 +2011,23 @@ packages:
   '@formatjs/icu-skeleton-parser@2.1.12':
     resolution: {integrity: sha512-ca7tZMLpfHX3sUD7hP6gE/qr6Iq89EDd3ZLeRhbsB7r0UD55DGJq+tmFLzrGrnx5StahUevQmQQVtbDRHsfDHA==}
 
+  '@formatjs/intl-getcanonicallocales@3.3.0':
+    resolution: {integrity: sha512-ndj9jw/LHAftSe34D/A6+lj3Y7GHVfPEZ6FZP2wjd8/beYeh3d1sjlSpZSBlzegSKS3U3mUEIzLCpI0+jKNT6w==}
+
+  '@formatjs/intl-locale@5.4.2':
+    resolution: {integrity: sha512-2upVZtpzktEkLMffAk14T2HB62B7ytqrlppZuVX4StnbOHNc4qx5ovimMMMn8mkqvAwFlPX+UZygetny+quqIQ==}
+
+  '@formatjs/intl-localematcher@0.10.0':
+    resolution: {integrity: sha512-OvfBelurObm02D1+4BsuHSt3Xkn49RZPo7uJXt/1Z0dNET3EN39kY1rKMV3kG0tn0p4gyGWrcFx9HyeF07cq5g==}
+
   '@formatjs/intl-localematcher@0.8.14':
     resolution: {integrity: sha512-8O7V38QmbB11+ryJ3KM/znrzXtiqgpXzqNoqDsndHZZ5/zDKTTL+cf5F0mzXkQEwhx8IlWnqYvEovf2S5EwLTw==}
+
+  '@formatjs/intl-pluralrules@7.0.0':
+    resolution: {integrity: sha512-T6LxklnTxJti7S3Bqpl6lrwE4zfP7KIsH7sm0YWC101YjyQMdwbbgtueqK+OIaJ3pSRS7k+AfN+hJ24CtkNupQ==}
+
+  '@formatjs/intl-supportedvaluesof@3.0.0':
+    resolution: {integrity: sha512-9rG37qcIBFyX+HSyPelJKpAatFaO+ElvnWYO/FFMERVZG9e9Wj51CWAvF7+ozYd7B1uKBL2ub6aLzrkWA0UBxA==}
 
   '@hono/node-server@2.1.3':
     resolution: {integrity: sha512-TA//nWMqPhbfdfneACk6t5a9eqbS9lABEPyKn0/xZTah3H3U2XaVg85rJFl0/Fyit0I552YDHgXGVSf3GwqbUw==}
@@ -8965,6 +8992,8 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
+  '@formatjs/bigdecimal@0.2.8': {}
+
   '@formatjs/fast-memoize@3.1.7': {}
 
   '@formatjs/icu-messageformat-parser@3.5.18':
@@ -8979,7 +9008,27 @@ snapshots:
 
   '@formatjs/icu-skeleton-parser@2.1.12': {}
 
+  '@formatjs/intl-getcanonicallocales@3.3.0': {}
+
+  '@formatjs/intl-locale@5.4.2':
+    dependencies:
+      '@formatjs/intl-getcanonicallocales': 3.3.0
+      '@formatjs/intl-supportedvaluesof': 3.0.0
+
+  '@formatjs/intl-localematcher@0.10.0':
+    dependencies:
+      '@formatjs/fast-memoize': 3.1.7
+
   '@formatjs/intl-localematcher@0.8.14':
+    dependencies:
+      '@formatjs/fast-memoize': 3.1.7
+
+  '@formatjs/intl-pluralrules@7.0.0':
+    dependencies:
+      '@formatjs/bigdecimal': 0.2.8
+      '@formatjs/intl-localematcher': 0.10.0
+
+  '@formatjs/intl-supportedvaluesof@3.0.0':
     dependencies:
       '@formatjs/fast-memoize': 3.1.7
 

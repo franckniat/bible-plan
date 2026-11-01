@@ -22,6 +22,9 @@
   "dependencies": {
     "@expo-google-fonts/geist": "^0.4.2",
     "@expo-google-fonts/lora": "^0.4.2",
+    "@formatjs/intl-getcanonicallocales": "^3.3.0",
+    "@formatjs/intl-locale": "^5.4.2",
+    "@formatjs/intl-pluralrules": "^7.0.0",
     "@workspace/bible-data": "workspace:*",
     "@workspace/core": "workspace:*",
     "@workspace/i18n": "workspace:*",
