@@ -1,8 +1,9 @@
 import { displayVerse, type BibleVersionId } from "@workspace/bible-data"
 import type { HighlightColor } from "@workspace/core"
-import { Text, View } from "react-native"
+import { View, type GestureResponderEvent } from "react-native"
 
 import type { Verse } from "@/bible/texts"
+import { MarkedText, type MarkedPart } from "@/components/bible/marked-text"
 import type { Preferences } from "@/lib/preferences"
 import { fontFamily } from "@/theme/fonts"
 import { spacing } from "@/theme/metrics"
@@ -23,11 +24,29 @@ export const highlightBackgrounds: Record<HighlightColor, string> = {
   PINK: "#f9a8d4",
 }
 
+/** A darker shade of each color, for the verse number's chip on it. */
+const chipBackgrounds: Record<HighlightColor, string> = {
+  YELLOW: "#facc15",
+  ORANGE: "#fb923c",
+  GREEN: "#4ade80",
+  BLUE: "#38bdf8",
+  PURPLE: "#a78bfa",
+  PINK: "#f472b6",
+}
+
+/** A selected verse: gold behind its letters, its number a deeper gold. */
+const selectionBackground = "#f2b441"
+const selectionChip = "#d4952a"
+
+/** Dark letters on the light bands. */
+const onBand = "#0a0a0a"
+
 /**
  * Verses in Lora, numbered in gold, flowing or one per line, as on the web:
  * paragraphs and the translators' words in italics (King James Version)
- * through bible-data's displayVerse. Verses can be tapped to select them,
- * and show their highlight color.
+ * through bible-data's displayVerse. Verses can be tapped to select them. A
+ * highlighted or selected verse has a rounded band behind its letters only,
+ * its number in a chip of its own (MarkedText).
  */
 export function ChapterText({
   version,
@@ -48,66 +67,87 @@ export function ChapterText({
 }) {
   const styles = useThemedStyles(themedStyles)
   const fontSize = fontSizes[look.size]
-  const text = { fontSize, lineHeight: Math.round(fontSize * 1.7) }
+  const text = [
+    styles.text,
+    { fontSize, lineHeight: Math.round(fontSize * 1.7) },
+  ]
 
-  const verse = ([number, words]: Verse, index: number, flow: boolean) => {
+  /** The parts of a verse: its number, its words, and the spaces between. */
+  const partsOf = (
+    [number, words]: Verse,
+    index: number,
+    flow: boolean
+  ): MarkedPart[] => {
     const { paragraph, segments } = displayVerse(version, words)
     const color = highlights[number]
     const isSelected = selected.includes(number)
-    return (
-      <Text
-        key={number}
-        onPress={
-          onPressVerse
-            ? (event) => onPressVerse(number, event.nativeEvent.pageY)
-            : undefined
-        }
-        accessibilityState={onPressVerse ? { selected: isSelected } : undefined}
-        style={
-          color
-            ? { backgroundColor: highlightBackgrounds[color], color: "#0a0a0a" }
-            : null
-        }
-      >
-        {/* A new paragraph starts on its own line, after text shown above. */}
-        {flow && paragraph && index > 0 ? "\n" : null}
-        {look.verseNumbers ? (
-          <Text style={[styles.number, { fontSize: fontSize * 0.65 }]}>
-            {number}{" "}
-          </Text>
-        ) : null}
-        {/* Only the words are marked when selected: not the number. */}
-        {segments.map((segment, part) => (
-          <Text
-            key={part}
-            style={[
-              segment.italic && styles.italic,
-              isSelected && styles.selected,
-            ]}
-          >
-            {segment.text}
-          </Text>
-        ))}
-        {flow ? " " : null}
-      </Text>
-    )
+    const band = isSelected
+      ? selectionBackground
+      : color
+        ? highlightBackgrounds[color]
+        : null
+    const chip = isSelected
+      ? selectionChip
+      : color
+        ? chipBackgrounds[color]
+        : null
+    const onPress = onPressVerse
+      ? (event: GestureResponderEvent) =>
+          onPressVerse(number, event.nativeEvent.pageY)
+      : undefined
+    const parts: MarkedPart[] = []
+    // A new paragraph starts on its own line, after text shown above.
+    if (flow && paragraph && index > 0) {
+      parts.push({ key: `${number}-p`, text: "\n" })
+    }
+    if (look.verseNumbers) {
+      parts.push({
+        key: `${number}-n`,
+        text: String(number),
+        style: [
+          styles.number,
+          { fontSize: fontSize * 0.65 },
+          chip ? { color: onBand } : null,
+        ],
+        mark: chip ? { color: chip, group: `${number}-n` } : undefined,
+        onPress,
+      })
+      parts.push({ key: `${number}-s`, text: " ", onPress })
+    }
+    segments.forEach((segment, part) => {
+      parts.push({
+        key: `${number}-${part}`,
+        text: segment.text,
+        style: [
+          segment.italic ? styles.italic : null,
+          band ? { color: onBand } : null,
+        ],
+        mark: band ? { color: band, group: `${number}` } : undefined,
+        onPress,
+      })
+    })
+    if (flow) parts.push({ key: `${number}-e`, text: " ", onPress })
+    return parts
   }
 
   if (look.layout === "lines") {
     return (
       <View style={styles.lines}>
         {verses.map((item, index) => (
-          <Text key={item[0]} style={[styles.text, text]}>
-            {verse(item, index, false)}
-          </Text>
+          <MarkedText
+            key={item[0]}
+            style={text}
+            parts={partsOf(item, index, false)}
+          />
         ))}
       </View>
     )
   }
   return (
-    <Text style={[styles.text, text]}>
-      {verses.map((item, index) => verse(item, index, true))}
-    </Text>
+    <MarkedText
+      style={text}
+      parts={verses.flatMap((item, index) => partsOf(item, index, true))}
+    />
   )
 }
 
@@ -115,11 +155,5 @@ const themedStyles = createThemedStyles((colors) => ({
   text: { fontFamily: fontFamily.scripture, color: colors.foreground },
   italic: { fontFamily: fontFamily.scriptureItalic },
   number: { fontFamily: fontFamily.semibold, color: colors.accent },
-  // Selected verses are underlined in gold, as on the web (a solid line:
-  // Android draws no dotted one).
-  selected: {
-    textDecorationLine: "underline",
-    textDecorationColor: colors.accent,
-  },
   lines: { gap: spacing.sm },
 }))
