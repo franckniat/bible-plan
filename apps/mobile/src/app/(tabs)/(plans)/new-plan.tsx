@@ -35,6 +35,7 @@ import { Chip } from "@/components/ui/chip"
 import { Input } from "@/components/ui/input"
 import { ListRow } from "@/components/ui/list-row"
 import { Notice } from "@/components/ui/notice"
+import { Segmented } from "@/components/ui/segmented"
 import { bookRange } from "@/lib/book-range"
 import { addPlan } from "@/repositories/plans"
 import { useProfile } from "@/repositories/profile"
@@ -42,6 +43,23 @@ import { spacing, typography } from "@/theme/metrics"
 import { createThemedStyles, useThemedStyles } from "@/theme/themed-styles"
 
 const quickChapters = [1, 2, 3, 5, 10]
+/** Lengths offered for a plan over a number of days, as on the web. */
+const quickDays = [30, 90, 180, 365]
+/** End dates offered: in so many months. */
+const quickMonths = [1, 3, 6, 12]
+
+/** The same day `months` later (the last day of a shorter month). */
+function inMonths(date: IsoDate, months: number): IsoDate {
+  const [year, month, day] = date.split("-").map(Number) as [
+    number,
+    number,
+    number,
+  ]
+  const last = new Date(Date.UTC(year, month - 1 + months + 1, 0)).getUTCDate()
+  return new Date(Date.UTC(year, month - 1 + months, Math.min(day, last)))
+    .toISOString()
+    .slice(0, 10)
+}
 
 /** A date of the calendar, read in UTC so that it stays the same day. */
 const utc = (date: IsoDate) => new Date(`${date}T00:00:00.000Z`)
@@ -64,7 +82,8 @@ function previewPlan(request: NewPlan, locale: Locale) {
 }
 
 /**
- * The plan wizard: from a template (`?template=key`), or by chapters a day
+ * The plan wizard: from a template (`?template=key`), over a number of days
+ * or until a date (`?type=duration`), or by chapters a day
  * from a first to a last book. The plan is generated on the phone, as on the
  * web, and stored offline.
  */
@@ -74,8 +93,10 @@ export default function NewPlanScreen() {
   const format = useFormatter()
   const styles = useThemedStyles(themedStyles)
   const profile = useProfile()
-  const { template: templateKey } = useLocalSearchParams<{
+  const { template: templateKey, type } = useLocalSearchParams<{
     template?: string
+    /** How the plan's length is chosen; by chapters a day when left out. */
+    type?: "chapters" | "duration"
   }>()
   const template = templateKey ? getPlanTemplate(templateKey) : undefined
 
@@ -86,6 +107,11 @@ export default function NewPlanScreen() {
   const [to, setTo] = useState<BookId>("Deut")
   const [choosing, setChoosing] = useState<"from" | "to" | null>(null)
   const [chapters, setChapters] = useState(3)
+  const duration = type === "duration"
+  const [lengthMode, setLengthMode] = useState<"days" | "endDate">("days")
+  const [days, setDays] = useState(90)
+  // In so many months after the start: follows the start date chosen.
+  const [months, setMonths] = useState(3)
   const [title, setTitle] = useState("")
 
   const passages = bookRange(from, to)
@@ -109,7 +135,11 @@ export default function NewPlanScreen() {
         passages,
         startDate,
         activeWeekdays: weekdays,
-        pace: { mode: "chaptersPerDay", chapters },
+        pace: !duration
+          ? { mode: "chaptersPerDay", chapters }
+          : lengthMode === "days"
+            ? { mode: "days", days }
+            : { mode: "endDate", endDate: inMonths(startDate, months) },
       }
 
   const preview = previewPlan(request, locale)
@@ -208,23 +238,68 @@ export default function NewPlanScreen() {
               </Text>
             </Card>
 
-            <Card title={t("PlanWizard.schedule.chapters.label")}>
-              <View style={styles.chips}>
-                {quickChapters.map((value) => (
-                  <Chip
-                    key={value}
-                    label={t("PlanWizard.schedule.chapters.quick", {
-                      chapters: value,
-                    })}
-                    selected={chapters === value}
-                    onPress={() => setChapters(value)}
-                  />
-                ))}
-              </View>
-              <Text style={styles.hint}>
-                {t("PlanWizard.schedule.chapters.hint")}
-              </Text>
-            </Card>
+            {duration ? (
+              <Card title={t("PlanWizard.schedule.mode.legend")}>
+                <Segmented
+                  value={lengthMode}
+                  options={[
+                    {
+                      value: "days",
+                      label: t("PlanWizard.schedule.mode.days"),
+                    },
+                    {
+                      value: "endDate",
+                      label: t("PlanWizard.schedule.mode.endDate"),
+                    },
+                  ]}
+                  onChange={setLengthMode}
+                />
+                <Text style={styles.groupLabel}>
+                  {lengthMode === "days"
+                    ? t("PlanWizard.schedule.days.label")
+                    : t("PlanWizard.schedule.endDate.label")}
+                </Text>
+                <View style={styles.chips}>
+                  {lengthMode === "days"
+                    ? quickDays.map((value) => (
+                        <Chip
+                          key={value}
+                          label={t("PlanWizard.schedule.days.quick", {
+                            days: value,
+                          })}
+                          selected={days === value}
+                          onPress={() => setDays(value)}
+                        />
+                      ))
+                    : quickMonths.map((value) => (
+                        <Chip
+                          key={value}
+                          label={dateText(inMonths(startDate, value))}
+                          selected={months === value}
+                          onPress={() => setMonths(value)}
+                        />
+                      ))}
+                </View>
+              </Card>
+            ) : (
+              <Card title={t("PlanWizard.schedule.chapters.label")}>
+                <View style={styles.chips}>
+                  {quickChapters.map((value) => (
+                    <Chip
+                      key={value}
+                      label={t("PlanWizard.schedule.chapters.quick", {
+                        chapters: value,
+                      })}
+                      selected={chapters === value}
+                      onPress={() => setChapters(value)}
+                    />
+                  ))}
+                </View>
+                <Text style={styles.hint}>
+                  {t("PlanWizard.schedule.chapters.hint")}
+                </Text>
+              </Card>
+            )}
           </>
         )}
 

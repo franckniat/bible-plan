@@ -1,6 +1,6 @@
 import { planTemplates, type Locale } from "@workspace/core"
 import { router } from "expo-router"
-import { ArrowRight, ListOrdered } from "lucide-react-native"
+import { ArrowRight, CalendarDays, ListOrdered } from "lucide-react-native"
 import { useState } from "react"
 import { Text, View } from "react-native"
 import { useFormatter, useLocale, useTranslations } from "use-intl"
@@ -84,14 +84,21 @@ export default function PlansScreen() {
         </Card>
       )}
 
-      <Card title={t("PlanWizard.type.chapters.label")}>
-        <Body>{t("PlanWizard.type.chapters.description")}</Body>
-        <Button
-          title={t("Plans.new")}
-          icon={ListOrdered}
-          variant="outline"
-          onPress={() => router.push("/new-plan")}
-        />
+      <Card title={t("Plans.new")} padded={false}>
+        <View>
+          {(["duration", "chapters"] as const).map((type, index, all) => (
+            <ListRow
+              key={type}
+              icon={type === "chapters" ? ListOrdered : CalendarDays}
+              label={t(`PlanWizard.type.${type}.label`)}
+              subtitle={t(`PlanWizard.type.${type}.description`)}
+              onPress={() =>
+                router.push({ pathname: "/new-plan", params: { type } })
+              }
+              last={index === all.length - 1}
+            />
+          ))}
+        </View>
       </Card>
 
       <Text accessibilityRole="header" style={heading}>

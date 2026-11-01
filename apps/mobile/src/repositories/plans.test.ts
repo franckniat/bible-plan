@@ -121,6 +121,25 @@ describe("createPlan", () => {
     expect(days).toHaveLength(63)
   })
 
+  it("stores the same plan as the web over a number of days or until a date", async () => {
+    for (const pace of [
+      { mode: "days", days: 90 },
+      { mode: "endDate", endDate: "2027-02-01" },
+    ] as const) {
+      const db = await testDatabase()
+      const request: NewPlan = {
+        source: "custom",
+        title: "Le Nouveau Testament",
+        passages: bookRange("Matt", "Rev"),
+        startDate: "2026-11-02",
+        activeWeekdays: [1, 2, 3, 4, 5, 6],
+        pace,
+      }
+      const { id } = createPlan(db, request, "fr", { now, id: ids() })
+      expect(storedDays(db, id)).toEqual(webPlan(request).days)
+    }
+  })
+
   it("puts the plan and its enrollment in the outbox, as the sync sends them", async () => {
     const db = await testDatabase()
     const { id } = createPlan(
