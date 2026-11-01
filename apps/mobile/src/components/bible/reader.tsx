@@ -16,13 +16,7 @@ import {
   parsePassageSlug,
 } from "@workspace/core"
 import { router, Stack } from "expo-router"
-import {
-  ChevronLeft,
-  Circle,
-  CircleCheck,
-  ChevronRight,
-  Type,
-} from "lucide-react-native"
+import { Circle, CircleCheck, Type } from "lucide-react-native"
 import {
   ActivityIndicator,
   Dimensions,
@@ -38,6 +32,7 @@ import { useLocale, useTranslations } from "use-intl"
 
 import { usePassage } from "@/bible/use-passage"
 import { versionName } from "@/bible/versions"
+import { arrowsRoom, ChapterArrows } from "@/components/bible/chapter-arrows"
 import { ChapterPager } from "@/components/bible/chapter-pager"
 import { ChapterText } from "@/components/bible/chapter-text"
 import { HeaderButton } from "@/components/bible/header-button"
@@ -343,39 +338,29 @@ export function Reader({
               />
             ) : null}
 
-            {previous || next ? (
-              <View style={styles.navigation}>
-                {previous ? (
-                  <Button
-                    title={label(previous)}
-                    icon={ChevronLeft}
-                    variant="outline"
-                    size="sm"
-                    accessibilityLabel={t("Reader.previous", {
-                      chapter: label(previous),
-                    })}
-                    onPress={() => go(previous)}
-                  />
-                ) : (
-                  <View />
-                )}
-                {next ? (
-                  <Button
-                    title={label(next)}
-                    icon={ChevronRight}
-                    variant="outline"
-                    size="sm"
-                    accessibilityLabel={t("Reader.next", {
-                      chapter: label(next),
-                    })}
-                    onPress={() => go(next)}
-                  />
-                ) : null}
-              </View>
-            ) : null}
+            {/* Room for the arrows, so the last line is not under them. */}
+            <View style={{ height: arrowsRoom }} />
             {/* Room for the sheet, so the last verses can be picked too. */}
             {selection ? <View style={styles.panelRoom} /> : null}
           </TabScreen>
+        }
+      />
+      <ChapterArrows
+        previous={
+          previous
+            ? {
+                label: t("Reader.previous", { chapter: label(previous) }),
+                onPress: () => go(previous),
+              }
+            : null
+        }
+        next={
+          next
+            ? {
+                label: t("Reader.next", { chapter: label(next) }),
+                onPress: () => go(next),
+              }
+            : null
         }
       />
     </>
@@ -386,10 +371,4 @@ const styles = StyleSheet.create({
   header: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
   chapter: { gap: spacing.sm },
   panelRoom: { height: 400 },
-  navigation: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: spacing.sm,
-    marginTop: spacing.md,
-  },
 })
