@@ -1,10 +1,12 @@
 import {
   type BookId,
   books,
+  getBookName,
   getChapterCount,
+  getVerseCount,
   parsePassageSlug,
 } from "@workspace/core"
-import { ChevronDown, ChevronRight } from "lucide-react-native"
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react-native"
 import { useRef, useState } from "react"
 import {
   Pressable,
@@ -17,6 +19,7 @@ import { useLocale, useTranslations } from "use-intl"
 
 import { haptics } from "@/lib/haptics"
 import { openPassage } from "@/lib/open-passage"
+import { scrollTarget } from "@/lib/scroll-target"
 import { useReadingHistory } from "@/lib/reading-history"
 import { radius, spacing, typography } from "@/theme/metrics"
 import { createThemedStyles, useThemedStyles } from "@/theme/themed-styles"
@@ -35,8 +38,62 @@ export default function ChoosePassageScreen() {
   const [last] = useReadingHistory()
   const reading = parsePassageSlug(last?.slug ?? "")
   const [open, setOpen] = useState<BookId | null>(reading?.book ?? null)
+  // A chapter chosen: its verses to go to, as in the reading apps.
+  const [chosen, setChosen] = useState<{
+    book: BookId
+    chapter: number
+  } | null>(null)
+  const tRead = useTranslations("Mobile.read")
   const scroll = useRef<ScrollViewInstance>(null)
   const scrolled = useRef(false)
+
+  if (chosen) {
+    const slug = `${chosen.book}.${chosen.chapter}`
+    const go = (verse: number) => {
+      haptics.tap()
+      if (verse > 1) scrollTarget.set(slug, verse)
+      openPassage(slug)
+    }
+    return (
+      <View style={styles.screen}>
+        <Text accessibilityRole="header" style={styles.title}>
+          {tRead("goToVerse")}
+        </Text>
+        <ScrollView contentContainerStyle={styles.content}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setChosen(null)}
+            style={({ pressed }) => [styles.book, pressed && styles.pressed]}
+          >
+            <View style={styles.back}>
+              <ChevronLeft size={18} color={colors.mutedForeground} />
+              <Text style={[styles.name, styles.current]}>
+                {getBookName(chosen.book, locale)} {chosen.chapter}
+              </Text>
+            </View>
+          </Pressable>
+          <View style={styles.grid}>
+            {Array.from(
+              { length: getVerseCount(chosen.book, chosen.chapter) },
+              (_, index) => index + 1
+            ).map((verse) => (
+              <Pressable
+                key={verse}
+                accessibilityRole="button"
+                onPress={() => go(verse)}
+                style={({ pressed }) => [
+                  styles.cell,
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Text style={styles.number}>{verse}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </ScrollView>
+      </View>
+    )
+  }
 
   return (
     <View style={styles.screen}>
@@ -78,7 +135,8 @@ export default function ChoosePassageScreen() {
                       accessibilityState={{ expanded: unfolded }}
                       onPress={() => {
                         haptics.tap()
-                        if (count === 1) openPassage(`${book.id}.1`)
+                        if (count === 1)
+                          setChosen({ book: book.id, chapter: 1 })
                         else setOpen(unfolded ? null : book.id)
                       }}
                       style={({ pressed }) => [
@@ -113,7 +171,7 @@ export default function ChoosePassageScreen() {
                                 })}
                                 onPress={() => {
                                   haptics.tap()
-                                  openPassage(`${book.id}.${chapter}`)
+                                  setChosen({ book: book.id, chapter })
                                 }}
                                 style={({ pressed }) => [
                                   styles.cell,
@@ -169,6 +227,7 @@ const themedStyles = createThemedStyles((colors) => ({
     borderBottomColor: colors.border,
   },
   name: { ...typography.body, color: colors.foreground },
+  back: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
   current: { fontFamily: typography.h3.fontFamily, color: colors.primary },
   pressed: { backgroundColor: colors.accentSoft },
   grid: {

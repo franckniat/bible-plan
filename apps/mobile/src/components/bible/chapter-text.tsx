@@ -60,6 +60,7 @@ export function ChapterText({
   highlights = {},
   selected = [],
   onPressVerse,
+  onVerseTops,
 }: {
   version: BibleVersionId
   verses: readonly Verse[]
@@ -69,6 +70,8 @@ export function ChapterText({
   selected?: readonly number[]
   /** A verse tapped, with where (its height on the screen). */
   onPressVerse?: (verse: number, pageY: number) => void
+  /** Where each verse starts, from the top of the text, once laid out. */
+  onVerseTops?: (tops: Record<number, number>) => void
 }) {
   const styles = useThemedStyles(themedStyles)
   const colors = useColors()
@@ -100,7 +103,9 @@ export function ChapterText({
       ? (event: GestureResponderEvent) =>
           onPressVerse(number, event.nativeEvent.pageY)
       : undefined
+    // The first part of a verse marks where it starts.
     const parts: MarkedPart[] = []
+    const anchor = `${number}`
     // A new paragraph starts on its own line, after text shown above.
     if (flow && paragraph && index > 0) {
       parts.push({ key: `${number}-p`, text: "\n" })
@@ -115,6 +120,7 @@ export function ChapterText({
           chip ? { color: onBand } : null,
         ],
         mark: chip ? { color: chip, group: `${number}-n` } : undefined,
+        anchor,
         onPress,
       })
       parts.push({ key: `${number}-s`, text: " ", onPress })
@@ -129,6 +135,7 @@ export function ChapterText({
         ],
         mark: band ? { color: band, group: `${number}` } : undefined,
         underline: dots,
+        anchor: !look.verseNumbers && part === 0 ? anchor : undefined,
         onPress,
       })
     })
@@ -140,11 +147,15 @@ export function ChapterText({
     return (
       <View style={styles.lines}>
         {verses.map((item, index) => (
-          <MarkedText
+          // One verse a line: where it starts is where its own text is.
+          <View
             key={item[0]}
-            style={text}
-            parts={partsOf(item, index, false)}
-          />
+            onLayout={(event) =>
+              onVerseTops?.({ [item[0]]: event.nativeEvent.layout.y })
+            }
+          >
+            <MarkedText style={text} parts={partsOf(item, index, false)} />
+          </View>
         ))}
       </View>
     )
@@ -153,6 +164,16 @@ export function ChapterText({
     <MarkedText
       style={text}
       parts={verses.flatMap((item, index) => partsOf(item, index, true))}
+      onAnchors={
+        onVerseTops
+          ? (tops) =>
+              onVerseTops(
+                Object.fromEntries(
+                  Object.entries(tops).map(([verse, y]) => [Number(verse), y])
+                )
+              )
+          : undefined
+      }
     />
   )
 }

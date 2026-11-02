@@ -22,6 +22,8 @@ export type MarkedPart = {
   style?: StyleProp<TextStyle>
   mark?: Mark
   underline?: Mark
+  /** Its line's top is told to `onAnchors` under this name (a verse). */
+  anchor?: string
   onPress?: (event: GestureResponderEvent) => void
 }
 
@@ -72,6 +74,29 @@ export function bandsOf(parts: readonly MarkedPart[]): Band[] {
     }
   }
   return bands
+}
+
+/** The top of the line where each anchored part starts. */
+export function anchorTops(
+  parts: readonly MarkedPart[],
+  lines: readonly TextLayoutLine[]
+): Record<string, number> {
+  const tops: Record<string, number> = {}
+  let offset = 0
+  for (const part of parts) {
+    if (part.anchor) {
+      let start = 0
+      for (const line of lines) {
+        if (offset < start + line.text.length) {
+          tops[part.anchor] = line.y
+          break
+        }
+        start += line.text.length
+      }
+    }
+    offset += part.text.length
+  }
+  return tops
 }
 
 /** The parts between two offsets of the text, cut to them. */
@@ -141,10 +166,13 @@ export function piecesOf(
 export function MarkedText({
   parts,
   style,
+  onAnchors,
 }: {
   parts: readonly MarkedPart[]
   /** The text's style, with its font size and line height. */
   style: StyleProp<TextStyle>
+  /** The top of the line of each anchored part, once laid out natively. */
+  onAnchors?: (tops: Record<string, number>) => void
 }) {
   const [lines, setLines] = useState<readonly TextLayoutLine[] | null>(null)
   // Widths of line beginnings, by "line:offset"; "x" is the width of an x.
@@ -156,11 +184,12 @@ export function MarkedText({
     <Text
       style={style}
       onTextLayout={
-        web || bands.length === 0
+        web || (bands.length === 0 && !onAnchors)
           ? undefined
           : (event) => {
               const next = event.nativeEvent.lines
               if (JSON.stringify(lines) === JSON.stringify(next)) return
+              if (onAnchors) onAnchors(anchorTops(parts, next))
               // Other lines: the widths measured for the former ones go.
               setLines(next)
               setWidths({})

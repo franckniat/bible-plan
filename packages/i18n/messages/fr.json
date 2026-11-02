@@ -1527,6 +1527,7 @@
       "invalid": "Le lien « {slug} » ne désigne aucun passage.",
       "choosePassage": "Aller à un autre passage (actuel : {passage})",
       "chooseVersion": "Changer de version (actuelle : {version})",
+      "goToVerse": "Aller au verset",
       "lineHeight": "Interligne",
       "lineHeights": {
         "compact": "Serré",

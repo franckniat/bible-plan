@@ -1527,6 +1527,7 @@
       "invalid": "The link “{slug}” doesn’t point to a passage.",
       "choosePassage": "Go to another passage (now: {passage})",
       "chooseVersion": "Change the version (now: {version})",
+      "goToVerse": "Go to a verse",
       "lineHeight": "Line spacing",
       "lineHeights": {
         "compact": "Tight",

@@ -41,6 +41,7 @@ import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { usePreferences } from "@/lib/preferences"
 import { recordReading } from "@/lib/reading-history"
+import { scrollTarget } from "@/lib/scroll-target"
 import { useVerseActions, verseActions } from "@/lib/verse-actions"
 import { highlightVerses, useHighlights } from "@/repositories/highlights"
 import { markReading, useReadingDone } from "@/repositories/plans"
@@ -101,6 +102,21 @@ export function Reader({
   // Once the sheet is open, and for each verse tapped while it is.
   useEffect(keepInView, [sheetHeight, selection])
   const clear = () => setPicked({ slug, selection: null })
+  // "Go to a verse": once the verse is laid out, the reader scrolls to it.
+  const chapterTops = useRef<Record<number, number>>({})
+  const textTops = useRef<Record<number, number>>({})
+  const verseTops = useRef<Record<number, Record<number, number>>>({})
+  const goToTarget = () => {
+    const verse = scrollTarget.peek(slug)
+    const chapter = passage?.start.chapter
+    if (verse === null || chapter === undefined) return
+    const top = chapterTops.current[chapter]
+    const text = textTops.current[chapter]
+    const line = verseTops.current[chapter]?.[verse]
+    if (top === undefined || text === undefined || line === undefined) return
+    scrollTarget.clear()
+    scroll.current?.scrollTo({ y: Math.max(0, top + text + line - 16) })
+  }
   const valid = passage !== null
   useEffect(() => {
     if (valid) recordReading(slug)
@@ -285,7 +301,14 @@ export function Reader({
               <Body>{t("Reader.loadFailed")}</Body>
             ) : (
               state.text.chapters.map(({ chapter, verses }) => (
-                <View key={chapter} style={styles.chapter}>
+                <View
+                  key={chapter}
+                  style={styles.chapter}
+                  onLayout={(event) => {
+                    chapterTops.current[chapter] = event.nativeEvent.layout.y
+                    goToTarget()
+                  }}
+                >
                   {state.text.chapters.length > 1 ? (
                     <Text
                       style={[typography.h3, { color: colors.mutedForeground }]}
@@ -293,19 +316,35 @@ export function Reader({
                       {t("Reader.chapter", { chapter })}
                     </Text>
                   ) : null}
-                  <ChapterText
-                    version={version}
-                    verses={verses}
-                    look={reader}
-                    highlights={colorsOf(
-                      chapter,
-                      verses.map(([number]) => number)
-                    )}
-                    selected={
-                      selection?.chapter === chapter ? selection.verses : []
-                    }
-                    onPressVerse={(verse, pageY) => pick(chapter, verse, pageY)}
-                  />
+                  <View
+                    onLayout={(event) => {
+                      textTops.current[chapter] = event.nativeEvent.layout.y
+                      goToTarget()
+                    }}
+                  >
+                    <ChapterText
+                      version={version}
+                      verses={verses}
+                      look={reader}
+                      onVerseTops={(tops) => {
+                        verseTops.current[chapter] = {
+                          ...verseTops.current[chapter],
+                          ...tops,
+                        }
+                        goToTarget()
+                      }}
+                      highlights={colorsOf(
+                        chapter,
+                        verses.map(([number]) => number)
+                      )}
+                      selected={
+                        selection?.chapter === chapter ? selection.verses : []
+                      }
+                      onPressVerse={(verse, pageY) =>
+                        pick(chapter, verse, pageY)
+                      }
+                    />
+                  </View>
                 </View>
               ))
             )}

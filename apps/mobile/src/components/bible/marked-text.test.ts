@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest"
 
 vi.mock("react-native", () => ({ Platform: { OS: "ios" } }))
 
-const { bandsOf, piecesOf, slice } = await import("./marked-text")
+const { anchorTops, bandsOf, piecesOf, slice } = await import("./marked-text")
 
 const parts = [
   { key: "1-n", text: "1", mark: { color: "chip", group: "1-n" } },
@@ -57,5 +57,20 @@ describe("marked text", () => {
 
   it("gives the parts of a stretch of text, cut to it", () => {
     expect(slice(parts, 2, 8).map((part) => part.text)).toEqual(["Au ", "com"])
+  })
+
+  it("tells the top of the line where each verse starts", () => {
+    const verses = [
+      { key: "1-n", text: "1", anchor: "1" },
+      { key: "1-0", text: " Au commencement " },
+      { key: "2-n", text: "2", anchor: "2" },
+      { key: "2-0", text: " La terre" },
+    ]
+    const lines = [
+      { ...line("1 Au "), y: 0 },
+      { ...line("commencement 2 La "), y: 30 },
+      { ...line("terre"), y: 60 },
+    ]
+    expect(anchorTops(verses, lines)).toEqual({ "1": 0, "2": 30 })
   })
 })
