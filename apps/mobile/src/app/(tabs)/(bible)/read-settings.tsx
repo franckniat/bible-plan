@@ -1,5 +1,4 @@
 import type { Passage } from "@workspace/core"
-import { Stack } from "expo-router"
 import { StyleSheet, Text, View } from "react-native"
 import { useLocale, useTranslations } from "use-intl"
 
@@ -41,10 +40,17 @@ export default function ReaderSettingsScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{ title: t("settings.title"), presentation: "formSheet" }}
-      />
       <TabScreen>
+        {/* A sheet has no header: its title is at the top of it. */}
+        <Text
+          accessibilityRole="header"
+          style={[
+            typography.h3,
+            { color: colors.foreground, textAlign: "center" },
+          ]}
+        >
+          {t("settings.title")}
+        </Text>
         <Card>
           <ChapterText
             version={version}

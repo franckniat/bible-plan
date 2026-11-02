@@ -1,8 +1,8 @@
 import { getBibleVersion, type BibleVersionId } from "@workspace/bible-data"
-import { router, Stack } from "expo-router"
+import { router } from "expo-router"
 import { CircleAlert, Download } from "lucide-react-native"
 import { useState } from "react"
-import { ActivityIndicator, View } from "react-native"
+import { ActivityIndicator, Text, View } from "react-native"
 import { useLocale, useTranslations } from "use-intl"
 
 import { downloadVersion, useDownloading } from "@/bible/downloads"
@@ -18,6 +18,7 @@ import { ListRow } from "@/components/ui/list-row"
 import { Notice } from "@/components/ui/notice"
 import { usePreferences } from "@/lib/preferences"
 import { bibleVersionOf, setProfile, useProfile } from "@/repositories/profile"
+import { typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
 
 /**
@@ -41,10 +42,17 @@ export default function ChooseVersionScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{ title: t("Reader.version"), presentation: "formSheet" }}
-      />
       <TabScreen>
+        {/* A sheet has no header: its title is at the top of it. */}
+        <Text
+          accessibilityRole="header"
+          style={[
+            typography.h3,
+            { color: colors.foreground, textAlign: "center" },
+          ]}
+        >
+          {t("Reader.version")}
+        </Text>
         <ChoiceList
           options={readable.map((id) => ({
             value: id,
