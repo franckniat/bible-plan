@@ -19,6 +19,7 @@ import {
   type IsoDate,
   type Locale,
   type NewPlan,
+  type Passage,
   type Weekday,
 } from "@workspace/core"
 import { TriangleAlert } from "lucide-react-native"
@@ -27,6 +28,7 @@ import { useState } from "react"
 import { Text, View } from "react-native"
 import { useFormatter, useLocale, useTranslations } from "use-intl"
 
+import { FreeSelection } from "@/components/plans/free-selection"
 import { TemplateCard } from "@/components/plans/template-card"
 import { TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
@@ -98,7 +100,7 @@ export default function NewPlanScreen() {
   const { template: templateKey, type } = useLocalSearchParams<{
     template?: string
     /** How the plan's length is chosen; by chapters a day when left out. */
-    type?: "chapters" | "duration" | "time"
+    type?: "chapters" | "duration" | "time" | "free"
   }>()
   const template = templateKey ? getPlanTemplate(templateKey) : undefined
 
@@ -109,7 +111,10 @@ export default function NewPlanScreen() {
   const [to, setTo] = useState<BookId>("Deut")
   const [choosing, setChoosing] = useState<"from" | "to" | null>(null)
   const [chapters, setChapters] = useState(3)
-  const duration = type === "duration"
+  // A free plan reads what is chosen book by book, over days or until a date.
+  const free = type === "free"
+  const [freePassages, setFreePassages] = useState<Passage[]>([])
+  const duration = type === "duration" || free
   const time = type === "time"
   const [minutes, setMinutes] = useState(15)
   const readingWpm = readingSpeeds[profile.readingSpeed]
@@ -119,12 +124,17 @@ export default function NewPlanScreen() {
   const [months, setMonths] = useState(3)
   const [title, setTitle] = useState("")
 
-  const passages = bookRange(from, to)
+  const passages = free ? freePassages : bookRange(from, to)
+  const freeBooks = new Set(freePassages.map((passage) => passage.book))
   const suggestedTitle = template
     ? template.title[locale]
-    : from === to
-      ? getBookName(from, locale)
-      : `${getBookName(from, locale)} – ${getBookName(to, locale)}`
+    : free
+      ? freeBooks.size === 1
+        ? getBookName([...freeBooks][0]!, locale)
+        : ""
+      : from === to
+        ? getBookName(from, locale)
+        : `${getBookName(from, locale)} – ${getBookName(to, locale)}`
   const request: NewPlan = template
     ? {
         source: "template",
@@ -217,33 +227,40 @@ export default function NewPlanScreen() {
           <TemplateCard template={template} />
         ) : (
           <>
-            <Card title={t("PlanWizard.steps.selection")} padded={false}>
-              <View>
-                {(["from", "to"] as const).map((side) => (
-                  <View key={side}>
-                    <ListRow
-                      label={t(`PlanWizard.range.${side}`)}
-                      value={getBookName(side === "from" ? from : to, locale)}
-                      onPress={() =>
-                        setChoosing(choosing === side ? null : side)
-                      }
-                      last={side === "to" && choosing !== "to"}
-                    />
-                    {choosing === side ? bookPicker(side) : null}
-                  </View>
-                ))}
-              </View>
-              <Text style={[styles.hint, styles.rangeHint]}>
-                {t("PlanWizard.range.summary", {
-                  books: passages.length,
-                  chapters: passages.reduce(
-                    (total, passage) => total + getChapterCount(passage.book),
-                    0
-                  ),
-                  verses: countVerses(passages),
-                })}
-              </Text>
-            </Card>
+            {free ? (
+              <FreeSelection
+                passages={freePassages}
+                onChange={setFreePassages}
+              />
+            ) : (
+              <Card title={t("PlanWizard.steps.selection")} padded={false}>
+                <View>
+                  {(["from", "to"] as const).map((side) => (
+                    <View key={side}>
+                      <ListRow
+                        label={t(`PlanWizard.range.${side}`)}
+                        value={getBookName(side === "from" ? from : to, locale)}
+                        onPress={() =>
+                          setChoosing(choosing === side ? null : side)
+                        }
+                        last={side === "to" && choosing !== "to"}
+                      />
+                      {choosing === side ? bookPicker(side) : null}
+                    </View>
+                  ))}
+                </View>
+                <Text style={[styles.hint, styles.rangeHint]}>
+                  {t("PlanWizard.range.summary", {
+                    books: passages.length,
+                    chapters: passages.reduce(
+                      (total, passage) => total + getChapterCount(passage.book),
+                      0
+                    ),
+                    verses: countVerses(passages),
+                  })}
+                </Text>
+              </Card>
+            )}
 
             {time ? (
               <Card title={t("PlanWizard.schedule.minutes.label")}>
@@ -420,7 +437,12 @@ export default function NewPlanScreen() {
             </View>
           ) : weekdays.length > 0 ? (
             <Notice icon={TriangleAlert}>
-              {t(`PlanWizard.preview.errors.${preview.error ?? "invalid"}`)}
+              {!template &&
+              passages.length > 0 &&
+              !suggestedTitle &&
+              !title.trim()
+                ? t("PlanWizard.preview.titleRequired")
+                : t(`PlanWizard.preview.errors.${preview.error ?? "invalid"}`)}
             </Notice>
           ) : null}
         </Card>

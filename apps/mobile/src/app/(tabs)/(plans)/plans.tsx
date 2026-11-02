@@ -5,6 +5,7 @@ import {
   CalendarDays,
   Clock,
   ListOrdered,
+  Shapes,
 } from "lucide-react-native"
 import { useState } from "react"
 import { Text, View } from "react-native"
@@ -91,7 +92,7 @@ export default function PlansScreen() {
 
       <Card title={t("Plans.new")} padded={false}>
         <View>
-          {(["duration", "time", "chapters"] as const).map(
+          {(["duration", "time", "chapters", "free"] as const).map(
             (type, index, all) => (
               <ListRow
                 key={type}
@@ -100,7 +101,9 @@ export default function PlansScreen() {
                     ? ListOrdered
                     : type === "time"
                       ? Clock
-                      : CalendarDays
+                      : type === "free"
+                        ? Shapes
+                        : CalendarDays
                 }
                 label={t(`PlanWizard.type.${type}.label`)}
                 subtitle={t(`PlanWizard.type.${type}.description`)}

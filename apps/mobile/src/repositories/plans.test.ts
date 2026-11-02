@@ -1,6 +1,7 @@
 import {
   generatePlan,
   newPlanSchema,
+  parseReference,
   PlanGenerationError,
   resolveNewPlan,
   type NewPlan,
@@ -139,6 +140,27 @@ describe("createPlan", () => {
       const { id } = createPlan(db, request, "fr", { now, id: ids() })
       expect(storedDays(db, id)).toEqual(webPlan(request).days)
     }
+  })
+
+  it("stores the same plan as the web for books and passages in a chosen order", async () => {
+    const db = await testDatabase()
+    const request: NewPlan = {
+      source: "custom",
+      title: "Mon parcours",
+      passages: [
+        ...bookRange("Jude", "Jude"),
+        ...parseReference("Jean 3-5 ; Ps 23", { locale: "fr" })!,
+        ...bookRange("Ruth", "Ruth"),
+      ],
+      startDate: "2026-11-02",
+      pace: { mode: "days", days: 10 },
+    }
+    const { id } = createPlan(db, request, "fr", { now, id: ids() })
+    const days = storedDays(db, id)
+    expect(days).toEqual(webPlan(request).days)
+    // In the order chosen: Jude first, Ruth last.
+    expect(days[0]!.readings[0]!.passage.book).toBe("Jude")
+    expect(days.at(-1)!.readings.at(-1)!.passage.book).toBe("Ruth")
   })
 
   it("puts the plan and its enrollment in the outbox, as the sync sends them", async () => {
