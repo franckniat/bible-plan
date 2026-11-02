@@ -303,3 +303,10 @@ export const achievements = sqliteTable(
   },
   (table) => [uniqueIndex("achievements_level").on(table.key, table.level)]
 )
+
+/** Passages bookmarked in the reader, on this phone (not synced). */
+export const bookmarks = sqliteTable("bookmarks", {
+  /** The passage's slug, "John.3": one bookmark per passage. */
+  slug: text("slug").primaryKey(),
+  createdAt: text("created_at").notNull(),
+})

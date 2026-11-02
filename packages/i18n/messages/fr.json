@@ -1527,6 +1527,15 @@
       "invalid": "Le lien « {slug} » ne désigne aucun passage.",
       "choosePassage": "Aller à un autre passage (actuel : {passage})",
       "chooseVersion": "Changer de version (actuelle : {version})",
+      "menu": {
+        "open": "Menu de lecture",
+        "settings": "Police et paramètres",
+        "parallel": "Affichage parallèle",
+        "addBookmark": "Ajouter un marque-page",
+        "removeBookmark": "Retirer le marque-page",
+        "shareLink": "Partager le lien",
+        "bookmarks": "Marque-pages"
+      },
       "dayBackground": "Fond le jour",
       "nightBackground": "Fond la nuit",
       "font": "Police",

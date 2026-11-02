@@ -16,7 +16,7 @@ import {
   parsePassageSlug,
 } from "@workspace/core"
 import { router, Stack } from "expo-router"
-import { Circle, CircleCheck, Type } from "lucide-react-native"
+import { Circle, CircleCheck, EllipsisVertical } from "lucide-react-native"
 import {
   ActivityIndicator,
   Dimensions,
@@ -262,11 +262,13 @@ export function Reader({
           headerRight: () => (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={t("Reader.settings.open")}
+              accessibilityLabel={t("Mobile.read.menu.open")}
               hitSlop={12}
-              onPress={() => router.push("/read-settings")}
+              onPress={() =>
+                router.push({ pathname: "/reader-menu", params: { slug } })
+              }
             >
-              <Type size={22} color={colors.foreground} />
+              <EllipsisVertical size={22} color={colors.foreground} />
             </Pressable>
           ),
         }}

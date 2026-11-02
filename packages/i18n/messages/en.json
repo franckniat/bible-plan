@@ -1527,6 +1527,15 @@
       "invalid": "The link “{slug}” doesn’t point to a passage.",
       "choosePassage": "Go to another passage (now: {passage})",
       "chooseVersion": "Change the version (now: {version})",
+      "menu": {
+        "open": "Reading menu",
+        "settings": "Font and settings",
+        "parallel": "Parallel view",
+        "addBookmark": "Add a bookmark",
+        "removeBookmark": "Remove the bookmark",
+        "shareLink": "Share the link",
+        "bookmarks": "Bookmarks"
+      },
       "dayBackground": "Daytime background",
       "nightBackground": "Night background",
       "font": "Font",

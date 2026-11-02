@@ -22,6 +22,10 @@ export default function BibleStack() {
       <Stack.Screen name="choose-passage" options={sheet} />
       <Stack.Screen name="choose-version" options={sheet} />
       <Stack.Screen name="read-settings" options={sheet} />
+      <Stack.Screen
+        name="reader-menu"
+        options={{ ...sheet, sheetAllowedDetents: "fitToContents" }}
+      />
       {/* The text stays usable behind it: more verses can be tapped. */}
       <Stack.Screen
         name="verse-actions"
