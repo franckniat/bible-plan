@@ -5,6 +5,7 @@ import { ActivityIndicator } from "react-native"
 import { usePassage } from "@/bible/use-passage"
 import { ChapterText, type ReaderLook } from "@/components/bible/chapter-text"
 import { TabScreen } from "@/components/screen"
+import { useReaderBackground } from "@/theme/reader-backgrounds"
 import { useColors } from "@/theme/use-colors"
 
 /**
@@ -23,9 +24,10 @@ export function NeighborChapter({
   look: ReaderLook
 }) {
   const colors = useColors()
+  const background = useReaderBackground()
   const state = usePassage(chaptersPassage(book, chapter), version)
   return (
-    <TabScreen>
+    <TabScreen backgroundColor={background}>
       {state.status === "ready" ? (
         state.text.chapters.map(({ chapter: number, verses }) => (
           <ChapterText

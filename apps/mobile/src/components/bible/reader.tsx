@@ -47,6 +47,7 @@ import { highlightVerses, useHighlights } from "@/repositories/highlights"
 import { markReading, useReadingDone } from "@/repositories/plans"
 import { bibleVersionOf, useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
+import { useReaderBackground } from "@/theme/reader-backgrounds"
 import { useColors } from "@/theme/use-colors"
 
 /**
@@ -69,6 +70,7 @@ export function Reader({
   const colors = useColors()
   const profile = useProfile()
   const { reader } = usePreferences()
+  const background = useReaderBackground()
   const version = bibleVersionOf(profile.bibleVersion, locale)
   const passage = parsePassageSlug(slug)
   const state = usePassage(passage, version)
@@ -287,6 +289,7 @@ export function Reader({
           // Another passage starts at the top.
           <TabScreen
             key={slug}
+            backgroundColor={background}
             scrollRef={scroll}
             onScrollY={(y) => {
               scrollY.current = y

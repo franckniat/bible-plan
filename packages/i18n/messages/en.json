@@ -1527,6 +1527,19 @@
       "invalid": "The link “{slug}” doesn’t point to a passage.",
       "choosePassage": "Go to another passage (now: {passage})",
       "chooseVersion": "Change the version (now: {version})",
+      "dayBackground": "Daytime background",
+      "nightBackground": "Night background",
+      "font": "Font",
+      "backgrounds": {
+        "cream": "Cream",
+        "white": "White",
+        "green": "Soft green",
+        "rose": "Soft pink",
+        "neutral": "Dark",
+        "black": "Black",
+        "night": "Night blue",
+        "plum": "Plum"
+      },
       "goToVerse": "Go to a verse",
       "lineHeight": "Line spacing",
       "lineHeights": {

@@ -1,5 +1,5 @@
 import type { Passage } from "@workspace/core"
-import { StyleSheet, Text, View } from "react-native"
+import { Pressable, StyleSheet, Text, View } from "react-native"
 import { useLocale, useTranslations } from "use-intl"
 
 import { usePassage } from "@/bible/use-passage"
@@ -11,6 +11,11 @@ import { SwitchRow } from "@/components/ui/switch-row"
 import { lineHeights, setPreferences, usePreferences } from "@/lib/preferences"
 import { bibleVersionOf, useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
+import {
+  dayBackgrounds,
+  nightBackgrounds,
+  useReaderBackground,
+} from "@/theme/reader-backgrounds"
 import { useColors } from "@/theme/use-colors"
 
 const sizes = [0, 1, 2, 3] as const
@@ -28,7 +33,9 @@ export default function ReaderSettingsScreen() {
   const tMobile = useTranslations("Mobile.read")
   const locale = useLocale()
   const colors = useColors()
-  const { reader } = usePreferences()
+  const tTheme = useTranslations("Theme")
+  const { reader, theme } = usePreferences()
+  const background = useReaderBackground()
   const profile = useProfile()
   const version = bibleVersionOf(profile.bibleVersion, locale)
   const verse = usePassage(sample, version)
@@ -51,7 +58,7 @@ export default function ReaderSettingsScreen() {
         >
           {t("settings.title")}
         </Text>
-        <Card>
+        <Card style={{ backgroundColor: background }}>
           <ChapterText
             version={version}
             verses={
@@ -62,6 +69,48 @@ export default function ReaderSettingsScreen() {
             look={reader}
           />
         </Card>
+
+        <View style={styles.field}>
+          {label(tTheme("label"))}
+          <Segmented
+            value={theme}
+            options={(["system", "light", "dark"] as const).map((value) => ({
+              value,
+              label: tTheme(value),
+            }))}
+            onChange={(value) => setPreferences({ theme: value })}
+          />
+        </View>
+
+        <View style={styles.field}>
+          {label(tMobile("dayBackground"))}
+          <Swatches
+            colors={dayBackgrounds}
+            value={reader.dayBackground}
+            onChange={(dayBackground) => set({ dayBackground })}
+          />
+        </View>
+
+        <View style={styles.field}>
+          {label(tMobile("nightBackground"))}
+          <Swatches
+            colors={nightBackgrounds}
+            value={reader.nightBackground}
+            onChange={(nightBackground) => set({ nightBackground })}
+          />
+        </View>
+
+        <View style={styles.field}>
+          {label(tMobile("font"))}
+          <Segmented
+            value={reader.font}
+            options={[
+              { value: "lora", label: "Lora" },
+              { value: "geist", label: "Geist" },
+            ]}
+            onChange={(font) => set({ font })}
+          />
+        </View>
 
         <View style={styles.field}>
           {label(t("settings.size"))}
@@ -111,6 +160,42 @@ export default function ReaderSettingsScreen() {
         </Card>
       </TabScreen>
     </>
+  )
+}
+
+/** A choice of colors, as round swatches; the one chosen is ringed. */
+function Swatches<T extends string>({
+  colors: choices,
+  value,
+  onChange,
+}: {
+  colors: Record<T, string>
+  value: T
+  onChange: (value: T) => void
+}) {
+  const tMobile = useTranslations("Mobile.read.backgrounds")
+  const colors = useColors()
+  return (
+    <View style={{ flexDirection: "row", gap: spacing.md }}>
+      {(Object.keys(choices) as T[]).map((key) => (
+        <Pressable
+          key={key}
+          accessibilityRole="radio"
+          accessibilityLabel={tMobile(key as "cream")}
+          accessibilityState={{ selected: key === value }}
+          hitSlop={6}
+          onPress={() => onChange(key)}
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: choices[key],
+            borderWidth: key === value ? 3 : 1,
+            borderColor: key === value ? colors.accent : colors.border,
+          }}
+        />
+      ))}
+    </View>
   )
 }
 

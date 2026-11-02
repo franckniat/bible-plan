@@ -27,7 +27,11 @@ describe("preferences", () => {
         verseNumbers: true,
         layout: "flow",
         lineHeight: "normal",
+        font: "lora",
+        dayBackground: "cream",
+        nightBackground: "neutral",
       },
+      theme: "system",
       downloaded: [],
       history: [],
     })
@@ -66,6 +70,9 @@ describe("preferences", () => {
       verseNumbers: false,
       layout: "lines",
       lineHeight: "normal",
+      font: "lora",
+      dayBackground: "cream",
+      nightBackground: "neutral",
     })
   })
 })

@@ -76,8 +76,10 @@ export function ChapterText({
   const styles = useThemedStyles(themedStyles)
   const colors = useColors()
   const fontSize = fontSizes[look.size]
+  const geist = look.font === "geist"
   const text = [
     styles.text,
+    geist ? { fontFamily: fontFamily.regular } : null,
     {
       fontSize,
       lineHeight: Math.round(fontSize * lineHeightFactors[look.lineHeight]),
@@ -130,7 +132,11 @@ export function ChapterText({
         key: `${number}-${part}`,
         text: segment.text,
         style: [
-          segment.italic ? styles.italic : null,
+          segment.italic
+            ? geist
+              ? { fontStyle: "italic" as const }
+              : styles.italic
+            : null,
           band ? { color: onBand } : null,
         ],
         mark: band ? { color: band, group: `${number}` } : undefined,

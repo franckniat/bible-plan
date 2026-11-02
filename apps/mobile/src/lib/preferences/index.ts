@@ -15,6 +15,9 @@ export const reminderTimes = {
 /** The line spacings of the reader, tight to extra wide. */
 export const lineHeights = ["compact", "normal", "wide", "wider"] as const
 
+/** The reader's fonts: Lora (with serifs) or Geist (without). */
+export const readerFonts = ["lora", "geist"] as const
+
 const preferencesSchema = z.object({
   /** The welcome screens and the onboarding are done. */
   onboarded: z.boolean().catch(false),
@@ -26,13 +29,23 @@ const preferencesSchema = z.object({
       verseNumbers: z.boolean(),
       layout: z.enum(["flow", "lines"]),
       lineHeight: z.enum(lineHeights).catch("normal"),
+      font: z.enum(readerFonts).catch("lora"),
+      dayBackground: z.enum(["cream", "white", "green", "rose"]).catch("cream"),
+      nightBackground: z
+        .enum(["neutral", "black", "night", "plum"])
+        .catch("neutral"),
     })
     .catch({
       size: 1,
       verseNumbers: true,
       layout: "flow",
       lineHeight: "normal",
+      font: "lora",
+      dayBackground: "cream",
+      nightBackground: "neutral",
     }),
+  /** The app's theme: the phone's, or always light or dark. */
+  theme: z.enum(["system", "light", "dark"]).catch("system"),
   /**
    * The passages read on this phone, the latest first (reading-history.ts):
    * the Bible tab opens on the first.

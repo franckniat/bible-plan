@@ -18,8 +18,11 @@ export function TabScreen({
   children,
   scrollRef,
   onScrollY,
+  backgroundColor,
 }: {
   children?: ReactNode
+  /** In place of the theme's background (the reader's page). */
+  backgroundColor?: string
   /** To scroll from outside (the reader keeps a verse in view). */
   scrollRef?: Ref<ScrollViewInstance>
   /** Follows the vertical scroll. */
@@ -37,7 +40,7 @@ export function TabScreen({
       scrollEventThrottle={onScrollY ? 32 : undefined}
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
-      style={{ flex: 1, backgroundColor: colors.background }}
+      style={{ flex: 1, backgroundColor: backgroundColor ?? colors.background }}
       contentContainerStyle={styles.content}
     >
       {children}

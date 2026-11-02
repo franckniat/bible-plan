@@ -5,7 +5,7 @@ import { Stack, ThemeProvider } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { StatusBar } from "expo-status-bar"
 import { useEffect } from "react"
-import { useColorScheme } from "react-native"
+import { Appearance, useColorScheme } from "react-native"
 import { useTranslations } from "use-intl"
 
 import { Celebration } from "@/components/achievements/celebration"
@@ -45,6 +45,10 @@ export default function RootLayout() {
 /** The app in the language of the profile. */
 function App() {
   const { locale } = useProfile()
+  const { theme } = usePreferences()
+  useEffect(() => {
+    Appearance.setColorScheme(theme === "system" ? "unspecified" : theme)
+  }, [theme])
   useReminderScheduling()
   useReminderResponses()
   useAchievementEvaluation()

@@ -1527,6 +1527,19 @@
       "invalid": "Le lien « {slug} » ne désigne aucun passage.",
       "choosePassage": "Aller à un autre passage (actuel : {passage})",
       "chooseVersion": "Changer de version (actuelle : {version})",
+      "dayBackground": "Fond le jour",
+      "nightBackground": "Fond la nuit",
+      "font": "Police",
+      "backgrounds": {
+        "cream": "Crème",
+        "white": "Blanc",
+        "green": "Vert doux",
+        "rose": "Rose doux",
+        "neutral": "Sombre",
+        "black": "Noir",
+        "night": "Bleu nuit",
+        "plum": "Prune"
+      },
       "goToVerse": "Aller au verset",
       "lineHeight": "Interligne",
       "lineHeights": {
