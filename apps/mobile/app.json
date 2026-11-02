@@ -38,7 +38,13 @@
       "expo-sqlite",
       "expo-asset",
       "expo-audio",
-      ["expo-notifications", { "sounds": ["./assets/sounds/session-end.wav"] }]
+      [
+        "expo-notifications",
+        {
+          "sounds": ["./assets/sounds/session-end.wav"]
+        }
+      ],
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

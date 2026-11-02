@@ -4,6 +4,7 @@ import { Text, View } from "react-native"
 import { useFormatter, useTranslations } from "use-intl"
 
 import { achievementViews } from "@/components/achievements/achievement-view"
+import { ShareAchievement } from "@/components/achievements/share-card"
 import { Body, TabScreen } from "@/components/screen"
 import { Card } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
@@ -56,6 +57,9 @@ export default function AchievementScreen() {
             <Body>{t("complete")}</Body>
           )}
         </Card>
+        {view.level > 0 ? (
+          <ShareAchievement achievementKey={view.key} level={view.level} />
+        ) : null}
         <Card padded={false}>
           {Array.from({ length: view.levels }, (_, index) => index + 1).map(
             (level) => (

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { AccessibilityInfo, Animated, Modal, Text, View } from "react-native"
 import { useTranslations } from "use-intl"
 
+import { ShareAchievement } from "@/components/achievements/share-card"
 import { Button } from "@/components/ui/button"
 import { haptics } from "@/lib/haptics"
 import { celebrated, useUnseenAchievements } from "@/repositories/achievements"
@@ -113,6 +114,12 @@ export function Celebration() {
           >
             {t("levelAria", { name, level })}
           </Text>
+          <View style={{ alignSelf: "stretch" }}>
+            <ShareAchievement
+              achievementKey={current.key}
+              level={current.level}
+            />
+          </View>
           <Button
             title={t("celebrate.close")}
             onPress={() => celebrated([current.id])}
