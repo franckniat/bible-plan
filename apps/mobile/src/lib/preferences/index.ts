@@ -38,7 +38,7 @@ const preferencesSchema = z.object({
     .catch({
       size: 1,
       verseNumbers: true,
-      layout: "flow",
+      layout: "lines",
       lineHeight: "normal",
       font: "lora",
       dayBackground: "cream",
