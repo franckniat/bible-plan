@@ -1,3 +1,4 @@
+import * as DocumentPicker from "expo-document-picker"
 import { File, Paths } from "expo-file-system"
 import * as Sharing from "expo-sharing"
 
@@ -22,4 +23,14 @@ export async function shareBackupFile(backup: Backup, title: string) {
     UTI: "public.json",
     dialogTitle: title,
   })
+}
+
+/** Lets the person pick a backup file; gives its text, or null if cancelled. */
+export async function pickBackupFile(): Promise<string | null> {
+  const picked = await DocumentPicker.getDocumentAsync({
+    type: ["application/json", "public.json"],
+    copyToCacheDirectory: true,
+  })
+  const asset = picked.canceled ? undefined : picked.assets[0]
+  return asset ? new File(asset.uri).text() : null
 }

@@ -1526,7 +1526,11 @@
       "title": "Mes données",
       "export": "Exporter une sauvegarde",
       "exportHint": "Un fichier JSON avec vos plans, votre progression, vos surlignages, votre journal de prière, vos notes, vos rappels et vos trophées.",
-      "exportFailed": "La sauvegarde n’a pas pu être partagée. Réessayez."
+      "exportFailed": "La sauvegarde n’a pas pu être partagée. Réessayez.",
+      "import": "Importer une sauvegarde",
+      "importHint": "Ajoute ce qu’elle contient à ce téléphone, sans rien remplacer ni créer de doublon.",
+      "imported": "{count, plural, =0 {Rien de nouveau : tout était déjà sur ce téléphone.} one {# élément ajouté.} other {# éléments ajoutés.}}",
+      "importFailed": "Ce fichier n’est pas une sauvegarde Bible Plan, ou il est abîmé."
     },
     "read": {
       "notFound": "Passage introuvable",

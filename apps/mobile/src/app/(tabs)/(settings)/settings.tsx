@@ -4,8 +4,10 @@ import {
   Bell,
   BookOpen,
   CircleAlert,
+  CircleCheck,
   Clock,
   FileDown,
+  FileUp,
   Gauge,
   Languages,
   Shapes,
@@ -18,9 +20,9 @@ import { TabScreen } from "@/components/screen"
 import { Card } from "@/components/ui/card"
 import { ListRow } from "@/components/ui/list-row"
 import { Notice } from "@/components/ui/notice"
-import { shareBackupFile } from "@/lib/backup-file"
+import { pickBackupFile, shareBackupFile } from "@/lib/backup-file"
 import { versionName } from "@/bible/versions"
-import { currentBackup } from "@/repositories/backup"
+import { currentBackup, restoreBackup } from "@/repositories/backup"
 import { bibleVersionOf, useProfile } from "@/repositories/profile"
 
 /** The settings of the local profile, without an account. */
@@ -29,13 +31,29 @@ export default function SettingsScreen() {
   const locale = useLocale()
   const profile = useProfile()
   const language = t("LanguageSwitcher.locale", { locale })
-  const [backupFailed, setBackupFailed] = useState(false)
+  /** What the last export or import gave, shown under the card. */
+  const [backup, setBackup] = useState<
+    | { status: "exportFailed" | "importFailed" }
+    | { status: "imported"; count: number }
+    | null
+  >(null)
   const exportBackup = async () => {
-    setBackupFailed(false)
+    setBackup(null)
     try {
       await shareBackupFile(currentBackup(), t("Mobile.backup.export"))
     } catch {
-      setBackupFailed(true)
+      setBackup({ status: "exportFailed" })
+    }
+  }
+  const importBackup = async () => {
+    setBackup(null)
+    try {
+      const text = await pickBackupFile()
+      if (text !== null) {
+        setBackup({ status: "imported", count: restoreBackup(text) })
+      }
+    } catch {
+      setBackup({ status: "importFailed" })
     }
   }
 
@@ -96,12 +114,24 @@ export default function SettingsScreen() {
             label={t("Mobile.backup.export")}
             subtitle={t("Mobile.backup.exportHint")}
             onPress={() => void exportBackup()}
+          />
+          <ListRow
+            icon={FileUp}
+            label={t("Mobile.backup.import")}
+            subtitle={t("Mobile.backup.importHint")}
+            onPress={() => void importBackup()}
             last
           />
         </View>
       </Card>
-      {backupFailed ? (
-        <Notice icon={CircleAlert}>{t("Mobile.backup.exportFailed")}</Notice>
+      {backup?.status === "imported" ? (
+        <Notice icon={CircleCheck}>
+          {t("Mobile.backup.imported", { count: backup.count })}
+        </Notice>
+      ) : backup ? (
+        <Notice icon={CircleAlert}>
+          {t(`Mobile.backup.${backup.status}`)}
+        </Notice>
       ) : null}
 
       {__DEV__ ? (

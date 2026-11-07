@@ -1526,7 +1526,11 @@
       "title": "My data",
       "export": "Export a backup",
       "exportHint": "A JSON file with your plans, your progress, your highlights, your prayer journal, your notes, your reminders and your trophies.",
-      "exportFailed": "The backup could not be shared. Try again."
+      "exportFailed": "The backup could not be shared. Try again.",
+      "import": "Import a backup",
+      "importHint": "Adds what it holds to this phone, without replacing anything or making duplicates.",
+      "imported": "{count, plural, =0 {Nothing new: everything was already on this phone.} one {# item added.} other {# items added.}}",
+      "importFailed": "This file is not a Bible Plan backup, or it is damaged."
     },
     "read": {
       "notFound": "Passage not found",

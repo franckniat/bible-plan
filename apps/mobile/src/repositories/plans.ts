@@ -53,7 +53,7 @@ const planTables = ["readingPlan", "planEnrollment", "readingProgress"]
 /** Rows inserted at once, under SQLite's limit of bound values. */
 const CHUNK = 80
 
-function chunks<T>(rows: readonly T[]): T[][] {
+export function chunks<T>(rows: readonly T[]): T[][] {
   return Array.from({ length: Math.ceil(rows.length / CHUNK) }, (_, index) =>
     rows.slice(index * CHUNK, (index + 1) * CHUNK)
   )
