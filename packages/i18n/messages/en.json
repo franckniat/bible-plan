@@ -1522,6 +1522,12 @@
     }
   },
   "Mobile": {
+    "backup": {
+      "title": "My data",
+      "export": "Export a backup",
+      "exportHint": "A JSON file with your plans, your progress, your highlights, your prayer journal, your notes, your reminders and your trophies.",
+      "exportFailed": "The backup could not be shared. Try again."
+    },
     "read": {
       "notFound": "Passage not found",
       "invalid": "The link “{slug}” doesn’t point to a passage.",

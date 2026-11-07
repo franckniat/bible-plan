@@ -1522,6 +1522,12 @@
     }
   },
   "Mobile": {
+    "backup": {
+      "title": "Mes données",
+      "export": "Exporter une sauvegarde",
+      "exportHint": "Un fichier JSON avec vos plans, votre progression, vos surlignages, votre journal de prière, vos notes, vos rappels et vos trophées.",
+      "exportFailed": "La sauvegarde n’a pas pu être partagée. Réessayez."
+    },
     "read": {
       "notFound": "Passage introuvable",
       "invalid": "Le lien « {slug} » ne désigne aucun passage.",
