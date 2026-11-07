@@ -34,6 +34,7 @@ describe("preferences", () => {
       theme: "system",
       downloaded: [],
       history: [],
+      lastBackupAt: null,
     })
   })
 

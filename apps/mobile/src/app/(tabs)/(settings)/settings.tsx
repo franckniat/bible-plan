@@ -11,19 +11,22 @@ import {
   Gauge,
   Languages,
   Shapes,
+  Smartphone,
 } from "lucide-react-native"
 import { useState } from "react"
 import { View } from "react-native"
-import { useLocale, useTranslations } from "use-intl"
+import { useFormatter, useLocale, useTranslations } from "use-intl"
 
 import { TabScreen } from "@/components/screen"
 import { Card } from "@/components/ui/card"
 import { ListRow } from "@/components/ui/list-row"
 import { Notice } from "@/components/ui/notice"
 import { pickBackupFile, shareBackupFile } from "@/lib/backup-file"
+import { setPreferences, usePreferences } from "@/lib/preferences"
 import { versionName } from "@/bible/versions"
 import { currentBackup, restoreBackup } from "@/repositories/backup"
 import { bibleVersionOf, useProfile } from "@/repositories/profile"
+import { spacing } from "@/theme/metrics"
 
 /** The settings of the local profile, without an account. */
 export default function SettingsScreen() {
@@ -31,6 +34,13 @@ export default function SettingsScreen() {
   const locale = useLocale()
   const profile = useProfile()
   const language = t("LanguageSwitcher.locale", { locale })
+  const format = useFormatter()
+  const { lastBackupAt } = usePreferences()
+  const [openedAt] = useState(() => Date.now())
+  // Without an account, nothing is kept elsewhere: a backup a month.
+  const backupDue =
+    lastBackupAt === null ||
+    openedAt - Date.parse(lastBackupAt) > 30 * 24 * 60 * 60 * 1000
   /** What the last export or import gave, shown under the card. */
   const [backup, setBackup] = useState<
     | { status: "exportFailed" | "importFailed" }
@@ -41,6 +51,7 @@ export default function SettingsScreen() {
     setBackup(null)
     try {
       await shareBackupFile(currentBackup(), t("Mobile.backup.export"))
+      setPreferences({ lastBackupAt: new Date().toISOString() })
     } catch {
       setBackup({ status: "exportFailed" })
     }
@@ -109,10 +120,29 @@ export default function SettingsScreen() {
 
       <Card title={t("Mobile.backup.title")} padded={false}>
         <View>
+          {backupDue ? (
+            <View style={{ padding: spacing.md, paddingBottom: 0 }}>
+              <Notice icon={Smartphone}>
+                {t(
+                  lastBackupAt
+                    ? "Mobile.backup.suggestAgain"
+                    : "Mobile.backup.suggest"
+                )}
+              </Notice>
+            </View>
+          ) : null}
           <ListRow
             icon={FileDown}
             label={t("Mobile.backup.export")}
-            subtitle={t("Mobile.backup.exportHint")}
+            subtitle={
+              lastBackupAt
+                ? t("Mobile.backup.lastExport", {
+                    date: format.dateTime(new Date(lastBackupAt), {
+                      dateStyle: "long",
+                    }),
+                  })
+                : t("Mobile.backup.exportHint")
+            }
             onPress={() => void exportBackup()}
           />
           <ListRow

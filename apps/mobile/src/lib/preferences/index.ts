@@ -53,6 +53,8 @@ const preferencesSchema = z.object({
   /** The Bible versions downloaded on this phone (bible/downloads.ts). */
   downloaded: z.array(z.string()).catch([]),
   history: z.array(z.object({ slug: z.string(), at: z.number() })).catch([]),
+  /** When a backup was last exported from this phone (ISO), or never. */
+  lastBackupAt: z.iso.datetime().nullable().catch(null),
 })
 
 export type Preferences = z.infer<typeof preferencesSchema>
