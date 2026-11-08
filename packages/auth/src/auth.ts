@@ -1,3 +1,4 @@
+import { expo } from "@better-auth/expo"
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { nextCookies } from "better-auth/next-js"
@@ -27,6 +28,9 @@ function getGoogleCredentials(env = process.env) {
 export function isGoogleAuthEnabled(env = process.env): boolean {
   return getGoogleCredentials(env) !== undefined
 }
+
+/** The mobile app's scheme (apps/mobile/app.json), as an origin. */
+export const mobileAppOrigin = "bibleplan://"
 
 export type CreateAuthOptions = {
   /** Sends authentication emails (verification, password reset). */
@@ -64,6 +68,9 @@ export function createAuth({
   return betterAuth({
     appName: "Bible Plan",
     database: prismaAdapter(prisma, { provider: "postgresql" }),
+    // The mobile app comes back to bibleplan:// after a sign-in in the
+    // browser (Expo Go's exp:// is trusted in development by the plugin).
+    trustedOrigins: [mobileAppOrigin],
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
@@ -130,6 +137,9 @@ export function createAuth({
         ),
     },
     plugins: [
+      // Sessions of the mobile app (stored in expo-secure-store), and its
+      // way back from Google or an e-mail link.
+      expo(),
       // Passwordless sign-in by email (link valid 5 minutes, single use).
       magicLink({
         sendMagicLink: ({ email, url }, ctx) =>
