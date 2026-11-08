@@ -9,7 +9,7 @@ import { Field, FieldLabel } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
 
 import { AuthNotice } from "@/components/auth/auth-card"
-import { getAuthErrorKey, type AuthErrorKey } from "@/lib/auth-errors"
+import { getAuthErrorKey, type AuthErrorKey } from "@workspace/core"
 
 type AuthResult = { error: { code?: string; status?: number } | null }
 

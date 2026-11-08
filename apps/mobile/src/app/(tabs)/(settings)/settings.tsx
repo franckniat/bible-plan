@@ -5,6 +5,7 @@ import {
   BookOpen,
   CircleAlert,
   CircleCheck,
+  CircleUserRound,
   Clock,
   FileDown,
   FileUp,
@@ -21,6 +22,7 @@ import { TabScreen } from "@/components/screen"
 import { Card } from "@/components/ui/card"
 import { ListRow } from "@/components/ui/list-row"
 import { Notice } from "@/components/ui/notice"
+import { useSession } from "@/lib/auth-client"
 import { pickBackupFile, shareBackupFile } from "@/lib/backup-file"
 import { setPreferences, usePreferences } from "@/lib/preferences"
 import { versionName } from "@/bible/versions"
@@ -35,6 +37,7 @@ export default function SettingsScreen() {
   const profile = useProfile()
   const language = t("LanguageSwitcher.locale", { locale })
   const format = useFormatter()
+  const { data: session } = useSession()
   const { lastBackupAt } = usePreferences()
   const [openedAt] = useState(() => Date.now())
   // Without an account, nothing is kept elsewhere: a backup a month.
@@ -70,6 +73,29 @@ export default function SettingsScreen() {
 
   return (
     <TabScreen>
+      <Card title={t("Mobile.account.title")} padded={false}>
+        <View>
+          {session ? (
+            <ListRow
+              icon={CircleUserRound}
+              label={session.user.name}
+              subtitle={t("Mobile.account.signedIn", {
+                email: session.user.email,
+              })}
+              last
+            />
+          ) : (
+            <ListRow
+              icon={CircleUserRound}
+              label={t("Mobile.account.open")}
+              subtitle={t("Mobile.account.openHint")}
+              onPress={() => router.push("/settings/account")}
+              last
+            />
+          )}
+        </View>
+      </Card>
+
       <Card title={t("Mobile.settings.reading")} padded={false}>
         <View>
           <ListRow

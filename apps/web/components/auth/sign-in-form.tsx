@@ -14,7 +14,7 @@ import { AuthNotice } from "@/components/auth/auth-card"
 import { PasswordInput } from "@/components/auth/password-input"
 import { ResendVerification } from "@/components/auth/resend-verification"
 import { Link } from "@/i18n/navigation"
-import { getAuthErrorKey, type AuthErrorKey } from "@/lib/auth-errors"
+import { getAuthErrorKey, type AuthErrorKey } from "@workspace/core"
 
 /** Email and password sign-in. */
 export function SignInForm({ redirectTo }: { redirectTo: string }) {

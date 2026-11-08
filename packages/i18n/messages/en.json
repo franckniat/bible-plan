@@ -1522,6 +1522,13 @@
     }
   },
   "Mobile": {
+    "account": {
+      "title": "Account",
+      "description": "Optional: an account saves your data and finds it again on the website. Without one, everything stays on this phone.",
+      "open": "Create an account or sign in",
+      "openHint": "To save your data and find it again on the website.",
+      "signedIn": "Signed in with {email}"
+    },
     "backup": {
       "title": "My data",
       "export": "Export a backup",

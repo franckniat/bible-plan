@@ -18,7 +18,7 @@ import { AuthNotice } from "@/components/auth/auth-card"
 import { PasswordInput } from "@/components/auth/password-input"
 import { ResendVerification } from "@/components/auth/resend-verification"
 import { Link } from "@/i18n/navigation"
-import { getAuthErrorKey, type AuthErrorKey } from "@/lib/auth-errors"
+import { getAuthErrorKey, type AuthErrorKey } from "@workspace/core"
 
 /** Account creation; then asks to confirm the email address. */
 export function SignUpForm() {

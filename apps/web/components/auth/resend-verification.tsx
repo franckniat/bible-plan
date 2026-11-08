@@ -6,7 +6,7 @@ import { useState, useTransition } from "react"
 import { authClient } from "@workspace/auth/client"
 import { Button } from "@workspace/ui/components/button"
 
-import { getAuthErrorKey, type AuthErrorKey } from "@/lib/auth-errors"
+import { getAuthErrorKey, type AuthErrorKey } from "@workspace/core"
 
 /** Sends the confirmation email again for an unverified address. */
 export function ResendVerification({

@@ -16,7 +16,7 @@ import {
 import { AuthNotice } from "@/components/auth/auth-card"
 import { PasswordInput } from "@/components/auth/password-input"
 import { Link } from "@/i18n/navigation"
-import { getAuthErrorKey, type AuthErrorKey } from "@/lib/auth-errors"
+import { getAuthErrorKey, type AuthErrorKey } from "@workspace/core"
 
 /** Sets a new password with the token received by email. */
 export function ResetPasswordForm({ token }: { token: string }) {

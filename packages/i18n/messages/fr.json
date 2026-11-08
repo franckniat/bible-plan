@@ -1522,6 +1522,13 @@
     }
   },
   "Mobile": {
+    "account": {
+      "title": "Compte",
+      "description": "Facultatif : un compte sauvegarde vos données et les retrouve sur le site. Sans compte, tout reste sur ce téléphone.",
+      "open": "Créer un compte ou se connecter",
+      "openHint": "Pour sauvegarder vos données et les retrouver sur le site.",
+      "signedIn": "Connecté avec {email}"
+    },
     "backup": {
       "title": "Mes données",
       "export": "Exporter une sauvegarde",

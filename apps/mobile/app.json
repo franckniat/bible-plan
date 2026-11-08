@@ -41,10 +41,14 @@
       [
         "expo-notifications",
         {
-          "sounds": ["./assets/sounds/session-end.wav"]
+          "sounds": [
+            "./assets/sounds/session-end.wav"
+          ]
         }
       ],
-      "expo-sharing"
+      "expo-sharing",
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

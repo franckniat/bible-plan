@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { getAuthErrorKey } from "./auth-errors"
+import { getAuthErrorKey } from "./errors"
 
 describe("getAuthErrorKey", () => {
   it("maps better-auth error codes to messages", () => {
