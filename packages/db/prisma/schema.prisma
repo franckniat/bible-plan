@@ -693,3 +693,11 @@ model SyncTombstone {
   @@index([userId, syncVersion])
   @@index([deletedAt])
 }
+
+/// How far the old tombstones were purged (one row): a phone whose cursor is
+/// older may have missed deletions, so its sync starts over from scratch.
+model SyncPurge {
+  id   Int    @id @default(1)
+  /// The largest syncVersion of the tombstones purged.
+  upTo BigInt
+}
