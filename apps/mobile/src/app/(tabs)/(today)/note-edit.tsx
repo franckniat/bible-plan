@@ -13,11 +13,15 @@ import { useLocale, useTranslations } from "use-intl"
 
 import { TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
+import { KeyboardAction } from "@/components/ui/keyboard-action"
 import { Input } from "@/components/ui/input"
 import { confirm } from "@/lib/confirm"
 import { notebook, useNote, type Note } from "@/repositories/notes"
 import { typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
+
+/** The bar of the main action above the keyboard (KeyboardAction). */
+const keyboardAction = "note-edit"
 
 /**
  * Writes a meditation note (`?id=` to change one, `?session=` after a
@@ -119,6 +123,7 @@ function NoteForm({
       <Stack.Screen options={{ title: id ? t("edit") : t("add") }} />
       <TabScreen>
         <Input
+          inputAccessoryViewID={keyboardAction}
           label={t("fields.passage")}
           placeholder={locale === "fr" ? "Jean 3:1-21" : "John 3:1-21"}
           value={reference}
@@ -126,12 +131,14 @@ function NoteForm({
           autoFocus={!id && !passage}
         />
         <Input
+          inputAccessoryViewID={keyboardAction}
           label={t("fields.keyVerse")}
           placeholder={locale === "fr" ? "Jean 3:16" : "John 3:16"}
           value={keyVerse}
           onChangeText={setKeyVerse}
         />
         <Input
+          inputAccessoryViewID={keyboardAction}
           label={t("fields.reflection")}
           placeholder={t("fields.reflectionPlaceholder")}
           value={reflection}
@@ -141,6 +148,7 @@ function NoteForm({
           style={long}
         />
         <Input
+          inputAccessoryViewID={keyboardAction}
           label={t("fields.application")}
           placeholder={t("fields.applicationPlaceholder")}
           value={application}
@@ -165,6 +173,7 @@ function NoteForm({
           />
         )}
       </TabScreen>
+      <KeyboardAction id={keyboardAction} title={t("save")} onPress={save} />
     </>
   )
 }

@@ -15,10 +15,14 @@ import { TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { Chip } from "@/components/ui/chip"
 import { Input } from "@/components/ui/input"
+import { KeyboardAction } from "@/components/ui/keyboard-action"
 import { prayerJournal, usePrayer } from "@/repositories/prayers"
 import { useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
+
+/** The bar of the main action above the keyboard (KeyboardAction). */
+const keyboardAction = "prayer-edit"
 
 /** Adds a prayer request, or changes one (`?id=`). */
 export default function PrayerEditScreen() {
@@ -67,6 +71,7 @@ function PrayerForm({
       <Stack.Screen options={{ title: id ? t("edit") : t("add") }} />
       <TabScreen>
         <Input
+          inputAccessoryViewID={keyboardAction}
           label={t("fields.title")}
           placeholder={t("fields.titlePlaceholder")}
           value={title}
@@ -75,6 +80,7 @@ function PrayerForm({
           autoFocus={!id}
         />
         <Input
+          inputAccessoryViewID={keyboardAction}
           label={t("fields.details")}
           value={details}
           onChangeText={setDetails}
@@ -119,6 +125,7 @@ function PrayerForm({
           onPress={() => router.back()}
         />
       </TabScreen>
+      <KeyboardAction id={keyboardAction} title={t("save")} onPress={save} />
     </>
   )
 }

@@ -35,6 +35,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Chip } from "@/components/ui/chip"
 import { Input } from "@/components/ui/input"
+import { KeyboardAction } from "@/components/ui/keyboard-action"
 import { ListRow } from "@/components/ui/list-row"
 import { Notice } from "@/components/ui/notice"
 import { Segmented } from "@/components/ui/segmented"
@@ -48,6 +49,9 @@ const quickChapters = [1, 2, 3, 5, 10]
 /** Lengths offered for a plan over a number of days, as on the web. */
 const quickDays = [30, 90, 180, 365]
 /** Reading times offered, in minutes a day, as on the web. */
+/** The bar of the main action above the keyboard (KeyboardAction). */
+const keyboardAction = "new-plan"
+
 const quickMinutes = [5, 10, 15, 20, 30]
 /** End dates offered: in so many months. */
 const quickMonths = [1, 3, 6, 12]
@@ -218,6 +222,15 @@ export default function NewPlanScreen() {
   const versesPerDay = plan
     ? Math.round(plan.totalVerses / Math.max(1, plan.days.length))
     : 0
+
+  const create = () => {
+    // The new plan, with a reading reminder to set if none.
+    const { id } = addPlan(request, locale)
+    router.replace({
+      pathname: "/plan/[id]",
+      params: { id, created: "1" },
+    })
+  }
 
   return (
     <>
@@ -402,6 +415,7 @@ export default function NewPlanScreen() {
 
         <Card title={t("PlanWizard.steps.preview")}>
           <Input
+            inputAccessoryViewID={keyboardAction}
             label={t("PlanWizard.preview.title")}
             value={title}
             onChangeText={setTitle}
@@ -450,16 +464,15 @@ export default function NewPlanScreen() {
         <Button
           title={t("PlanWizard.create.submit")}
           disabled={!plan}
-          onPress={() => {
-            // The new plan, with a reading reminder to set if none.
-            const { id } = addPlan(request, locale)
-            router.replace({
-              pathname: "/plan/[id]",
-              params: { id, created: "1" },
-            })
-          }}
+          onPress={create}
         />
       </TabScreen>
+      <KeyboardAction
+        id={keyboardAction}
+        title={t("PlanWizard.create.submit")}
+        disabled={!plan}
+        onPress={create}
+      />
     </>
   )
 }

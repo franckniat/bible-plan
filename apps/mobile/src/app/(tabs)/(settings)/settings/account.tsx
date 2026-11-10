@@ -8,11 +8,15 @@ import { useLocale, useTranslations } from "use-intl"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { KeyboardAction } from "@/components/ui/keyboard-action"
 import { Notice } from "@/components/ui/notice"
 import { Segmented } from "@/components/ui/segmented"
 import { authClient } from "@/lib/auth-client"
 import { siteUrl } from "@/lib/site"
 import { spacing } from "@/theme/metrics"
+
+/** The bar of the main action above the keyboard (KeyboardAction). */
+const keyboardAction = "account"
 
 type Mode = "signIn" | "signUp"
 
@@ -123,6 +127,7 @@ export default function AccountScreen() {
         <View style={{ gap: spacing.md }}>
           {mode === "signUp" ? (
             <Input
+              inputAccessoryViewID={keyboardAction}
               label={t("fields.name")}
               placeholder={t("fields.namePlaceholder")}
               value={name}
@@ -132,6 +137,7 @@ export default function AccountScreen() {
             />
           ) : null}
           <Input
+            inputAccessoryViewID={keyboardAction}
             label={t("fields.email")}
             placeholder={t("fields.emailPlaceholder")}
             value={email}
@@ -143,6 +149,7 @@ export default function AccountScreen() {
             textContentType="emailAddress"
           />
           <Input
+            inputAccessoryViewID={keyboardAction}
             label={t("fields.password")}
             value={password}
             onChangeText={setPassword}
@@ -162,6 +169,13 @@ export default function AccountScreen() {
           />
         </View>
       </TabScreen>
+      <KeyboardAction
+        id={keyboardAction}
+        title={t(mode === "signUp" ? "signUp.submit" : "signIn.submit")}
+        loading={pending}
+        disabled={pending || !email.trim() || !password}
+        onPress={() => void submit()}
+      />
     </>
   )
 }

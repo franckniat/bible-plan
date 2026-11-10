@@ -1,5 +1,6 @@
 import type { ReactNode, Ref } from "react"
 import {
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,6 +9,17 @@ import {
 
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
+
+/**
+ * With the keyboard open, the screen keeps room for it and scrolls the
+ * field typed in into view; a button tapped then works at the first tap
+ * (it does not only close the keyboard); dragging the text down closes it.
+ */
+const keyboardAware = {
+  automaticallyAdjustKeyboardInsets: true,
+  keyboardShouldPersistTaps: "handled",
+  keyboardDismissMode: Platform.OS === "ios" ? "interactive" : "on-drag",
+} as const
 
 /**
  * Scrollable body of a tab under its native large title. The ScrollView must
@@ -39,6 +51,7 @@ export function TabScreen({
       }
       scrollEventThrottle={onScrollY ? 32 : undefined}
       contentInsetAdjustmentBehavior="automatic"
+      {...keyboardAware}
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, backgroundColor: backgroundColor ?? colors.background }}
       contentContainerStyle={styles.content}
@@ -60,6 +73,7 @@ export function Screen({
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
+      {...keyboardAware}
       style={{ flex: 1, backgroundColor: colors.background }}
       contentContainerStyle={styles.content}
     >

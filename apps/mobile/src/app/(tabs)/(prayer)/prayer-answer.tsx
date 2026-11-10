@@ -5,9 +5,13 @@ import { useTranslations } from "use-intl"
 
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
+import { KeyboardAction } from "@/components/ui/keyboard-action"
 import { Input } from "@/components/ui/input"
 import { prayerJournal, usePrayer } from "@/repositories/prayers"
 import { useProfile } from "@/repositories/profile"
+
+/** The bar of the main action above the keyboard (KeyboardAction). */
+const keyboardAction = "prayer-answer"
 
 /** Marks a request answered (`?id=`), or changes what was noted. */
 export default function PrayerAnswerScreen() {
@@ -33,6 +37,16 @@ function AnswerForm({
       </TabScreen>
     )
   }
+  const answerTitle =
+    prayer.status === "ANSWERED" ? t("save") : t("confirmAnswered")
+  const answer = () => {
+    const result = prayerJournal.answered(
+      id,
+      { answerNote: note },
+      getToday(profile.timeZone)
+    )
+    if (result.ok) router.back()
+  }
   return (
     <>
       <Stack.Screen
@@ -46,6 +60,7 @@ function AnswerForm({
       <TabScreen>
         <Body>{prayer.title}</Body>
         <Input
+          inputAccessoryViewID={keyboardAction}
           label={t("fields.answerNote")}
           placeholder={t("fields.answerPlaceholder")}
           value={note}
@@ -55,25 +70,18 @@ function AnswerForm({
           autoFocus
           style={{ minHeight: 120, textAlignVertical: "top", paddingTop: 12 }}
         />
-        <Button
-          title={
-            prayer.status === "ANSWERED" ? t("save") : t("confirmAnswered")
-          }
-          onPress={() => {
-            const result = prayerJournal.answered(
-              id,
-              { answerNote: note },
-              getToday(profile.timeZone)
-            )
-            if (result.ok) router.back()
-          }}
-        />
+        <Button title={answerTitle} onPress={answer} />
         <Button
           title={t("cancel")}
           variant="ghost"
           onPress={() => router.back()}
         />
       </TabScreen>
+      <KeyboardAction
+        id={keyboardAction}
+        title={answerTitle}
+        onPress={answer}
+      />
     </>
   )
 }
