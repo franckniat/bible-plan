@@ -257,6 +257,8 @@ function Timer({
       <Text
         accessibilityRole="timer"
         accessibilityLabel={title}
+        // Already large: it grows a little, and stays on one line.
+        maxFontSizeMultiplier={1.3}
         style={{
           fontFamily: fontFamily.heading,
           fontSize: 64,

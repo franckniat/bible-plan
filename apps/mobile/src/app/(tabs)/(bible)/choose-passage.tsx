@@ -251,8 +251,10 @@ const themedStyles = createThemedStyles((colors) => ({
     borderBottomColor: colors.border,
   },
   cell: {
-    width: 52,
-    height: 52,
+    // Larger with the phone's text size.
+    minWidth: 52,
+    minHeight: 52,
+    paddingHorizontal: spacing.xs,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: radius.sm,

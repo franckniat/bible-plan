@@ -49,14 +49,9 @@ export function ListRow({
         </View>
       ) : null}
       <View style={styles.text}>
-        <Text style={[styles.label, { color: tint }]} numberOfLines={1}>
-          {label}
-        </Text>
-        {subtitle ? (
-          <Text style={styles.subtitle} numberOfLines={2}>
-            {subtitle}
-          </Text>
-        ) : null}
+        {/* Whole, on as many lines as the phone's text size needs. */}
+        <Text style={[styles.label, { color: tint }]}>{label}</Text>
+        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
       </View>
       {value ? (
         <Text style={styles.value} numberOfLines={1}>

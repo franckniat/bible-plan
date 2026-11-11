@@ -25,8 +25,11 @@ export default function TabsLayout() {
           paddingTop: 6,
           paddingBottom: bottom,
         },
-        // Small labels, as in the tab bars of iOS and Android.
+        // Small labels, as in the tab bars of iOS and Android, which keep
+        // their size whatever the phone's text size (iOS shows the large
+        // version on a long press instead).
         tabBarLabelStyle: { fontFamily: fontFamily.medium, fontSize: 10 },
+        tabBarAllowFontScaling: false,
       }}
     >
       {tabs.map(({ name, label, icon: Icon }) => (

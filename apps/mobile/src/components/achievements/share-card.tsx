@@ -76,6 +76,7 @@ export function ShareAchievement({
         >
           <Icon size={88} color={brand.gold} />
           <Text
+            allowFontScaling={false}
             style={{
               fontFamily: fontFamily.heading,
               fontSize: 28,
@@ -87,6 +88,7 @@ export function ShareAchievement({
             {name}
           </Text>
           <Text
+            allowFontScaling={false}
             style={{
               fontFamily: fontFamily.semibold,
               fontSize: 16,
@@ -96,6 +98,7 @@ export function ShareAchievement({
             {levelName}
           </Text>
           <Text
+            allowFontScaling={false}
             style={{
               position: "absolute",
               bottom: 20,

@@ -42,7 +42,7 @@ export function Segmented<T extends string>({
           >
             <Text
               style={[styles.label, on && styles.labelOn]}
-              numberOfLines={1}
+              numberOfLines={2}
             >
               {option.label}
             </Text>
