@@ -1,9 +1,16 @@
 import { displayVerse, type BibleVersionId } from "@workspace/bible-data"
 import type { HighlightColor } from "@workspace/core"
-import { View, type GestureResponderEvent } from "react-native"
+import { useRef } from "react"
+import {
+  View,
+  type GestureResponderEvent,
+  type ViewInstance,
+} from "react-native"
+import { useTranslations } from "use-intl"
 
 import type { Verse } from "@/bible/texts"
 import { MarkedText, type MarkedPart } from "@/components/bible/marked-text"
+import { useScreenReader } from "@/lib/accessibility"
 import type { Preferences } from "@/lib/preferences"
 import { fontFamily } from "@/theme/fonts"
 import { spacing } from "@/theme/metrics"
@@ -75,6 +82,9 @@ export function ChapterText({
 }) {
   const styles = useThemedStyles(themedStyles)
   const colors = useColors()
+  const t = useTranslations("Mobile.read")
+  const screenReader = useScreenReader()
+  const lineViews = useRef(new Map<number, ViewInstance>())
   const fontSize = fontSizes[look.size]
   const geist = look.font === "geist"
   const text = [
@@ -149,20 +159,48 @@ export function ChapterText({
     return parts
   }
 
-  if (look.layout === "lines") {
+  // VoiceOver and TalkBack read one verse at a time, a button each: a word
+  // of a flowing paragraph cannot be tapped with them.
+  if (look.layout === "lines" || screenReader) {
     return (
       <View style={styles.lines}>
-        {verses.map((item, index) => (
-          // One verse a line: where it starts is where its own text is.
-          <View
-            key={item[0]}
-            onLayout={(event) =>
-              onVerseTops?.({ [item[0]]: event.nativeEvent.layout.y })
-            }
-          >
-            <MarkedText style={text} parts={partsOf(item, index, false)} />
-          </View>
-        ))}
+        {verses.map((item, index) => {
+          const [number, words] = item
+          const choose = () =>
+            lineViews.current
+              .get(number)
+              ?.measureInWindow((_x, y) => onPressVerse?.(number, y))
+          return (
+            // One verse a line: where it starts is where its own text is.
+            <View
+              key={number}
+              ref={(view) => {
+                if (view) lineViews.current.set(number, view)
+                else lineViews.current.delete(number)
+              }}
+              onLayout={(event) =>
+                onVerseTops?.({ [number]: event.nativeEvent.layout.y })
+              }
+              {...(screenReader && onPressVerse
+                ? {
+                    accessible: true,
+                    accessibilityRole: "button" as const,
+                    accessibilityLabel: `${t("verse", { verse: number })}. ${displayVerse(
+                      version,
+                      words
+                    )
+                      .segments.map((segment) => segment.text)
+                      .join("")}`,
+                    accessibilityState: { selected: selected.includes(number) },
+                    accessibilityActions: [{ name: "activate" as const }],
+                    onAccessibilityAction: choose,
+                  }
+                : {})}
+            >
+              <MarkedText style={text} parts={partsOf(item, index, false)} />
+            </View>
+          )
+        })}
       </View>
     )
   }

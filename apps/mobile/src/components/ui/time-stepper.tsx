@@ -49,9 +49,18 @@ export function TimeStepper({
   )
   const [hours, minutes] = value.split(":")
   return (
+    // One element for VoiceOver and TalkBack: swiping up or down moves the
+    // time by a step (the buttons are for the eyes).
     <View
       accessible
-      accessibilityLabel={`${label} ${value}`}
+      accessibilityRole="adjustable"
+      accessibilityLabel={label}
+      accessibilityValue={{ text: value }}
+      accessibilityActions={[{ name: "increment" }, { name: "decrement" }]}
+      onAccessibilityAction={(event) => {
+        const by = event.nativeEvent.actionName === "increment" ? step : -step
+        onChange(shiftTime(value, by))
+      }}
       style={styles.row}
     >
       <View style={styles.part}>

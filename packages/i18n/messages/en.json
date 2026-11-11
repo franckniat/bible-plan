@@ -1570,6 +1570,8 @@
         "plum": "Plum"
       },
       "goToVerse": "Go to a verse",
+      "verse": "Verse {verse}",
+      "backToChapters": "Back to the chapters of {book}",
       "lineHeight": "Line spacing",
       "lineHeights": {
         "compact": "Tight",

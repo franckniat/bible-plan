@@ -1,6 +1,7 @@
 import {
   type BookId,
   books,
+  formatPassage,
   getBookName,
   getChapterCount,
   getVerseCount,
@@ -62,6 +63,9 @@ export default function ChoosePassageScreen() {
         <ScrollView contentContainerStyle={styles.content}>
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel={tRead("backToChapters", {
+              book: getBookName(chosen.book, locale),
+            })}
             onPress={() => setChosen(null)}
             style={({ pressed }) => [styles.book, pressed && styles.pressed]}
           >
@@ -80,6 +84,14 @@ export default function ChoosePassageScreen() {
               <Pressable
                 key={verse}
                 accessibilityRole="button"
+                accessibilityLabel={formatPassage(
+                  {
+                    book: chosen.book,
+                    start: { chapter: chosen.chapter, verse },
+                    end: { chapter: chosen.chapter, verse },
+                  },
+                  locale
+                )}
                 onPress={() => go(verse)}
                 style={({ pressed }) => [
                   styles.cell,
