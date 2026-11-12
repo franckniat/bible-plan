@@ -12,7 +12,7 @@ import { Link } from "@/i18n/navigation"
  * Opening section: the web app is open, so the first actions are to read and
  * to create an account; the waitlist stays one link away.
  */
-export async function Hero() {
+export async function Hero({ androidBeta }: { androidBeta: boolean }) {
   const t = await getTranslations("Landing.hero")
   const locale = await getLocale()
 
@@ -62,6 +62,14 @@ export async function Hero() {
               {t("ctaSignUp")}
             </Link>
           </div>
+          {androidBeta ? (
+            <a
+              href="#mobile"
+              className="w-fit text-sm font-medium text-brand-night underline underline-offset-4 dark:text-brand-gold-soft"
+            >
+              {t("androidBeta")}
+            </a>
+          ) : null}
           <a
             href="#waitlist"
             className="w-fit text-sm text-brand-night/70 underline underline-offset-4 hover:text-brand-night dark:text-neutral-100/70 dark:hover:text-neutral-100"

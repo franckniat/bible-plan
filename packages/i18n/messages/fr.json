@@ -19,6 +19,7 @@
       "ctaRead": "Lire la Bible maintenant",
       "ctaSignUp": "Créer un compte gratuit",
       "waitlistLink": "Ou rejoignez la liste d’attente pour suivre la suite",
+      "androidBeta": "📱 L’application Android est en bêta : téléchargez-la",
       "screenshotAlt": "Écran de lecture de la Bible avec des versets en surbrillance et le panneau de sélection"
     },
     "features": {
@@ -63,6 +64,16 @@
     },
     "soon": {
       "title": "Ce qui arrive ensuite",
+      "betaTitle": "L’application mobile",
+      "beta": {
+        "badge": "Bêta Android",
+        "title": "Bible Plan sur Android, en bêta",
+        "description": "Toute l’application sans compte et sans connexion : la Bible hors ligne, les plans de lecture, le journal de prière, les rappels et les trophées. Elle s’installe en dehors du Play Store, le temps de la bêta. Sur iPhone, bientôt.",
+        "download": "Télécharger l’APK",
+        "install": "Comment l’installer",
+        "requirements": "Version {version}, pour Android 7.0 ou plus récent.",
+        "release": "Voir les nouveautés"
+      },
       "badge": "Bientôt",
       "mobile": {
         "title": "Application mobile",

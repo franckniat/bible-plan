@@ -16,6 +16,7 @@ import { WaitlistSection } from "@/components/landing/waitlist-section"
 import { WaitlistForm } from "@/components/waitlist/waitlist-form"
 import { routing } from "@/i18n/routing"
 import { pageAlternates, pageSocial } from "@/lib/site"
+import { getMobileBeta } from "@/server/services/mobile-beta"
 import { countWaitlistEntries } from "@/server/services/waitlist"
 
 // The page is static; the waitlist counter is refreshed at most every 5 minutes
@@ -51,15 +52,18 @@ export default async function LandingPage({ params }: PageProps<"/[locale]">) {
   if (!hasLocale(routing.locales, locale)) notFound()
 
   setRequestLocale(locale)
-  const waitlistCount = await getWaitlistCount()
+  const [waitlistCount, beta] = await Promise.all([
+    getWaitlistCount(),
+    getMobileBeta(),
+  ])
 
   return (
     <SiteShell>
       <StructuredData locale={locale} />
-      <Hero />
+      <Hero androidBeta={beta !== null} />
       <Features />
       <AppPreview />
-      <ComingSoon />
+      <ComingSoon beta={beta} />
       <WaitlistSection
         counter={
           <WaitlistCounter
