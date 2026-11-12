@@ -22,10 +22,16 @@ const light = {
   muted: "#f5f0e5",
   mutedForeground: "#46576c",
   accent: brand.gold,
+  /**
+   * Gold for text and marks that say something (verse numbers, a reading
+   * done, the current choice): darker in the light theme, where the brand's
+   * gold on cream is too pale to read (4.5:1, WCAG AA).
+   */
+  accentStrong: "#8a5a00",
   /** Gold wash for notices and selected rows (web: gold 22%). */
   accentSoft: "rgba(242, 180, 65, 0.22)",
-  destructive: "#e7000b",
-  destructiveSoft: "rgba(231, 0, 11, 0.1)",
+  destructive: "#c10007",
+  destructiveSoft: "rgba(193, 0, 7, 0.1)",
   border: "rgba(16, 40, 74, 0.12)",
   input: "rgba(16, 40, 74, 0.16)",
 }
@@ -41,6 +47,7 @@ const dark: Colors = {
   muted: "#262626",
   mutedForeground: "#a1a1a1",
   accent: brand.gold,
+  accentStrong: brand.gold,
   accentSoft: "rgba(242, 180, 65, 0.16)",
   destructive: "#ff6467",
   destructiveSoft: "rgba(255, 100, 103, 0.2)",

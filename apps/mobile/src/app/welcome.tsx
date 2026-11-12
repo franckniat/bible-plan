@@ -156,5 +156,5 @@ const themedStyles = createThemedStyles((colors) => ({
     borderRadius: radius.pill,
     backgroundColor: colors.border,
   },
-  dotOn: { width: 24, backgroundColor: colors.accent },
+  dotOn: { width: 24, backgroundColor: colors.accentStrong },
 }))

@@ -9,6 +9,7 @@ import { useTranslations } from "use-intl"
 import { Button } from "@/components/ui/button"
 import { brand } from "@/theme/colors"
 import { fontFamily } from "@/theme/fonts"
+import { useColors } from "@/theme/use-colors"
 
 /** The card's side, square for every social app. */
 const side = 320
@@ -28,6 +29,7 @@ export function ShareAchievement({
   const t = useTranslations("Achievements")
   const card = useRef<ComponentRef<typeof View>>(null)
   const [failed, setFailed] = useState(false)
+  const colors = useColors()
   const trophy = (trophyKeys as readonly string[]).includes(achievementKey)
   const Icon = trophy ? Trophy : Award
   const name = t(`items.${achievementKey as "fidelity"}.name`)
@@ -52,7 +54,7 @@ export function ShareAchievement({
     <>
       <Button title={t("celebrate.share")} variant="outline" onPress={share} />
       {failed ? (
-        <Text style={{ color: brand.gold, textAlign: "center" }}>
+        <Text style={{ color: colors.destructive, textAlign: "center" }}>
           {t("celebrate.shareFailed")}
         </Text>
       ) : null}

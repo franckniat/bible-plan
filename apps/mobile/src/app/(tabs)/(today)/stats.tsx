@@ -62,7 +62,7 @@ export default function StatsScreen() {
               gap: spacing.md,
             }}
           >
-            <Flame size={36} color={colors.accent} />
+            <Flame size={36} color={colors.accentStrong} />
             <Text
               style={{
                 fontFamily: fontFamily.heading,

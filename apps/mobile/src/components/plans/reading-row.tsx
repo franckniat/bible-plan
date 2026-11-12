@@ -54,7 +54,7 @@ export function ReadingRow({
           }}
         >
           {done ? (
-            <CircleCheck size={26} color={colors.accent} />
+            <CircleCheck size={26} color={colors.accentStrong} />
           ) : (
             <Circle size={26} color={colors.mutedForeground} />
           )}

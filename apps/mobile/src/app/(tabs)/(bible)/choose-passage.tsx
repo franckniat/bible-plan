@@ -262,6 +262,6 @@ const themedStyles = createThemedStyles((colors) => ({
     borderColor: colors.border,
     backgroundColor: colors.card,
   },
-  cellCurrent: { borderColor: colors.accent, borderWidth: 2 },
+  cellCurrent: { borderColor: colors.accentStrong, borderWidth: 2 },
   number: { ...typography.h3, color: colors.foreground },
 }))

@@ -191,7 +191,7 @@ function Swatches<T extends string>({
             borderRadius: 20,
             backgroundColor: choices[key],
             borderWidth: key === value ? 3 : 1,
-            borderColor: key === value ? colors.accent : colors.border,
+            borderColor: key === value ? colors.accentStrong : colors.border,
           }}
         />
       ))}

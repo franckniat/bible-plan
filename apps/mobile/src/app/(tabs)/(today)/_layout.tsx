@@ -52,7 +52,7 @@ function NotificationBell() {
             width: 9,
             height: 9,
             borderRadius: 5,
-            backgroundColor: colors.accent,
+            backgroundColor: colors.accentStrong,
           }}
         />
       ) : null}

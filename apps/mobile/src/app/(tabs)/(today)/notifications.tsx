@@ -57,7 +57,7 @@ export default function NotificationsScreen() {
                           width: 10,
                           height: 10,
                           borderRadius: 5,
-                          backgroundColor: colors.accent,
+                          backgroundColor: colors.accentStrong,
                         }}
                       />
                     )

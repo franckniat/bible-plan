@@ -109,7 +109,7 @@ export function ChapterText({
     const chip = color ? chipBackgrounds[color] : null
     // Gold dots, dark on a highlight to stay visible.
     const dots = isSelected
-      ? { color: band ? onBand : colors.accent, group: `${number}` }
+      ? { color: band ? onBand : colors.accentStrong, group: `${number}` }
       : undefined
     const onPress = onPressVerse
       ? (event: GestureResponderEvent) =>
@@ -225,6 +225,6 @@ export function ChapterText({
 const themedStyles = createThemedStyles((colors) => ({
   text: { fontFamily: fontFamily.scripture, color: colors.foreground },
   italic: { fontFamily: fontFamily.scriptureItalic },
-  number: { fontFamily: fontFamily.semibold, color: colors.accent },
+  number: { fontFamily: fontFamily.semibold, color: colors.accentStrong },
   lines: { gap: spacing.sm },
 }))
