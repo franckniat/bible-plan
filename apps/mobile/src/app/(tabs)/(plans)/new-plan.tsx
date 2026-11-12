@@ -462,6 +462,7 @@ export default function NewPlanScreen() {
         </Card>
 
         <Button
+          testID="plan-create"
           title={t("PlanWizard.create.submit")}
           disabled={!plan}
           onPress={create}

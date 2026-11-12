@@ -1,0 +1,21 @@
+# From a fresh install to Today, without an account: the welcome screens
+# are skipped, the onboarding goes through with its first choices.
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions:
+      notifications: allow
+- tapOn:
+    id: welcome-skip
+- repeat:
+    while:
+      notVisible:
+        id: onboarding-finish
+    commands:
+      - tapOn:
+          id: onboarding-next
+- tapOn:
+    id: onboarding-finish
+- assertVisible:
+    id: tab-today

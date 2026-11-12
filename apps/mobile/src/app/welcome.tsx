@@ -52,7 +52,13 @@ export default function WelcomeScreen() {
     <SafeAreaView style={styles.screen}>
       <View style={styles.top}>
         {last ? null : (
-          <Button title={t("skip")} variant="ghost" size="sm" onPress={start} />
+          <Button
+            testID="welcome-skip"
+            title={t("skip")}
+            variant="ghost"
+            size="sm"
+            onPress={start}
+          />
         )}
       </View>
 
@@ -102,7 +108,11 @@ export default function WelcomeScreen() {
             />
           ))}
         </View>
-        <Button title={last ? t("start") : t("next")} onPress={next} />
+        <Button
+          testID="welcome-next"
+          title={last ? t("start") : t("next")}
+          onPress={next}
+        />
       </View>
     </SafeAreaView>
   )

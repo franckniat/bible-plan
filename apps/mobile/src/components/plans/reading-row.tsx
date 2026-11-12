@@ -44,6 +44,7 @@ export function ReadingRow({
       }
       trailing={
         <Pressable
+          testID="reading-check"
           accessibilityRole="checkbox"
           accessibilityState={{ checked: done }}
           accessibilityLabel={passage}

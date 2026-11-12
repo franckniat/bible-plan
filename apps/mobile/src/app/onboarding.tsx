@@ -168,6 +168,7 @@ export default function OnboardingScreen() {
           />
         ) : null}
         <Button
+          testID={last ? "onboarding-finish" : "onboarding-next"}
           title={
             last ? t("Mobile.onboarding.finish") : t("Mobile.onboarding.next")
           }

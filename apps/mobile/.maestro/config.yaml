@@ -1,0 +1,5 @@
+# The end-to-end flows of the app: the paths that must never break.
+# Run them with `pnpm test:e2e` on a simulator or an emulator where the
+# app is installed (see README.md here).
+flows:
+  - "flows/*.yaml"

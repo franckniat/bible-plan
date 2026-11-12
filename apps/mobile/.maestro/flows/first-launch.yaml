@@ -1,0 +1,14 @@
+# First launch: welcome, onboarding, then the tabs, all on the phone.
+appId: ${APP_ID}
+---
+- runFlow: ../shared/first-launch.yaml
+- tapOn:
+    id: tab-bible
+- tapOn:
+    id: tab-plans
+- tapOn:
+    id: tab-prayer
+- tapOn:
+    id: tab-settings
+- tapOn:
+    id: tab-today

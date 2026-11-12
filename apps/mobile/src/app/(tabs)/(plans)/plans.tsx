@@ -124,6 +124,7 @@ export default function PlansScreen() {
       {planTemplates.map((template) => (
         <TemplateCard key={template.key} template={template}>
           <Button
+            testID={`template-${template.key}`}
             title={t("Templates.choose")}
             accessibilityLabel={t("Templates.chooseLabel", {
               title: template.title[locale],

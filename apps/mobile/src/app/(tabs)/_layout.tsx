@@ -38,6 +38,8 @@ export default function TabsLayout() {
           name={name}
           options={{
             title: t(label),
+            // For the end-to-end flows (.maestro), whatever the language.
+            tabBarButtonTestID: `tab-${label}`,
             tabBarIcon: ({ focused, color }) => (
               <Icon size={22} color={focused ? colors.accentStrong : color} />
             ),

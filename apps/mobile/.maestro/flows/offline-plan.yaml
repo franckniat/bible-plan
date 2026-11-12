@@ -1,0 +1,38 @@
+# A plan made and followed without network: created from a template, then
+# today's first reading ticked off on Today.
+appId: ${APP_ID}
+---
+- runFlow: ../shared/first-launch.yaml
+# Airplane mode can only be set on Android; the app never needs the
+# network for this anyway.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - setAirplaneMode: enabled
+- tapOn:
+    id: tab-plans
+- scrollUntilVisible:
+    element:
+      id: template-gospels-30-days
+- tapOn:
+    id: template-gospels-30-days
+- scrollUntilVisible:
+    element:
+      id: plan-create
+- tapOn:
+    id: plan-create
+- tapOn:
+    id: tab-today
+- tapOn:
+    id: reading-check
+    index: 0
+- assertVisible:
+    id: reading-check
+    index: 0
+    checked: true
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - setAirplaneMode: disabled
