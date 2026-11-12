@@ -41,6 +41,10 @@ jobs:
 
       - name: Build the app (release, phone architectures)
         working-directory: apps/mobile
+        env:
+          # Anonymous statistics, sent only once a tester agrees.
+          EXPO_PUBLIC_POSTHOG_KEY: ${{ secrets.EXPO_PUBLIC_POSTHOG_KEY }}
+          EXPO_PUBLIC_POSTHOG_HOST: https://eu.i.posthog.com
         run: |
           node scripts/bible.mjs
           npx expo prebuild --platform android --no-install
