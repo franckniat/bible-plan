@@ -1,24 +1,34 @@
-import { getToday, type IsoDate } from "@workspace/core"
+import { getToday, type IsoDate, type Locale } from "@workspace/core"
 import { router } from "expo-router"
 import { ChartColumn, NotebookPen, Sparkles, Trophy } from "lucide-react-native"
 import { View } from "react-native"
-import { useFormatter, useTranslations } from "use-intl"
+import { useFormatter, useLocale, useTranslations } from "use-intl"
 
 import { CatchUpNotice } from "@/components/plans/catch-up-notice"
 import { ReadingRow } from "@/components/plans/reading-row"
 import { Body, TabScreen } from "@/components/screen"
+import { VerseOfTheDay } from "@/components/today/verse-of-the-day"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useTodayPlans, type TodayPlan } from "@/repositories/plans"
-import { useProfile } from "@/repositories/profile"
+import { bibleVersionOf, useProfile } from "@/repositories/profile"
 import { spacing } from "@/theme/metrics"
 
-/** The readings of the day in each plan followed. */
+/** The verse of the day, then the readings of the day in each plan followed. */
 export default function TodayScreen() {
   const t = useTranslations()
   const profile = useProfile()
   const today = getToday(profile.timeZone)
   const plans = useTodayPlans(today)
+  const locale = useLocale() as Locale
+
+  const verse = (
+    <VerseOfTheDay
+      today={today}
+      version={bibleVersionOf(profile.bibleVersion, locale)}
+      timeZone={profile.timeZone}
+    />
+  )
 
   const meditate = (
     <>
@@ -52,6 +62,7 @@ export default function TodayScreen() {
   if (plans.length === 0) {
     return (
       <TabScreen>
+        {verse}
         <Card title={t("App.today.empty.title")}>
           <Body>{t("App.today.empty.description")}</Body>
           <Button
@@ -65,6 +76,7 @@ export default function TodayScreen() {
   }
   return (
     <TabScreen>
+      {verse}
       {plans.map((plan) => (
         <TodayPlanCard key={plan.id} plan={plan} today={today} />
       ))}

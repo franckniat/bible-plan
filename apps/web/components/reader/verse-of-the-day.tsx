@@ -34,28 +34,31 @@ export async function VerseOfTheDay({
   const t = await getTranslations("VerseOfTheDay")
 
   return (
-    <VerseCard timeZone={timeZone}>
-      <h2
-        id="verse-of-the-day"
-        className="text-sm font-semibold tracking-wide uppercase opacity-70"
-      >
-        {t("title")}
-      </h2>
-      <PassageText
-        passage={passage}
-        version={version}
-        showVerseNumbers={false}
-        className="text-lg"
-      />
+    <VerseCard title={t("title")} timeZone={timeZone}>
+      <blockquote className="relative">
+        <span
+          aria-hidden
+          className="block h-7 font-heading text-6xl leading-none opacity-30 select-none"
+        >
+          “
+        </span>
+        <PassageText
+          passage={passage}
+          version={version}
+          showVerseNumbers={false}
+          className="text-xl text-pretty sm:text-2xl [&_p]:leading-normal"
+        />
+      </blockquote>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="font-heading font-semibold">
+        <p className="flex items-center gap-3 font-heading font-semibold">
+          <span aria-hidden className="h-px w-6 bg-current opacity-50" />
           {formatPassage(passage, locale)}
         </p>
         <Link
           href={`/read/${toPassageSlug(passage)}?v=${version}`}
           className={cn(
-            buttonVariants({ variant: "outline" }),
-            "h-9 border-transparent bg-white/70 text-brand-night group-data-[period=night]:bg-white/15 group-data-[period=night]:text-brand-cream hover:bg-white group-data-[period=night]:hover:bg-white/25"
+            buttonVariants(),
+            "h-9 rounded-full px-4 group-data-[period=day]:bg-brand-night group-data-[period=day]:text-brand-cream group-data-[period=morning]:bg-brand-night group-data-[period=morning]:text-brand-cream group-data-[period=night]:bg-brand-gold group-data-[period=night]:text-brand-night group-data-[period=day]:hover:bg-brand-night-soft group-data-[period=morning]:hover:bg-brand-night-soft group-data-[period=night]:hover:bg-brand-gold-soft"
           )}
         >
           <BookOpen />
