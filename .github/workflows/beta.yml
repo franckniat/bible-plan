@@ -71,10 +71,19 @@ jobs:
       - name: Publish the pre-release
         env:
           GH_TOKEN: ${{ github.token }}
+          BETA: ${{ github.run_number }}
+          REPO: ${{ github.repository }}
         run: |
-          tag="mobile-v$VERSION-beta.${{ github.run_number }}"
-          gh release create "$tag" "bible-plan-$VERSION-beta.${{ github.run_number }}.apk" \
+          export TAG="mobile-v$VERSION-beta.$BETA"
+          export APK="bible-plan-$VERSION-beta.$BETA.apk"
+          export COMMIT="${GITHUB_SHA::7}"
+          export SHA256=$(sha256sum "$APK" | cut -d' ' -f1)
+          export SIZE=$(( $(stat -c %s "$APK") / 1000000 ))
+          # What testers read on the release page: what it is, how to install.
+          envsubst '$BETA $REPO $TAG $APK $COMMIT $SHA256 $SIZE $VERSION' \
+            < .github/beta-release-notes.md > "$RUNNER_TEMP/notes.md"
+          gh release create "$TAG" "$APK" \
             --prerelease \
             --target "$GITHUB_SHA" \
-            --title "Bible Plan $VERSION beta ${{ github.run_number }} (Android)" \
-            --notes "Bêta de l'application Android, sans compte. Pour l'installer : https://github.com/${{ github.repository }}/blob/main/apps/mobile/BETA.md"
+            --title "Bible Plan $VERSION — bêta $BETA pour Android" \
+            --notes-file "$RUNNER_TEMP/notes.md"
