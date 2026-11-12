@@ -5,7 +5,7 @@ import { useState } from "react"
 import { useTranslations } from "use-intl"
 
 import { PrayerCard } from "@/components/prayer/prayer-card"
-import { Body, TabScreen } from "@/components/screen"
+import { Body, TabList } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Segmented } from "@/components/ui/segmented"
@@ -18,34 +18,39 @@ export default function PrayerScreen() {
   const prayers = usePrayers(status)
   const counts = usePrayerCounts()
   return (
-    <TabScreen>
-      <Body>{t("description")}</Body>
-      <Button
-        title={t("add")}
-        icon={Plus}
-        onPress={() => router.push("/prayer-edit")}
-      />
-      <Button
-        title={t("timer")}
-        icon={Timer}
-        variant="outline"
-        onPress={() => router.push("/prayer-timer")}
-      />
-      <Segmented
-        value={status}
-        options={prayerStatuses.map((value) => ({
-          value,
-          label: `${t(`statuses.${value}`)} · ${counts[value]}`,
-        }))}
-        onChange={setStatus}
-      />
-      {prayers.length === 0 ? (
+    <TabList
+      items={prayers}
+      keyOf={(prayer) => prayer.id}
+      renderItem={(prayer) => <PrayerCard prayer={prayer} />}
+      empty={
         <Card title={t(`empty.${status}.title`)}>
           <Body>{t(`empty.${status}.description`)}</Body>
         </Card>
-      ) : (
-        prayers.map((prayer) => <PrayerCard key={prayer.id} prayer={prayer} />)
-      )}
-    </TabScreen>
+      }
+      header={
+        <>
+          <Body>{t("description")}</Body>
+          <Button
+            title={t("add")}
+            icon={Plus}
+            onPress={() => router.push("/prayer-edit")}
+          />
+          <Button
+            title={t("timer")}
+            icon={Timer}
+            variant="outline"
+            onPress={() => router.push("/prayer-timer")}
+          />
+          <Segmented
+            value={status}
+            options={prayerStatuses.map((value) => ({
+              value,
+              label: `${t(`statuses.${value}`)} · ${counts[value]}`,
+            }))}
+            onChange={setStatus}
+          />
+        </>
+      }
+    />
   )
 }

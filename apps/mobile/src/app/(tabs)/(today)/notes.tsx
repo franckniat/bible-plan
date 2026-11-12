@@ -5,7 +5,7 @@ import { useState } from "react"
 import { Text } from "react-native"
 import { useLocale, useTranslations } from "use-intl"
 
-import { Body, TabScreen } from "@/components/screen"
+import { Body, TabList } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -21,21 +21,11 @@ export default function NotesScreen() {
   return (
     <>
       <Stack.Screen options={{ title: t("title") }} />
-      <TabScreen>
-        <Body>{t("description")}</Body>
-        <Button
-          title={t("add")}
-          icon={Plus}
-          onPress={() => router.push("/note-edit")}
-        />
-        <Input
-          label={t("search.label")}
-          placeholder={t("search.placeholder")}
-          value={query}
-          onChangeText={setQuery}
-          returnKeyType="search"
-        />
-        {notes.length === 0 ? (
+      <TabList
+        items={notes}
+        keyOf={(note) => note.id}
+        renderItem={(note) => <NoteCard note={note} />}
+        empty={
           <Card title={t(query.trim() ? "empty.filteredTitle" : "empty.title")}>
             <Body>
               {t(
@@ -43,10 +33,25 @@ export default function NotesScreen() {
               )}
             </Body>
           </Card>
-        ) : (
-          notes.map((note) => <NoteCard key={note.id} note={note} />)
-        )}
-      </TabScreen>
+        }
+        header={
+          <>
+            <Body>{t("description")}</Body>
+            <Button
+              title={t("add")}
+              icon={Plus}
+              onPress={() => router.push("/note-edit")}
+            />
+            <Input
+              label={t("search.label")}
+              placeholder={t("search.placeholder")}
+              value={query}
+              onChangeText={setQuery}
+              returnKeyType="search"
+            />
+          </>
+        }
+      />
     </>
   )
 }

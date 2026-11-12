@@ -1,5 +1,6 @@
-import type { ReactNode, Ref } from "react"
+import type { ReactElement, ReactNode, Ref } from "react"
 import {
+  FlatList,
   Platform,
   ScrollView,
   StyleSheet,
@@ -61,6 +62,42 @@ export function TabScreen({
   )
 }
 
+/**
+ * A tab's body for a list that keeps growing (prayers, notes): like
+ * TabScreen, but only the items on screen are drawn. What comes before the
+ * list is its `header`; `empty` shows when there is nothing.
+ */
+export function TabList<T>({
+  header,
+  items,
+  keyOf,
+  renderItem,
+  empty,
+}: {
+  header: ReactElement
+  items: readonly T[]
+  keyOf: (item: T) => string
+  renderItem: (item: T) => ReactElement
+  empty: ReactElement
+}) {
+  const colors = useColors()
+  return (
+    <FlatList
+      data={items}
+      keyExtractor={keyOf}
+      renderItem={({ item }) => renderItem(item)}
+      ListHeaderComponent={header}
+      ListHeaderComponentStyle={styles.header}
+      ListEmptyComponent={empty}
+      contentInsetAdjustmentBehavior="automatic"
+      {...keyboardAware}
+      showsVerticalScrollIndicator={false}
+      style={{ flex: 1, backgroundColor: colors.background }}
+      contentContainerStyle={styles.content}
+    />
+  )
+}
+
 /** A centred screen with a title, for screens outside the tabs. */
 export function Screen({
   title,
@@ -98,6 +135,7 @@ export function Body({ children }: { children: ReactNode }) {
 }
 
 const styles = StyleSheet.create({
+  header: { gap: spacing.md },
   content: {
     gap: spacing.md,
     paddingHorizontal: spacing.md,
