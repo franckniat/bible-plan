@@ -5,7 +5,11 @@ import { Badge } from "@workspace/ui/components/badge"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { betaGuideUrl, type MobileBeta } from "@/server/services/mobile-beta"
+import {
+  betaDownloadPath,
+  betaGuideUrl,
+  type MobileBeta,
+} from "@/server/services/mobile-beta"
 
 /**
  * The mobile app: its Android beta to download when one is published
@@ -53,7 +57,7 @@ export async function ComingSoon({ beta }: { beta: MobileBeta | null }) {
           <>
             <div className="mt-2 flex flex-col gap-3 sm:flex-row">
               <a
-                href={beta.apkUrl}
+                href={betaDownloadPath}
                 download
                 className={cn(
                   buttonVariants({ size: "lg" }),

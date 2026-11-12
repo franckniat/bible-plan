@@ -40,16 +40,17 @@ export function latestMobileBeta(
 }
 
 /**
- * The newest Android beta, read from GitHub at most once an hour; null when
- * there is none yet or GitHub cannot be reached (the page shows "soon").
+ * The newest Android beta, read from GitHub at most every `maxAge` seconds
+ * (an hour for the page); null when there is none yet or GitHub cannot be
+ * reached (the page shows "soon").
  */
-export async function getMobileBeta(): Promise<MobileBeta | null> {
+export async function getMobileBeta(maxAge = 3600): Promise<MobileBeta | null> {
   try {
     const response = await fetch(
       `https://api.github.com/repos/${repository}/releases?per_page=20`,
       {
         headers: { Accept: "application/vnd.github+json" },
-        next: { revalidate: 3600 },
+        next: { revalidate: maxAge },
       }
     )
     if (!response.ok) return null
@@ -58,6 +59,16 @@ export async function getMobileBeta(): Promise<MobileBeta | null> {
     return null
   }
 }
+
+/**
+ * The site's own link to the newest APK (app/api/download/android): it
+ * finds the beta when followed, so it still works once an older beta is
+ * deleted, and can be shared as it is.
+ */
+export const betaDownloadPath = "/api/download/android"
+
+/** Every release, where the download falls back without a beta. */
+export const releasesUrl = `https://github.com/${repository}/releases`
 
 /** How a tester installs a beta (in French, for the testers). */
 export const betaGuideUrl = `https://github.com/${repository}/blob/main/apps/mobile/BETA.md`
