@@ -46,7 +46,7 @@
         "expo-notifications",
         {
           "sounds": [
-            "./assets/sounds/session-end.wav"
+            "./assets/sounds/session_end.wav"
           ]
         }
       ],

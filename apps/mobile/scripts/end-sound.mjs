@@ -1,4 +1,4 @@
-// Writes assets/sounds/session-end.wav: the three soft tones the web plays
+// Writes assets/sounds/session_end.wav: the three soft tones the web plays
 // at the end of a meditation or prayer session (C5, E5, G5), as a small
 // mono WAV. Run with `node scripts/end-sound.mjs` after changing it.
 import { Buffer } from "node:buffer"
@@ -47,7 +47,7 @@ header.writeUInt32LE(samples.byteLength, 40)
 
 const file = join(
   dirname(fileURLToPath(import.meta.url)),
-  "../assets/sounds/session-end.wav"
+  "../assets/sounds/session_end.wav"
 )
 mkdirSync(dirname(file), { recursive: true })
 writeFileSync(file, Buffer.concat([header, Buffer.from(samples.buffer)]))

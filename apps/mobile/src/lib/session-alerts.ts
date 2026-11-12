@@ -3,7 +3,7 @@ import * as Notifications from "expo-notifications"
 import { Platform } from "react-native"
 
 /** The three soft tones of the web (scripts/end-sound.mjs). */
-const endSound = require("@/assets/sounds/session-end.wav")
+const endSound = require("@/assets/sounds/session_end.wav")
 
 /** Marks the notification that ends a session, shown only in the background. */
 const SESSION_END = "session-end"
@@ -56,7 +56,7 @@ export async function scheduleSessionEnd(
     return await Notifications.scheduleNotificationAsync({
       content: {
         ...content,
-        sound: "session-end.wav",
+        sound: "session_end.wav",
         data: { kind: SESSION_END },
       },
       trigger: {
