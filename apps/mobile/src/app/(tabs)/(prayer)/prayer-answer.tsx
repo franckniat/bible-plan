@@ -6,6 +6,7 @@ import { useTranslations } from "use-intl"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { KeyboardAction } from "@/components/ui/keyboard-action"
+import { track } from "@/lib/analytics"
 import { Input } from "@/components/ui/input"
 import { prayerJournal, usePrayer } from "@/repositories/prayers"
 import { useProfile } from "@/repositories/profile"
@@ -45,7 +46,9 @@ function AnswerForm({
       { answerNote: note },
       getToday(profile.timeZone)
     )
-    if (result.ok) router.back()
+    if (!result.ok) return
+    if (prayer.status !== "ANSWERED") track({ name: "prayer_answered" })
+    router.back()
   }
   return (
     <>

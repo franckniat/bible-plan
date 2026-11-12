@@ -53,6 +53,8 @@ const preferencesSchema = z.object({
   /** The Bible versions downloaded on this phone (bible/downloads.ts). */
   downloaded: z.array(z.string()).catch([]),
   history: z.array(z.object({ slug: z.string(), at: z.number() })).catch([]),
+  /** Anonymous usage statistics agreed to (lib/analytics.ts): off until then. */
+  analytics: z.boolean().catch(false),
   /** When a backup was last exported from this phone (ISO), or never. */
   lastBackupAt: z.iso.datetime().nullable().catch(null),
 })

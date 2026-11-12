@@ -2,6 +2,7 @@ import { useEffect } from "react"
 
 import { onChange } from "@/db/changes"
 import { afterFirstScreen } from "@/lib/after-first-screen"
+import { track } from "@/lib/analytics"
 import {
   achievementSources,
   checkAchievements,
@@ -16,7 +17,11 @@ export function useAchievementEvaluation() {
   useEffect(() => {
     const check = () => {
       try {
-        checkAchievements(currentProfile().timeZone)
+        for (const { key, level } of checkAchievements(
+          currentProfile().timeZone
+        )) {
+          track({ name: "achievement_earned", key, level })
+        }
       } catch {
         // Evaluated again at the next change.
       }

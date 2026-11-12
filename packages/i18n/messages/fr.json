@@ -1644,7 +1644,17 @@
         "evening": "Le soir",
         "none": "Pas de rappel",
         "at": "Vers {time}"
+      },
+      "statistics": {
+        "title": "Nous aider à améliorer l’application ?",
+        "description": "Des statistiques anonymes d’utilisation (écrans ouverts, plans créés, erreurs) nous montrent ce qui sert et ce qui casse. Jamais votre nom, ni ce que vous écrivez (prières, notes). Modifiable à tout moment dans les réglages.",
+        "yes": "Oui, partager des statistiques anonymes",
+        "no": "Non merci"
       }
+    },
+    "statistics": {
+      "label": "Statistiques anonymes",
+      "hint": "Écrans ouverts, plans créés et erreurs, sans votre nom ni ce que vous écrivez (prières, notes)."
     },
     "database": {
       "errorTitle": "Un problème est survenu",

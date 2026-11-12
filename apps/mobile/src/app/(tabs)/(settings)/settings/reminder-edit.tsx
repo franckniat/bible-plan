@@ -29,6 +29,7 @@ import {
   useReminder,
   type Reminder,
 } from "@/repositories/reminders"
+import { track } from "@/lib/analytics"
 import { useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
@@ -102,6 +103,7 @@ function ReminderForm({
           : t("errors.not_found")
       )
     }
+    track({ name: "reminder_saved", kind })
     if (enabled) await allowNotifications()
     void rescheduleReminders()
     router.back()

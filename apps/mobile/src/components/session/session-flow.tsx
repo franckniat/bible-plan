@@ -17,6 +17,7 @@ import {
   scheduleSessionEnd,
 } from "@/lib/session-alerts"
 import { recordSession } from "@/repositories/sessions"
+import { track } from "@/lib/analytics"
 import { fontFamily } from "@/theme/fonts"
 import { spacing } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
@@ -99,6 +100,11 @@ export function SessionFlow({
       plannedSeconds: current.plannedSeconds,
       durationSeconds: seconds,
       startedAt: current.startedAt,
+    })
+    track({
+      name: "session_finished",
+      kind,
+      minutes: Math.round(seconds / 60),
     })
     setRun(null)
     setDone({ id, seconds })

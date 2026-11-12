@@ -18,12 +18,19 @@ import {
   type Reminder,
 } from "@/lib/preferences"
 import { bundledVersions, versionName } from "@/bible/versions"
+import { analyticsAvailable, setAnalytics } from "@/lib/analytics"
 import { bibleVersionOf, setProfile, useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { createThemedStyles, useThemedStyles } from "@/theme/themed-styles"
 import { useColors } from "@/theme/use-colors"
 
-const steps = ["language", "pace", "reminder"] as const
+/** The question on statistics only where a build can send them. */
+const steps = [
+  "language",
+  "pace",
+  "reminder",
+  ...(analyticsAvailable ? (["statistics"] as const) : []),
+] as const
 
 const reminders: Reminder[] = ["morning", "noon", "evening", "none"]
 
@@ -151,6 +158,32 @@ export default function OnboardingScreen() {
                   trailing={check(preferences.reminder === reminder)}
                   onPress={() => setPreferences({ reminder })}
                   last={i === reminders.length - 1}
+                />
+              ))}
+            </Card>
+          </>
+        ) : null}
+
+        {step === "statistics" ? (
+          <>
+            <Text accessibilityRole="header" style={styles.title}>
+              {t("Mobile.onboarding.statistics.title")}
+            </Text>
+            <Text style={styles.description}>
+              {t("Mobile.onboarding.statistics.description")}
+            </Text>
+            <Card padded={false}>
+              {([true, false] as const).map((enabled, i) => (
+                <ListRow
+                  key={String(enabled)}
+                  label={t(
+                    enabled
+                      ? "Mobile.onboarding.statistics.yes"
+                      : "Mobile.onboarding.statistics.no"
+                  )}
+                  trailing={check(preferences.analytics === enabled)}
+                  onPress={() => setAnalytics(enabled)}
+                  last={i === 1}
                 />
               ))}
             </Card>

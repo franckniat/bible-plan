@@ -36,6 +36,7 @@ import { Card } from "@/components/ui/card"
 import { Chip } from "@/components/ui/chip"
 import { Input } from "@/components/ui/input"
 import { KeyboardAction } from "@/components/ui/keyboard-action"
+import { track } from "@/lib/analytics"
 import { ListRow } from "@/components/ui/list-row"
 import { Notice } from "@/components/ui/notice"
 import { Segmented } from "@/components/ui/segmented"
@@ -226,6 +227,11 @@ export default function NewPlanScreen() {
   const create = () => {
     // The new plan, with a reading reminder to set if none.
     const { id } = addPlan(request, locale)
+    track({
+      name: "plan_created",
+      source: request.source,
+      template: request.source === "template" ? request.templateKey : null,
+    })
     router.replace({
       pathname: "/plan/[id]",
       params: { id, created: "1" },

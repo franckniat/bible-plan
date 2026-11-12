@@ -22,6 +22,8 @@ import { TabScreen } from "@/components/screen"
 import { Card } from "@/components/ui/card"
 import { ListRow } from "@/components/ui/list-row"
 import { Notice } from "@/components/ui/notice"
+import { SwitchRow } from "@/components/ui/switch-row"
+import { analyticsAvailable, setAnalytics, track } from "@/lib/analytics"
 import { useSession } from "@/lib/auth-client"
 import { pickBackupFile, shareBackupFile } from "@/lib/backup-file"
 import { setPreferences, usePreferences } from "@/lib/preferences"
@@ -38,7 +40,7 @@ export default function SettingsScreen() {
   const language = t("LanguageSwitcher.locale", { locale })
   const format = useFormatter()
   const { data: session } = useSession()
-  const { lastBackupAt } = usePreferences()
+  const { lastBackupAt, analytics } = usePreferences()
   const [openedAt] = useState(() => Date.now())
   // Without an account, nothing is kept elsewhere: a backup a month.
   const backupDue =
@@ -54,6 +56,7 @@ export default function SettingsScreen() {
     setBackup(null)
     try {
       await shareBackupFile(currentBackup(), t("Mobile.backup.export"))
+      track({ name: "backup_exported" })
       setPreferences({ lastBackupAt: new Date().toISOString() })
     } catch {
       setBackup({ status: "exportFailed" })
@@ -64,7 +67,9 @@ export default function SettingsScreen() {
     try {
       const text = await pickBackupFile()
       if (text !== null) {
-        setBackup({ status: "imported", count: restoreBackup(text) })
+        const count = restoreBackup(text)
+        track({ name: "backup_imported", count })
+        setBackup({ status: "imported", count })
       }
     } catch {
       setBackup({ status: "importFailed" })
@@ -176,8 +181,17 @@ export default function SettingsScreen() {
             label={t("Mobile.backup.import")}
             subtitle={t("Mobile.backup.importHint")}
             onPress={() => void importBackup()}
-            last
+            last={!analyticsAvailable}
           />
+          {analyticsAvailable ? (
+            <SwitchRow
+              label={t("Mobile.statistics.label")}
+              subtitle={t("Mobile.statistics.hint")}
+              value={analytics}
+              onValueChange={setAnalytics}
+              last
+            />
+          ) : null}
         </View>
       </Card>
       {backup?.status === "imported" ? (

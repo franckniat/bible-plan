@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Chip } from "@/components/ui/chip"
 import { Input } from "@/components/ui/input"
 import { KeyboardAction } from "@/components/ui/keyboard-action"
+import { track } from "@/lib/analytics"
 import { prayerJournal, usePrayer } from "@/repositories/prayers"
 import { useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
@@ -58,7 +59,10 @@ function PrayerForm({
       id,
       getToday(profile.timeZone)
     )
-    if (result.ok) return router.back()
+    if (result.ok) {
+      if (!id) track({ name: "prayer_added" })
+      return router.back()
+    }
     setError(
       result.error === "limit"
         ? t("errors.limit", { max: maxPrayerRequestsPerUser })

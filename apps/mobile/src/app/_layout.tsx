@@ -1,7 +1,7 @@
 // Before anything that formats a text (use-intl).
 import "@/lib/intl-polyfills"
 
-import { Stack, ThemeProvider } from "expo-router"
+import { Stack, ThemeProvider, useSegments } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
 import { StatusBar } from "expo-status-bar"
 import { useEffect } from "react"
@@ -13,6 +13,7 @@ import { Body, Screen } from "@/components/screen"
 import { useDatabase } from "@/db/migrate"
 import { I18nProvider } from "@/i18n/provider"
 import { useAchievementEvaluation } from "@/lib/achievements/keep-evaluated"
+import { trackScreen } from "@/lib/analytics"
 import { usePreferences } from "@/lib/preferences"
 import { useReminderResponses } from "@/lib/reminders/actions"
 import { useReminderScheduling } from "@/lib/reminders/keep-scheduled"
@@ -70,7 +71,15 @@ function DatabaseError() {
   )
 }
 
+/** Counts the screens opened, by their route, not their parameters. */
+function useScreenTracking() {
+  const segments = useSegments()
+  const route = `/${segments.join("/")}`
+  useEffect(() => trackScreen(route), [route])
+}
+
 function Navigation() {
+  useScreenTracking()
   const colorScheme = useColorScheme()
   const { onboarded } = usePreferences()
   return (

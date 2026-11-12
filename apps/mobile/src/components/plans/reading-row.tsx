@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "use-intl"
 
 import { ListRow } from "@/components/ui/list-row"
 import { haptics } from "@/lib/haptics"
+import { track } from "@/lib/analytics"
 import { markReading, type PlanReadingView } from "@/repositories/plans"
 import { useColors } from "@/theme/use-colors"
 
@@ -25,14 +26,14 @@ export function ReadingRow({
   const t = useTranslations()
   const locale = useLocale() as Locale
   const colors = useColors()
-  const track = trackNames.length > 1 ? trackNames[reading.track] : null
+  const trackName = trackNames.length > 1 ? trackNames[reading.track] : null
   const verses = t("Readings.verses", { verses: reading.verses })
   const passage = formatPassage(reading.passage, locale)
   const done = reading.completedAt !== null
   return (
     <ListRow
       label={passage}
-      subtitle={track ? `${track[locale]} · ${verses}` : verses}
+      subtitle={trackName ? `${trackName[locale]} · ${verses}` : verses}
       onPress={() =>
         router.push({
           pathname: "/read/[passage]",
@@ -52,6 +53,7 @@ export function ReadingRow({
           onPress={() => {
             haptics.tap()
             markReading(reading.id, !done)
+            if (!done) track({ name: "reading_marked" })
           }}
         >
           {done ? (

@@ -14,6 +14,7 @@ import { useLocale, useTranslations } from "use-intl"
 import { TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
 import { KeyboardAction } from "@/components/ui/keyboard-action"
+import { track } from "@/lib/analytics"
 import { Input } from "@/components/ui/input"
 import { confirm } from "@/lib/confirm"
 import { notebook, useNote, type Note } from "@/repositories/notes"
@@ -96,8 +97,9 @@ function NoteForm({
       },
       id
     )
-    if (result.ok) router.back()
-    else setError(t("errors.notFound"))
+    if (!result.ok) return setError(t("errors.notFound"))
+    track({ name: "note_saved" })
+    router.back()
   }
 
   const remove = async () => {

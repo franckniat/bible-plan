@@ -1644,7 +1644,17 @@
         "evening": "In the evening",
         "none": "No reminder",
         "at": "Around {time}"
+      },
+      "statistics": {
+        "title": "Help us improve the app?",
+        "description": "Anonymous usage statistics (screens opened, plans made, errors) show us what helps and what breaks. Never your name, nor what you write (prayers, notes). You can change it any time in the settings.",
+        "yes": "Yes, share anonymous statistics",
+        "no": "No thanks"
       }
+    },
+    "statistics": {
+      "label": "Anonymous statistics",
+      "hint": "Screens opened, plans made and errors, without your name or what you write (prayers, notes)."
     },
     "database": {
       "errorTitle": "Something went wrong",
