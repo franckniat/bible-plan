@@ -1,0 +1,91 @@
+name: E2E mobile
+
+# The end-to-end flows of the mobile app (apps/mobile/.maestro), on an
+# Android emulator with a release build made here: no account needed. Apart
+# from CI because a build takes long; it runs when the app or what it uses
+# changes, and by hand.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/mobile/**"
+      - "packages/core/**"
+      - "packages/sync/**"
+      - "packages/bible-data/**"
+      - "packages/i18n/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/e2e.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Maestro on Android
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      APP_ID: com.franckniat.bibleplan
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up pnpm and Node.js, install dependencies
+        uses: pnpm/setup@v3
+        with:
+          runtime: node@24
+          cache: true
+          require-lockfile: true
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build the app (release, emulator architecture only)
+        working-directory: apps/mobile
+        run: |
+          node scripts/bible.mjs
+          npx expo prebuild --platform android --no-install
+          cd android
+          ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86_64
+
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Enable hardware acceleration for the emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run the flows on an emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: |
+            adb install apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+            maestro test apps/mobile/.maestro -e APP_ID=$APP_ID --format junit --output maestro-report.xml
+
+      - name: Keep the report and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro
+          path: |
+            maestro-report.xml
+            ~/.maestro/tests/
+          if-no-files-found: ignore
