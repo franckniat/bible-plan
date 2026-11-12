@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { AppState } from "react-native"
 
 import { onChange } from "@/db/changes"
+import { afterFirstScreen } from "@/lib/after-first-screen"
 import { followPhoneTimeZone } from "@/repositories/reminders"
 import { phoneTimeZone } from "@/repositories/profile"
 
@@ -28,7 +29,10 @@ export function useReminderScheduling() {
       followPhoneTimeZone(phoneTimeZone())
       void rescheduleReminders()
     }
-    refresh()
+    // The day follows the phone's time zone at once; the notifications are
+    // scheduled again once the first screen is shown.
+    followPhoneTimeZone(phoneTimeZone())
+    const cancel = afterFirstScreen(() => void rescheduleReminders())
     const app = AppState.addEventListener("change", (state) => {
       if (state === "active") refresh()
     })
@@ -39,6 +43,7 @@ export function useReminderScheduling() {
       timer = setTimeout(() => void rescheduleReminders(), 1000)
     })
     return () => {
+      cancel()
       app.remove()
       stop()
       clearTimeout(timer)

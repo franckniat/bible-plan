@@ -67,16 +67,29 @@ export function computeActiveDates(options: ActiveDatesOptions): IsoDate[] {
  * follows the user's day rather than the server's.
  */
 export function getToday(timeZone?: string | null, now = new Date()): IsoDate {
-  const format = (zone: string) =>
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone: zone,
+  try {
+    return dayFormat(timeZone || "UTC").format(now)
+  } catch {
+    return dayFormat("UTC").format(now)
+  }
+}
+
+/**
+ * The formatter of a time zone's dates, made once: making one is slow, and
+ * the days of a whole history are read at once (activity, achievements).
+ */
+const dayFormats = new Map<string, Intl.DateTimeFormat>()
+
+function dayFormat(timeZone: string): Intl.DateTimeFormat {
+  let format = dayFormats.get(timeZone)
+  if (!format) {
+    format = new Intl.DateTimeFormat("en-CA", {
+      timeZone,
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
-    }).format(now)
-  try {
-    return format(timeZone || "UTC")
-  } catch {
-    return format("UTC")
+    })
+    dayFormats.set(timeZone, format)
   }
+  return format
 }

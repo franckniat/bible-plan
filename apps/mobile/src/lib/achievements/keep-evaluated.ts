@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 
 import { onChange } from "@/db/changes"
+import { afterFirstScreen } from "@/lib/after-first-screen"
 import {
   achievementSources,
   checkAchievements,
@@ -20,7 +21,8 @@ export function useAchievementEvaluation() {
         // Evaluated again at the next change.
       }
     }
-    check()
+    // At opening, once the first screen is shown.
+    const cancel = afterFirstScreen(check)
     let timer: ReturnType<typeof setTimeout> | undefined
     const stop = onChange((tables) => {
       if (!achievementSources.some((table) => tables.has(table))) return
@@ -28,6 +30,7 @@ export function useAchievementEvaluation() {
       timer = setTimeout(check, 300)
     })
     return () => {
+      cancel()
       stop()
       clearTimeout(timer)
     }
