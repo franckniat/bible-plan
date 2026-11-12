@@ -14,6 +14,7 @@ import { createTranslator } from "use-intl"
 
 import { messages } from "@/i18n/provider"
 import { phoneLocale } from "@/i18n/locale"
+import { reportError } from "@/lib/analytics"
 import { notificationCentre } from "@/repositories/notifications"
 import { plansOn } from "@/repositories/plans"
 import { activePrayers } from "@/repositories/prayers"
@@ -176,7 +177,8 @@ export async function rescheduleReminders(now: Date = new Date()) {
       })
     }
     notificationCentre.logScheduled(logged, now)
-  } catch {
+  } catch (error) {
     // Reminders are scheduled again at the next opening.
+    reportError(error, "reminders")
   }
 }

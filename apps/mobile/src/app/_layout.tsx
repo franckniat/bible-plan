@@ -13,7 +13,7 @@ import { Body, Screen } from "@/components/screen"
 import { useDatabase } from "@/db/migrate"
 import { I18nProvider } from "@/i18n/provider"
 import { useAchievementEvaluation } from "@/lib/achievements/keep-evaluated"
-import { trackScreen } from "@/lib/analytics"
+import { startAnalytics, trackScreen } from "@/lib/analytics"
 import { usePreferences } from "@/lib/preferences"
 import { useReminderResponses } from "@/lib/reminders/actions"
 import { useReminderScheduling } from "@/lib/reminders/keep-scheduled"
@@ -45,6 +45,7 @@ export default function RootLayout() {
 
 /** The app in the language of the profile. */
 function App() {
+  useEffect(startAnalytics, [])
   const { locale } = useProfile()
   const { theme } = usePreferences()
   useEffect(() => {

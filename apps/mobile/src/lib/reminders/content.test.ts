@@ -10,6 +10,7 @@ const state = vi.hoisted(() => ({
 
 vi.mock("react-native", () => ({ Platform: { OS: "web" } }))
 vi.mock("expo-notifications", () => ({}))
+vi.mock("@/lib/analytics", () => ({ reportError: () => undefined }))
 vi.mock("@/i18n/provider", async () => ({
   messages: { fr: (await import("@workspace/i18n/messages/fr")).default },
 }))

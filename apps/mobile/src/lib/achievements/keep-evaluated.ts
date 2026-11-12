@@ -2,7 +2,7 @@ import { useEffect } from "react"
 
 import { onChange } from "@/db/changes"
 import { afterFirstScreen } from "@/lib/after-first-screen"
-import { track } from "@/lib/analytics"
+import { reportError, track } from "@/lib/analytics"
 import {
   achievementSources,
   checkAchievements,
@@ -22,8 +22,9 @@ export function useAchievementEvaluation() {
         )) {
           track({ name: "achievement_earned", key, level })
         }
-      } catch {
+      } catch (error) {
         // Evaluated again at the next change.
+        reportError(error, "achievements")
       }
     }
     // At opening, once the first screen is shown.

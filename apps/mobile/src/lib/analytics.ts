@@ -36,8 +36,22 @@ function posthog(): PostHog | null {
     disableGeoip: true,
     personProfiles: "never",
     captureAppLifecycleEvents: true,
+    // Errors the app did not catch, with their stack; never the console,
+    // which may hold what the person wrote.
+    errorTracking: {
+      autocapture: {
+        uncaughtExceptions: true,
+        unhandledRejections: true,
+        console: false,
+      },
+    },
   })
   return client
+}
+
+/** Starts counting at opening, if the person agreed (errors from the start). */
+export function startAnalytics() {
+  posthog()
 }
 
 /** Whether statistics can be sent at all (a key is set for this build). */
