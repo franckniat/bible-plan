@@ -1,5 +1,5 @@
 # A plan made and followed without network: created from a template, then
-# today's first reading ticked off on Today.
+# today's first reading ticked off on Today, which earns the first badge.
 appId: ${APP_ID}
 ---
 - runFlow: ../shared/first-launch.yaml
@@ -27,6 +27,11 @@ appId: ${APP_ID}
 - tapOn:
     id: reading-check
     index: 0
+# A first reading earns a badge, celebrated over the screen.
+- assertVisible:
+    id: celebration-close
+- tapOn:
+    id: celebration-close
 - assertVisible:
     id: reading-check
     index: 0

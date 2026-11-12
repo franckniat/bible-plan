@@ -121,6 +121,7 @@ export function Celebration() {
             />
           </View>
           <Button
+            testID="celebration-close"
             title={t("celebrate.close")}
             onPress={() => celebrated([current.id])}
             style={{ alignSelf: "stretch" }}
