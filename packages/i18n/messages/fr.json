@@ -1595,7 +1595,7 @@
       "title": "Invitation",
       "invalidTitle": "Invitation invalide",
       "invalid": "Le code « {code} » n’est pas un code d’invitation.",
-      "signedOut": "Connectez-vous ou créez un compte : vous rejoindrez ensuite ce groupe automatiquement."
+      "signedOut": "Connectez-vous ou créez un compte \u0001 vous rejoindrez ensuite ce groupe automatiquement."
     },
     "prayerTime": {
       "title": "Temps de prière",
@@ -1701,11 +1701,11 @@
     },
     "groups": {
       "signedOutTitle": "Un compte pour les groupes",
-      "signedOut": "Les groupes se partagent avec d’autres personnes : ils demandent un compte. Le reste de l’application fonctionne toujours sans.",
-      "offline": "Hors ligne : voici le dernier état connu.",
+      "signedOut": "Les groupes se partagent avec d’autres personnes \u0001 ils demandent un compte. Le reste de l’application fonctionne toujours sans.",
+      "offline": "Hors ligne \u0001 voici le dernier état connu.",
       "offlineEmpty": "Hors ligne. Les groupes s’afficheront dès le retour du réseau.",
       "discussion": "Discussion du jour {day}",
-      "prayersEmpty": "Aucun sujet partagé pour l’instant. Pour partager l’un des vôtres, choisissez ce groupe dans le journal de prière du site : depuis le téléphone, ce sera possible avec la synchronisation."
+      "prayersEmpty": "Aucun sujet partagé pour l’instant. Pour partager l’un des vôtres, choisissez ce groupe dans le journal de prière du site \u0001 depuis le téléphone, ce sera possible avec la synchronisation."
     }
   }
 }
