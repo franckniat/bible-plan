@@ -35,9 +35,12 @@ export function SignedOutCard() {
 export function QueryState<T>({
   query,
   children,
+  section = false,
 }: {
   query: UseQueryResult<T>
   children: (data: T) => ReactNode
+  /** A part of a screen: the screen already says it is offline. */
+  section?: boolean
 }) {
   const t = useTranslations()
   const colors = useColors()
@@ -65,7 +68,7 @@ export function QueryState<T>({
   }
   return (
     <>
-      {offline ? (
+      {offline && !section ? (
         <Notice icon={WifiOff}>{t("Mobile.groups.offline")}</Notice>
       ) : null}
       {children(data)}

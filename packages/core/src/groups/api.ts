@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+import { isoDateSchema } from "../schemas/common"
 import { groupRoles } from "./schema"
 
 /**
@@ -42,6 +43,30 @@ export const groupDetailSchema = z.object({
   members: z.array(groupMemberSchema),
 })
 export type GroupDetailData = z.infer<typeof groupDetailSchema>
+
+/** How far a member is in a plan of the group. */
+export const memberProgressSchema = z.object({
+  userId: z.string(),
+  name: z.string(),
+  completedReadings: z.number().int(),
+})
+
+/** A plan of a group, followed by all its members on one calendar. */
+export const groupPlanSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  startDate: isoDateSchema,
+  endDate: isoDateSchema,
+  totalDays: z.number().int(),
+  totalReadings: z.number().int(),
+  /** The furthest first. */
+  members: z.array(memberProgressSchema),
+})
+export type GroupPlanData = z.infer<typeof groupPlanSchema>
+
+export const groupPlanListSchema = z.object({
+  plans: z.array(groupPlanSchema),
+})
 
 /** What the API says when something is refused: a key of Groups.errors. */
 export const apiErrorSchema = z.object({ error: z.string() })

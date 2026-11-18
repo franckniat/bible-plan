@@ -22,7 +22,8 @@ describe("commentInputSchema", () => {
         .success
     ).toBe(false)
     expect(
-      commentInputSchema.safeParse({ body: "x".repeat(maxCommentLength) }).success
+      commentInputSchema.safeParse({ body: "x".repeat(maxCommentLength) })
+        .success
     ).toBe(true)
   })
 

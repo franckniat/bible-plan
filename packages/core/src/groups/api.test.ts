@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { groupDetailSchema, groupListSchema } from "./api"
+import { groupDetailSchema, groupListSchema, groupPlanListSchema } from "./api"
 
 /** What goes through the network: dates become ISO strings. */
 const overTheWire = (value: unknown): unknown =>
@@ -49,6 +49,28 @@ describe("group API schemas", () => {
             memberCount: 1,
           },
         ],
+      }).success
+    ).toBe(false)
+  })
+
+  it("read the plans of a group with each member's progress", () => {
+    const sent = {
+      plans: [
+        {
+          id: "p1",
+          title: "Évangiles",
+          startDate: "2026-11-01",
+          endDate: "2026-12-30",
+          totalDays: 60,
+          totalReadings: 89,
+          members: [{ userId: "u1", name: "Anne", completedReadings: 12 }],
+        },
+      ],
+    }
+    expect(groupPlanListSchema.parse(overTheWire(sent))).toEqual(sent)
+    expect(
+      groupPlanListSchema.safeParse({
+        plans: [{ ...sent.plans[0], startDate: "1 novembre" }],
       }).success
     ).toBe(false)
   })

@@ -11,9 +11,7 @@ export const inviteCodeLength = 8
  * including) its argument; it must be a cryptographic one (node:crypto's
  * `randomInt`) outside of tests. 31^8 codes: too many to guess.
  */
-export function generateInviteCode(
-  randomInt: (max: number) => number
-): string {
+export function generateInviteCode(randomInt: (max: number) => number): string {
   return Array.from(
     { length: inviteCodeLength },
     () => alphabet[randomInt(alphabet.length)]!

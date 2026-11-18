@@ -1,4 +1,8 @@
-import { groupDetailSchema, groupListSchema } from "@workspace/core"
+import {
+  groupDetailSchema,
+  groupListSchema,
+  groupPlanListSchema,
+} from "@workspace/core"
 import { useQuery } from "@tanstack/react-query"
 
 import { api } from "@/lib/api"
@@ -15,6 +19,8 @@ export const groupKeys = {
   list: (userId: string) => ["groups", userId, "list"] as const,
   detail: (userId: string, id: string) =>
     ["groups", userId, "detail", id] as const,
+  plans: (userId: string, id: string) =>
+    ["groups", userId, "plans", id] as const,
 }
 
 /** The id of the account signed in on the phone, if any. */
@@ -39,6 +45,19 @@ export function useGroup(id: string) {
   return useQuery({
     queryKey: groupKeys.detail(userId ?? "", id),
     queryFn: () => api(`/groups/${encodeURIComponent(id)}`, groupDetailSchema),
+    enabled: userId !== null,
+  })
+}
+
+/** The plans of a group, with how far each member is. */
+export function useGroupPlans(id: string) {
+  const userId = useAccountId()
+  return useQuery({
+    queryKey: groupKeys.plans(userId ?? "", id),
+    queryFn: () =>
+      api(`/groups/${encodeURIComponent(id)}/plans`, groupPlanListSchema).then(
+        (r) => r.plans
+      ),
     enabled: userId !== null,
   })
 }
