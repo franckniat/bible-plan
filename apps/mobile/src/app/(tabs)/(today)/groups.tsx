@@ -2,6 +2,7 @@ import { router, Stack } from "expo-router"
 import { Users } from "lucide-react-native"
 import { useTranslations } from "use-intl"
 
+import { JoinByCode } from "@/components/groups/join-by-code"
 import { QueryState, SignedOutCard } from "@/components/groups/query-state"
 import { Body, TabScreen } from "@/components/screen"
 import { Card } from "@/components/ui/card"
@@ -51,6 +52,7 @@ export default function GroupsScreen() {
             }
           </QueryState>
         )}
+        {accountId === null ? null : <JoinByCode />}
       </TabScreen>
     </>
   )

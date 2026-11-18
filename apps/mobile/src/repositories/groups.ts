@@ -6,6 +6,8 @@ import {
   groupListSchema,
   groupPlanListSchema,
   groupPrayerListSchema,
+  invitePreviewSchema,
+  joinedSchema,
   prayingSchema,
   type GroupPrayerData,
 } from "@workspace/core"
@@ -31,6 +33,8 @@ export const groupKeys = {
     ["groups", userId, "prayers", id] as const,
   day: (userId: string, planId: string, day: number) =>
     ["groups", userId, "day", planId, day] as const,
+  invite: (userId: string, code: string) =>
+    ["groups", userId, "invite", code] as const,
 }
 
 /** The id of the account signed in on the phone, if any. */
@@ -157,5 +161,30 @@ export function useDeleteComment(planId: string, day: number) {
       client.invalidateQueries({
         queryKey: groupKeys.day(userId, planId, day),
       }),
+  })
+}
+
+/** What the person sees of a group before joining it with its code. */
+export function useInvitePreview(code: string | null) {
+  const userId = useAccountId()
+  return useQuery({
+    queryKey: groupKeys.invite(userId ?? "", code ?? ""),
+    queryFn: () =>
+      api(`/invites/${encodeURIComponent(code ?? "")}`, invitePreviewSchema),
+    enabled: userId !== null && code !== null,
+    // An invitation is looked at once: never kept for offline.
+    gcTime: 0,
+  })
+}
+
+/** Joins a group with its code; the list of groups is read again. */
+export function useJoinGroup() {
+  const userId = useAccountId() ?? ""
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: (code: string) =>
+      api("/groups/join", joinedSchema, { method: "POST", body: { code } }),
+    onSuccess: () =>
+      client.invalidateQueries({ queryKey: groupKeys.list(userId) }),
   })
 }

@@ -130,6 +130,25 @@ export const dayThreadSchema = z.object({
 })
 export type DayThreadData = z.infer<typeof dayThreadSchema>
 
+/** What a person sees of a group before joining it with its code. */
+export const invitePreviewSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().nullable(),
+  memberCount: z.number().int(),
+  /** The person is in it already: the app goes straight to it. */
+  member: z.boolean(),
+  /** No room left in it. */
+  full: z.boolean(),
+})
+export type InvitePreviewData = z.infer<typeof invitePreviewSchema>
+
+/** Joining worked (or the person was in it already). */
+export const joinedSchema = z.object({
+  groupId: z.string(),
+  already: z.boolean(),
+})
+
 /** A write that worked, with what it created when it did. */
 export const createdSchema = z.object({ id: z.string() })
 export const doneSchema = z.object({ ok: z.literal(true) })

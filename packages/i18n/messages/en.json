@@ -1595,7 +1595,7 @@
       "title": "Invitation",
       "invalidTitle": "Invalid invitation",
       "invalid": "“{code}” isn’t an invitation code.",
-      "soon": "Groups are coming to the app soon."
+      "signedOut": "To join this group, sign in or create an account, then open the invitation again."
     },
     "prayerTime": {
       "title": "Prayer time",
