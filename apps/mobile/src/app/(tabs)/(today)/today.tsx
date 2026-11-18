@@ -1,6 +1,12 @@
 import { getToday, type IsoDate, type Locale } from "@workspace/core"
 import { router } from "expo-router"
-import { ChartColumn, NotebookPen, Sparkles, Trophy } from "lucide-react-native"
+import {
+  ChartColumn,
+  NotebookPen,
+  Sparkles,
+  Trophy,
+  Users,
+} from "lucide-react-native"
 import { View } from "react-native"
 import { useFormatter, useLocale, useTranslations } from "use-intl"
 
@@ -49,6 +55,12 @@ export default function TodayScreen() {
         icon={ChartColumn}
         variant="outline"
         onPress={() => router.push("/stats")}
+      />
+      <Button
+        title={t("App.today.shortcuts.groups")}
+        icon={Users}
+        variant="outline"
+        onPress={() => router.push("/groups")}
       />
       <Button
         title={t("App.nav.achievements")}

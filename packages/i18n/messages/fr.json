@@ -1698,6 +1698,12 @@
     },
     "reminders": {
       "meditateNow": "Méditer maintenant"
+    },
+    "groups": {
+      "signedOutTitle": "Un compte pour les groupes",
+      "signedOut": "Les groupes se partagent avec d’autres personnes : ils demandent un compte. Le reste de l’application fonctionne toujours sans.",
+      "offline": "Hors ligne : voici le dernier état connu.",
+      "offlineEmpty": "Hors ligne. Les groupes s’afficheront dès le retour du réseau."
     }
   }
 }

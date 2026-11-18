@@ -1698,6 +1698,12 @@
     },
     "reminders": {
       "meditateNow": "Meditate now"
+    },
+    "groups": {
+      "signedOutTitle": "An account for groups",
+      "signedOut": "Groups are shared with other people, so they need an account. The rest of the app still works without one.",
+      "offline": "Offline: this is the last known state.",
+      "offlineEmpty": "Offline. Your groups will show as soon as you are back online."
     }
   }
 }

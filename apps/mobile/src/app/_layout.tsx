@@ -15,6 +15,7 @@ import { I18nProvider } from "@/i18n/provider"
 import { useAchievementEvaluation } from "@/lib/achievements/keep-evaluated"
 import { startAnalytics, trackScreen } from "@/lib/analytics"
 import { usePreferences } from "@/lib/preferences"
+import { QueryProvider } from "@/lib/query"
 import { useReminderResponses } from "@/lib/reminders/actions"
 import { useReminderScheduling } from "@/lib/reminders/keep-scheduled"
 import { useProfile } from "@/repositories/profile"
@@ -56,8 +57,10 @@ function App() {
   useAchievementEvaluation()
   return (
     <I18nProvider locale={locale}>
-      <Navigation />
-      <Celebration />
+      <QueryProvider>
+        <Navigation />
+        <Celebration />
+      </QueryProvider>
     </I18nProvider>
   )
 }
