@@ -36,6 +36,7 @@ describe("preferences", () => {
       history: [],
       analytics: false,
       lastBackupAt: null,
+      pendingInvite: null,
     })
   })
 

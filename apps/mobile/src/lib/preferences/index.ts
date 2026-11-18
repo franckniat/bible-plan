@@ -57,6 +57,14 @@ const preferencesSchema = z.object({
   analytics: z.boolean().catch(false),
   /** When a backup was last exported from this phone (ISO), or never. */
   lastBackupAt: z.iso.datetime().nullable().catch(null),
+  /**
+   * A group invitation opened without an account (lib/pending-invite.ts):
+   * the group is joined once the person is signed in.
+   */
+  pendingInvite: z
+    .object({ code: z.string(), at: z.number() })
+    .nullable()
+    .catch(null),
 })
 
 export type Preferences = z.infer<typeof preferencesSchema>

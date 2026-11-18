@@ -1595,7 +1595,7 @@
       "title": "Invitation",
       "invalidTitle": "Invitation invalide",
       "invalid": "Le code « {code} » n’est pas un code d’invitation.",
-      "signedOut": "Pour rejoindre ce groupe, connectez-vous ou créez un compte, puis rouvrez l’invitation."
+      "signedOut": "Connectez-vous ou créez un compte : vous rejoindrez ensuite ce groupe automatiquement."
     },
     "prayerTime": {
       "title": "Temps de prière",

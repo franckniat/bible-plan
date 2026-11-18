@@ -16,6 +16,7 @@ import { Card } from "@/components/ui/card"
 import { Notice } from "@/components/ui/notice"
 import { ApiError } from "@/lib/api"
 import { haptics } from "@/lib/haptics"
+import { setPreferences } from "@/lib/preferences"
 import {
   useAccountId,
   useInvitePreview,
@@ -32,7 +33,8 @@ function openGroup(id: string) {
 /**
  * A group invitation, from bibleplan://join/ABCD2345 or a code typed in the
  * groups: the group's name and size, then "Join the group", as on the
- * website. Somebody already in it goes straight to it.
+ * website. Somebody already in it goes straight to it; somebody without an
+ * account joins it once signed in.
  */
 export default function JoinScreen() {
   const { code } = useLocalSearchParams<{ code: string }>()
@@ -44,6 +46,14 @@ export default function JoinScreen() {
   useEffect(() => {
     if (member) openGroup(member)
   }, [member])
+  // Without an account, the invitation waits: the group is joined once the
+  // person is signed in (lib/join-after-sign-in.ts).
+  const signedOut = accountId === null
+  useEffect(() => {
+    if (signedOut && normalized) {
+      setPreferences({ pendingInvite: { code: normalized, at: Date.now() } })
+    }
+  }, [signedOut, normalized])
 
   return (
     <>
