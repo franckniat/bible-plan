@@ -5,6 +5,7 @@ import { Share, Text } from "react-native"
 import { useFormatter, useTranslations } from "use-intl"
 
 import { GroupPlans } from "@/components/groups/group-plans"
+import { GroupPrayers } from "@/components/groups/group-prayers"
 import { QueryState, SignedOutCard } from "@/components/groups/query-state"
 import { Body, TabScreen } from "@/components/screen"
 import { Button } from "@/components/ui/button"
@@ -17,7 +18,8 @@ import { useColors } from "@/theme/use-colors"
 
 /**
  * A group: its invitation (for those who manage it), its plans with how far
- * each member is, and its members.
+ * each member is and the discussion of the day, the prayer requests shared
+ * with it, and its members.
  */
 export default function GroupScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -56,6 +58,7 @@ function GroupDetail({
         <Invite name={group.name} code={group.inviteCode} />
       ) : null}
       <GroupPlans groupId={group.id} role={group.role} accountId={accountId} />
+      <GroupPrayers groupId={group.id} accountId={accountId} />
       <Card
         title={t("membersTitle", { count: group.members.length })}
         padded={false}

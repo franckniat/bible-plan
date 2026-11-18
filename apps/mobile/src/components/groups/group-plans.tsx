@@ -1,8 +1,13 @@
 import {
   canManageMembers,
+  daysBetween,
+  getToday,
   type GroupPlanData,
   type GroupRole,
+  type IsoDate,
 } from "@workspace/core"
+import { router } from "expo-router"
+import { MessageCircle } from "lucide-react-native"
 import { useState } from "react"
 import { Text, View } from "react-native"
 import { useFormatter, useTranslations } from "use-intl"
@@ -13,11 +18,18 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ProgressBar } from "@/components/ui/progress-bar"
 import { useGroupPlans } from "@/repositories/groups"
+import { useProfile } from "@/repositories/profile"
 import { spacing, typography } from "@/theme/metrics"
 import { useColors } from "@/theme/use-colors"
 
 /** Members shown at first in a plan; the others behind "Show all". */
 const firstMembers = 5
+
+/** The day of a plan to talk about today: the first or last outside it. */
+export function dayToDiscuss(plan: GroupPlanData, today: IsoDate): number {
+  const day = daysBetween(plan.startDate, today) + 1
+  return Math.min(plan.totalDays, Math.max(1, day))
+}
 
 /** The plans of a group and how far each member is, as on the website. */
 export function GroupPlans({
@@ -58,9 +70,12 @@ function GroupPlanCard({
   accountId: string
 }) {
   const t = useTranslations("Groups.plans")
+  const tMobile = useTranslations("Mobile.groups")
   const format = useFormatter()
   const colors = useColors()
+  const { timeZone } = useProfile()
   const [showAll, setShowAll] = useState(false)
+  const day = dayToDiscuss(plan, getToday(timeZone))
   const date = (value: string) =>
     format.dateTime(new Date(`${value}T00:00:00.000Z`), {
       dateStyle: "medium",
@@ -137,6 +152,22 @@ function GroupPlanCard({
           onPress={() => setShowAll((current) => !current)}
         />
       ) : null}
+      <Button
+        title={tMobile("discussion", { day })}
+        icon={MessageCircle}
+        variant="outline"
+        onPress={() =>
+          router.push({
+            pathname: "/group-day",
+            params: {
+              plan: plan.id,
+              day,
+              title: plan.title,
+              total: plan.totalDays,
+            },
+          })
+        }
+      />
     </Card>
   )
 }
