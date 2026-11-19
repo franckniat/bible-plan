@@ -16,7 +16,7 @@ import {
   Sunrise,
   type LucideIcon,
 } from "lucide-react-native"
-import { useSyncExternalStore } from "react"
+import { useState, useSyncExternalStore } from "react"
 import { Pressable, StyleSheet, Text, View } from "react-native"
 import Svg, {
   Circle,
@@ -125,6 +125,11 @@ export function VerseOfTheDay({
   const t = useTranslations("VerseOfTheDay")
   const locale = useLocale() as Locale
   const period = useSyncExternalStore(subscribe, () => currentPeriod(timeZone))
+  // The sky is drawn at the card's measured size: a percentage size is not
+  // followed on Android when the text makes the card grow.
+  const [size, setSize] = useState<{ width: number; height: number } | null>(
+    null
+  )
   const passage = findVerseOfTheDay(today, locale)
   const state = usePassage(passage, version)
   if (!passage) return null
@@ -145,23 +150,42 @@ export function VerseOfTheDay({
   }
 
   return (
-    <View style={[styles.card, { borderColor: look.border }]}>
+    <View
+      style={[
+        styles.card,
+        { borderColor: look.border, backgroundColor: look.sky[1] },
+      ]}
+      onLayout={(event) => {
+        const { width, height } = event.nativeEvent.layout
+        setSize((current) =>
+          current?.width === width && current.height === height
+            ? current
+            : { width, height }
+        )
+      }}
+    >
       <View
         style={StyleSheet.absoluteFill}
         pointerEvents="none"
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
       >
-        <Svg width="100%" height="100%">
-          <Defs>
-            <LinearGradient id="verse-sky" x1="0" y1="0" x2="1" y2="1">
-              <Stop offset="0" stopColor={look.sky[0]} />
-              <Stop offset="0.55" stopColor={look.sky[1]} />
-              <Stop offset="1" stopColor={look.sky[2]} />
-            </LinearGradient>
-          </Defs>
-          <Rect width="100%" height="100%" fill="url(#verse-sky)" />
-        </Svg>
+        {size ? (
+          <Svg width={size.width} height={size.height}>
+            <Defs>
+              <LinearGradient id="verse-sky" x1="0" y1="0" x2="1" y2="1">
+                <Stop offset="0" stopColor={look.sky[0]} />
+                <Stop offset="0.55" stopColor={look.sky[1]} />
+                <Stop offset="1" stopColor={look.sky[2]} />
+              </LinearGradient>
+            </Defs>
+            <Rect
+              width={size.width}
+              height={size.height}
+              fill="url(#verse-sky)"
+            />
+          </Svg>
+        ) : null}
         {period === "night"
           ? stars.map(([left, top, size]) => (
               <View

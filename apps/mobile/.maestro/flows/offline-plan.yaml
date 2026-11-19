@@ -24,6 +24,10 @@ appId: ${APP_ID}
     id: plan-create
 - tapOn:
     id: tab-today
+# The verse of the day comes first: the plan may be lower on the screen.
+- scrollUntilVisible:
+    element:
+      id: reading-check
 - tapOn:
     id: reading-check
     index: 0
